@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Топ</title>
+</head>
+<body>
+<!--    {% block content %}-->
+<!--    {% endblock %}-->
+    {% for person in object_list %}
+        <h1>{{person.first_name}} {{person.last_name}}</h1>
+    {% endfor %}
+</body>
+</html>
