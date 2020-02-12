@@ -1,0 +1,39 @@
+{% extends "index.html"%}
+
+
+
+{% block header %}
+    <div class="container-fluid p-0">
+
+        <div class="navbar bg-dark">    <!-- Хедер -->
+
+            <h1><span class="nav badge badge-secondary">Курсовой проект </span></h1>
+
+            <h1><span class="btn badge badge-secondary">Войти</span></h1>
+
+        </div>
+
+        <div class="nav container-fluid p-5 ">
+
+            {% for i in object_list %}
+
+                <div class="dropdown m-5">
+                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{i.0}}
+                    </button>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+                        <a class="dropdown-item" href="#">{{i.1}}</a>
+                        <a class="dropdown-item" href="#">{{i.2}}</a>
+                        <a class="dropdown-item" href="#">{{i.3}}</a>
+
+                    </div>
+                </div>
+            {% endfor%}
+
+        </div>
+
+    </div>
+
+{% endblock %}
