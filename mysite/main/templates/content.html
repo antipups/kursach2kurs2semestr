@@ -1,6 +1,4 @@
-{% extends "index.html"%}
-
-
+{% extends "index.html" %}
 
 {% block header %}
     <div class="container-fluid p-0">
@@ -13,11 +11,13 @@
 
         </div>
 
-        <div class="nav container-fluid p-5 ">
+        <div class="container-fluid p-5">   <!-- Кнопки на работу с таблицей -->
 
-            {% for i in object_list %}
+            <h3><div class="badge badge-secondary p-3">Работа с элементами таблиц
 
-                <div class="dropdown m-5">
+            {% for i in object_list.Buttons %}
+
+                <div class="mx-auto dropdown m-5">
                     <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{i.0}}
                     </button>
@@ -31,9 +31,12 @@
                     </div>
                 </div>
             {% endfor%}
-
+            </div></h3>
         </div>
 
+
     </div>
+
+
 
 {% endblock %}
