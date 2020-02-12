@@ -24,7 +24,7 @@ class Manufacturer(models.Model):
     id_of_country = models.ForeignKey(Country, on_delete=models.PROTECT)
     address_of_manufact = models.CharField(max_length=10)
     email_of_manufact = models.CharField(max_length=12)
-    year_of_manufact = models.IntegerField(max_length=4)
+    year_of_manufact = models.IntegerField()
 
 
 ################################################################
@@ -82,7 +82,7 @@ class Pharmacy(models.Model):
         Таблица аптек, внешние ключи:
             District (районы).
     """
-    number_of_pharmacy = models.IntegerField(max_length=5)
+    number_of_pharmacy = models.IntegerField()
     title_of_pharmacy = models.CharField(max_length=15)
     address_of_pharmacy = models.CharField(max_length=12)
     id_of_district = models.ForeignKey(District, models.PROTECT)
@@ -114,11 +114,11 @@ class Lot(models.Model):
     """
     datefact = models.DateField()
     count = models.IntegerField()
-    number_of_lot = models.IntegerField(max_length=4)
+    number_of_lot = models.IntegerField()
     datestart = models.DateField()
     datefinish = models.DateField()
-    price_manufact = models.IntegerField(max_length=4)
-    price_pharm = models.IntegerField(max_length=4)
+    price_manufact = models.IntegerField()
+    price_pharm = models.IntegerField()
     employee = models.ForeignKey(Employee, models.DO_NOTHING)
     defect = models.BooleanField()
     reason = models.TextField()

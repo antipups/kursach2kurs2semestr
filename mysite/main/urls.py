@@ -5,7 +5,7 @@ from .models import *
 
 urlpatterns = [
     path('',
-         ListView.as_view(queryset=Product.objects.all(),   # всё работает , только тут доделай, и в index html
+         ListView.as_view(queryset=Pharmacy.objects.all(),   # всё работает , только тут доделай, и в index html
                           template_name='index.html'),
          name='hw'),
 ]

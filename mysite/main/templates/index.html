@@ -7,8 +7,8 @@
 <body>
 <!--    {% block content %}-->
 <!--    {% endblock %}-->
-    {% for product in object_list %}
-        <h1>{{product.company}} {{product.name}} {{product.price}}</h1>
+    {% for pharmacy in object_list %}
+        <h1>{{pharmacy.title_of_pharmacy}}{{pharmacy.id_of_district.title_of_district}}</h1>
     {% endfor %}
 </body>
 </html>
