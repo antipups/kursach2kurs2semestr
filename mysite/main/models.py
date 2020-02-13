@@ -82,11 +82,15 @@ class Pharmacy(models.Model):
         Таблица аптек, внешние ключи:
             District (районы).
     """
+
     number_of_pharmacy = models.IntegerField()
     title_of_pharmacy = models.CharField(max_length=15, help_text="Название аптеки")
     address_of_pharmacy = models.CharField(max_length=12)
     id_of_district = models.ForeignKey(District, models.PROTECT)
     phone_of_pharmacy = models.CharField(max_length=10)
+
+    def __str__(self):
+        return 'number_of_pharmacy', 'title_of_pharmacy', 'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
 
 
 ################################################################

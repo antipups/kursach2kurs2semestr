@@ -15,18 +15,24 @@
 
             <h3><div class="badge badge-secondary p-3">Работа с элементами таблиц
 
-            {% for i in object_list.Buttons %}
+            {% for i in object_list.Buttons.0 %}
 
-                <div class="mx-auto dropdown m-5">
+                <div class="mx-auto dropright m-5">
                     <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{i.0}}
+                        {{i}}
                     </button>
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
-                        <a class="dropdown-item" href="#">{{i.1}}</a>
-                        <a class="dropdown-item" href="#">{{i.2}}</a>
-                        <a class="dropdown-item" href="#">{{i.3}}</a>
+                        {% for j in object_list.Buttons.1.0 %}
+                            <a class="dropdown-item text-primary" href="#">{{j}}</a>
+                        {% endfor %}
+
+                        <div class="dropdown-divider"></div>    <!-- Разделитель -->
+
+                        {% for j in object_list.Buttons.1.1 %}
+                            <a class="dropdown-item text-secondary" href="#">{{j}}</a>
+                        {% endfor %}
 
                     </div>
                 </div>
