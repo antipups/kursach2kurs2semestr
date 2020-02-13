@@ -18,28 +18,36 @@
             {% for i in object_list.Buttons.0 %}
 
                 <div class="mx-auto dropright m-5">
-                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{i}}
                     </button>
 
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
-                        {% for j in object_list.Buttons.1.0 %}
-                            <a class="dropdown-item text-primary" href="#">{{j}}</a>
-                        {% endfor %}
+                        <div class="dropdown-menu">
 
-                        <div class="dropdown-divider"></div>    <!-- Разделитель -->
+                            <form action="/main/your-name/" method="post">
 
-                        {% for j in object_list.Buttons.1.1 %}
-                            <a class="dropdown-item text-secondary" href="#">{{j}}</a>
-                        {% endfor %}
+                                {% for j in object_list.Buttons.1.0 %}
 
-                    </div>
+                                    <button class="dropdown-item text-primary btn btn-info" id="your_name" name="your_name" type="submit" value="{{i}} : {{j}}">{{j}}</button>
+                                {% endfor %}
+
+                                <div class="dropdown-divider"></div>    <!-- Разделитель -->
+
+                                {% for j in object_list.Buttons.1.1 %}
+                                    <a class="dropdown-item text-secondary" href="#">{{j}}</a>
+                                {% endfor %}
+
+                            </form>
+
+
+                        </div>
+
+
                 </div>
             {% endfor%}
             </div></h3>
         </div>
-
 
     </div>
 

@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 def hw(request):
     print('Hello World')
     if request.method == 'POST':
-        print('POST')
+        print(request.POST)
     elif request.method == 'GET':
         print('GET')
     return HttpResponse('Hello World')

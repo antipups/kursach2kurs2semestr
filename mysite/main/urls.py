@@ -1,6 +1,7 @@
 from django.urls import path
 from django.views.generic import ListView, DetailView
 from .models import *
+from . import views
 
 tuple_with_tables = (('Лекарства',
                       'Аптека',
@@ -31,5 +32,6 @@ urlpatterns = [
                                          ("Работа с базой данных (Добавление, удаление)", "Задания"),
                                      }),
                           template_name='content.html'),
-         name='hw'),
+         name='sex'),
+    path('your-name/', views.hw, name='sex'),
 ]
