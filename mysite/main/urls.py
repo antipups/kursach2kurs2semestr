@@ -1,37 +1,12 @@
+from django.shortcuts import render
 from django.urls import path
 from django.views.generic import ListView, DetailView
 from .models import *
 from . import views
 
-tuple_with_tables = (('Лекарства',
-                      'Аптека',
-                      'Фирма',
-                      'Партия'),
-                     ('Страна',
-                      'Район',
-                      'Рабочий',
-                      'Фармакалогическая группа',
-                      'Форма лекарства',
-                      ))
-
-
-def lol():
-    # print(Pharmacy.__str__(Pharmacy))     # вывод полей класса
-    return Pharmacy.objects.all()
-
 
 urlpatterns = [
     path('',
-         ListView.as_view(queryset=({"Buttons":
-                                         (('Добавить в', 'Удалить из', 'Изменить в'),
-                                          tuple_with_tables,
-                                         ),
-                                     "DB":
-                                         Pharmacy.objects.all(),
-                                     "Mods":
-                                         ("Работа с базой данных (Добавление, удаление)", "Задания"),
-                                     }),
-                          template_name='content.html'),
-         name='sex'),
-    path('your-name/', views.hw, name='sex'),
+         lambda request: render(request, 'content.html', views.dict_of_data), name='sex'),
+    path('mode/', views.hw, name='sex2'),
 ]

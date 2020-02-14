@@ -1,23 +1,14 @@
 {% extends "index.html" %}
 
-{% block header %}
-    <div class="container-fluid p-0">
+{% block content %}
 
-        <div class="navbar bg-dark">    <!-- Хедер -->
+        <div class="nav container-fluid p-5">   <!-- Кнопки на работу с таблицей -->
 
-            <h1><span class="nav badge badge-secondary">Курсовой проект </span></h1>
+            <h3><div class="badge badge-secondary p-3 mr-3">Работа с элементами таблиц
 
-            <h1><span class="btn badge badge-secondary">Войти</span></h1>
+            {% for i in Buttons.0 %}
 
-        </div>
-
-        <div class="container-fluid p-5">   <!-- Кнопки на работу с таблицей -->
-
-            <h3><div class="badge badge-secondary p-3">Работа с элементами таблиц
-
-            {% for i in object_list.Buttons.0 %}
-
-                <div class="mx-auto dropright m-5">
+                <div class="mx-auto dropright m-4">
                     <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{i}}
                     </button>
@@ -25,17 +16,17 @@
 
                         <div class="dropdown-menu">
 
-                            <form action="/main/your-name/" method="post">
+                            <form action="/main/mode/" method="post">
 
-                                {% for j in object_list.Buttons.1.0 %}
+                                {% for j in Buttons.1.0 %}
 
-                                    <button class="dropdown-item text-primary btn btn-info" id="your_name" name="your_name" type="submit" value="{{i}} : {{j}}">{{j}}</button>
+                                    <button class="dropdown-item text-primary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>
                                 {% endfor %}
 
                                 <div class="dropdown-divider"></div>    <!-- Разделитель -->
 
-                                {% for j in object_list.Buttons.1.1 %}
-                                    <a class="dropdown-item text-secondary" href="#">{{j}}</a>
+                                {% for j in Buttons.1.1 %}
+                                    <button class="dropdown-item text-secondary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>
                                 {% endfor %}
 
                             </form>
@@ -47,10 +38,13 @@
                 </div>
             {% endfor%}
             </div></h3>
+
+            <h3><div class="badge badge-secondary p-3">Таблицы</div></h3>
+
+            {% block table %}
+
+            {% endblock %}
+
         </div>
-
-    </div>
-
-
 
 {% endblock %}
