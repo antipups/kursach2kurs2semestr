@@ -49,7 +49,7 @@ def hw(request):
             table = dict_of_tables.get(string[string.rfind(':') + 2:])
             dict_of_data.update({
                 'name_of_table': string[string.find(':'):],
-                'name_of_rows': table.__str__(table),
-                'Table': table.objects.values()})
+                'name_of_rows': table.readable(),
+                'Table': table.objects.values_list()})
             return render(request, 'tables.html', dict_of_data)
     return HttpResponse('Hello World')

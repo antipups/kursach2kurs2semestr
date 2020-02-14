@@ -14,6 +14,10 @@ class Country(models.Model):
     """
     title_of_country = models.CharField(max_length=3)
 
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_country'
+
 
 class Manufacturer(models.Model):
     """
@@ -25,6 +29,11 @@ class Manufacturer(models.Model):
     address_of_manufact = models.CharField(max_length=10)
     email_of_manufact = models.CharField(max_length=12)
     year_of_manufact = models.IntegerField()
+
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_manufact', 'id_of_country', 'address_of_manufact', \
+               'email_of_manufact', 'year_of_manufact', 'id_of_manufact'
 
 
 ################################################################
@@ -40,12 +49,20 @@ class Shape(models.Model):
     """
     title_of_shape = models.CharField(max_length=15)
 
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_shape'
+
 
 class Pharma_group(models.Model):
     """
         Таблица фармакалогических групп
     """
     title_of_group = models.CharField(max_length=20)
+
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_group'
 
 
 class Medicament(models.Model):
@@ -62,6 +79,10 @@ class Medicament(models.Model):
     bar_code = models.ImageField(width_field=100, height_field=100)
     id_of_manufact = models.ForeignKey(Manufacturer, models.CASCADE)
 
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_medicament', 'id_of_shape', 'id_of_group',\
+               'comments', 'bar_code', 'id_of_manufact'
 
 ################################################################
 
@@ -76,6 +97,10 @@ class District(models.Model):
     """
     title_of_district = models.CharField(max_length=15)
 
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_district'
+
 
 class Pharmacy(models.Model):
     """
@@ -89,7 +114,9 @@ class Pharmacy(models.Model):
     id_of_district = models.ForeignKey(District, models.PROTECT)
     phone_of_pharmacy = models.CharField(max_length=10)
 
-    def __str__(self):
+
+    @staticmethod
+    def readable():
         return 'id', 'number_of_pharmacy', 'title_of_pharmacy', 'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
 
 
@@ -110,6 +137,10 @@ class Employee(models.Model):
     second_name = models.CharField(max_length=20)
     third_name = models.CharField(max_length=20)
 
+    @staticmethod
+    def readable():
+        return 'id', 'id_of_pharm', 'first_name', 'second_name', 'third_name',
+
 
 class Lot(models.Model):
     """
@@ -126,3 +157,8 @@ class Lot(models.Model):
     employee = models.ForeignKey(Employee, models.DO_NOTHING)
     defect = models.BooleanField()
     reason = models.TextField()
+
+    @staticmethod
+    def readable():
+        return 'id', 'datefact', 'number_of_lot', 'datestart', 'datefinish', \
+               'price_manufact', 'price_pharm', 'employee', 'defect', 'reason'

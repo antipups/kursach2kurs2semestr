@@ -2,8 +2,8 @@
 
 {% block table %}
 
-    <table class="badge badge-secondary p-3 w-75 table table-hover">
-        <tr class="table-bordered"><td class="w-50" colspan="6">Таблица {{name_of_table}}</td></tr>
+    <table class="badge badge-secondary p-3 w-100 table table-hover ">
+        <tr class="table-bordered"><td class="w-25" colspan="{{name_of_rows|length}}">Таблица {{name_of_table}}</td></tr>
         <tr class="table table-hover table-bordered">
             {% for i in name_of_rows %}
                 <td class="m-5">{{i}}</td>
@@ -11,13 +11,11 @@
         </tr>
         {% for i in Table %}
             <tr class="table-bordered">
-                <td class="m-5">{{i.id}}</td>
-                <td class="m-5">{{i.number_of_pharmacy}}</td>
-                <td class="m-5">{{i.title_of_pharmacy}}</td>
-                <td class="m-5">{{i.address_of_pharmacy}}</td>
-                <td class="m-5">{{i.id_of_district_id}}</td>
-                <td class="m-5">{{i.phone_of_pharmacy}}</td>
+                {% for j in i %}
+                    <td class="m-5">{{j}}</td>
+                {% endfor %}
             </tr>
         {% endfor %}
     </table>
+
 {% endblock %}

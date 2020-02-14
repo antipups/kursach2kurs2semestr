@@ -2,24 +2,20 @@
 
 {% block content %}
 
-        <div class="nav container-fluid p-5">   <!-- Кнопки на работу с таблицей -->
+<div class="container-fluid pt-3">
+  <div class="row">
+    <div class="col-sm-1 mr-auto ">
+      <div class="badge badge-secondary p-3 ml-1"><h3 class="">Работа с данными<br>таблиц</h3>
 
-            <h3><div class="badge badge-secondary p-3 mr-3">Работа с элементами таблиц
+                {% for i in Buttons.0 %}
 
-            {% for i in Buttons.0 %}
-
-                <div class="mx-auto dropright m-4">
-                    <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{i}}
-                    </button>
-
-
+                    <div class="mx-auto dropright m-4">     <!-- Вывод кнопок -->
+                        <button class="btn btn-info dropdown-toggle w-75" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{i}}
+                        </button>
                         <div class="dropdown-menu">
-
                             <form action="/main/mode/" method="post">
-
                                 {% for j in Buttons.1.0 %}
-
                                     <button class="dropdown-item text-primary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>
                                 {% endfor %}
 
@@ -28,21 +24,21 @@
                                 {% for j in Buttons.1.1 %}
                                     <button class="dropdown-item text-secondary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>
                                 {% endfor %}
-
                             </form>
-
-
                         </div>
+                    </div>
 
+                {% endfor%}
 
-                </div>
-            {% endfor%}
-            </div></h3>
+            </div>
+    </div>
 
+    <div class="col-sm-10 pl-5 pr-4">
             {% block table %}
 
             {% endblock %}
-
-        </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
