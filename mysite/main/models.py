@@ -90,7 +90,7 @@ class Pharmacy(models.Model):
     phone_of_pharmacy = models.CharField(max_length=10)
 
     def __str__(self):
-        return 'number_of_pharmacy', 'title_of_pharmacy', 'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
+        return 'id', 'number_of_pharmacy', 'title_of_pharmacy', 'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
 
 
 ################################################################
