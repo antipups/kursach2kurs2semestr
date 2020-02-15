@@ -1,0 +1,69 @@
+{% extends "content.html" %}
+
+{% block table %}
+
+<!--    <form action="/main/mode/" method="post">-->
+<!--        {% for j in Buttons.1.0 %}-->
+<!--            <button class="dropdown-item text-primary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>-->
+<!--        {% endfor %}-->
+
+<!--        <div class="dropdown-divider"></div>    &lt;!&ndash; Разделитель &ndash;&gt;-->
+
+<!--        {% for j in Buttons.1.1 %}-->
+<!--            <button class="dropdown-item text-secondary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>-->
+<!--        {% endfor %}-->
+<!--    </form>-->
+
+    <div class="badge badge-secondary p-2 w-100"><h3>Добавить в таблицу {{name_of_table}}</h3>
+        <form>
+            <div class="form-row">    <!-- один строка для ввода -->
+                {% for i in name_of_rows %}
+                    <div class="form-group col-md-3">   <!-- одна форма ввода -->
+                      <label for="{{i}}">{{i}}</label>
+                      <input class="form-control" id="{{i}}">
+                    </div>
+                {% endfor %}
+                {% for i in ids %}
+                    <div class="form-group col-md-3">   <!-- одна форма ввода (с ключем)-->
+                      <label for="{{i}}">{{i}}</label>
+                        <select id="{{i}}" class="form-control">
+                            <option selected>Выберите...</option>
+                            {% for key, value in tables.items %}
+                                {% if i == key %}
+                                    {% for j in value %}
+                                        <option>{{j}}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+
+            </div>
+
+<!--          <div class="form-row">-->
+
+<!--            <div class="form-group col-md-4">-->
+<!--              <label for="inputState">State</label>-->
+<!--              <select id="inputState" class="form-control">-->
+<!--                <option selected>Choose...</option>-->
+<!--                <option>...</option>-->
+<!--              </select>-->
+<!--            </div>-->
+
+<!--          </div>-->
+
+        <!--    <div class="form-group">    &lt;!&ndash; добавить для изменения &ndash;&gt;-->
+        <!--        <div class="form-check">-->
+        <!--          <input class="form-check-input" type="checkbox" id="gridCheck">-->
+        <!--          <label class="form-check-label" for="gridCheck">-->
+        <!--            Check me out-->
+        <!--          </label>-->
+        <!--        </div>-->
+        <!--  </div>-->
+
+          <button type="submit" class="btn btn-primary w-100">Добавить</button>
+        </form>
+    </div>
+
+{% endblock %}

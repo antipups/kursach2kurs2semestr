@@ -114,7 +114,6 @@ class Pharmacy(models.Model):
     id_of_district = models.ForeignKey(District, models.PROTECT)
     phone_of_pharmacy = models.CharField(max_length=10)
 
-
     @staticmethod
     def readable():
         return 'id', 'number_of_pharmacy', 'title_of_pharmacy', 'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
@@ -154,11 +153,11 @@ class Lot(models.Model):
     datefinish = models.DateField()
     price_manufact = models.IntegerField()
     price_pharm = models.IntegerField()
-    employee = models.ForeignKey(Employee, models.DO_NOTHING)
+    id_of_employee = models.ForeignKey(Employee, models.DO_NOTHING)
     defect = models.BooleanField()
     reason = models.TextField()
 
     @staticmethod
     def readable():
         return 'id', 'datefact', 'number_of_lot', 'datestart', 'datefinish', \
-               'price_manufact', 'price_pharm', 'employee', 'defect', 'reason'
+               'price_manufact', 'price_pharm', 'id_of_employee', 'defect', 'reason'
