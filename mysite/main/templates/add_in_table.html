@@ -2,31 +2,20 @@
 
 {% block table %}
 
-<!--    <form action="/main/mode/" method="post">-->
-<!--        {% for j in Buttons.1.0 %}-->
-<!--            <button class="dropdown-item text-primary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>-->
-<!--        {% endfor %}-->
-
-<!--        <div class="dropdown-divider"></div>    &lt;!&ndash; Разделитель &ndash;&gt;-->
-
-<!--        {% for j in Buttons.1.1 %}-->
-<!--            <button class="dropdown-item text-secondary btn btn-info" id="mode" name="mode" type="submit" value="{{i}} : {{j}}">{{j}}</button>-->
-<!--        {% endfor %}-->
-<!--    </form>-->
-
     <div class="badge badge-secondary p-2 w-100"><h3>Добавить в таблицу {{name_of_table}}</h3>
-        <form>
+        <form action="/main/add/" method="post">
             <div class="form-row">    <!-- один строка для ввода -->
                 {% for i in name_of_rows %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
-                      <label for="{{i}}">{{i}}</label>
-                      <input class="form-control" id="{{i}}">
+                      <label for="add">{{i}}</label>
+                      <input class="form-control" id="add" name="{{i}}" value="{{ value }}">
                     </div>
                 {% endfor %}
+
                 {% for i in ids %}
-                    <div class="form-group col-md-3">   <!-- одна форма ввода (с ключем)-->
-                      <label for="{{i}}">{{i}}</label>
-                        <select id="{{i}}" class="form-control">
+                    <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
+                      <label for="add">{{i}}</label>
+                        <select id="add" name="{{i}}" class="form-control">
                             <option selected>Выберите...</option>
                             {% for key, value in tables.items %}
                                 {% if i == key %}
@@ -40,30 +29,23 @@
                 {% endfor %}
 
             </div>
-
-<!--          <div class="form-row">-->
-
-<!--            <div class="form-group col-md-4">-->
-<!--              <label for="inputState">State</label>-->
-<!--              <select id="inputState" class="form-control">-->
-<!--                <option selected>Choose...</option>-->
-<!--                <option>...</option>-->
-<!--              </select>-->
-<!--            </div>-->
-
-<!--          </div>-->
-
-        <!--    <div class="form-group">    &lt;!&ndash; добавить для изменения &ndash;&gt;-->
-        <!--        <div class="form-check">-->
-        <!--          <input class="form-check-input" type="checkbox" id="gridCheck">-->
-        <!--          <label class="form-check-label" for="gridCheck">-->
-        <!--            Check me out-->
-        <!--          </label>-->
-        <!--        </div>-->
-        <!--  </div>-->
-
-          <button type="submit" class="btn btn-primary w-100">Добавить</button>
+          <button type="submit" class="btn btn-primary w-100" id="add">Добавить</button>
         </form>
     </div>
+
+    {% if win == True %}
+        <form action="/main/mode/" method="post">
+            <button id="mode" name="mode" class="btn w-100" type="submit" value="смотр : {{name_of_table}}">
+                <div class="alert alert-success mt-3" align="center" role="alert">
+                    <h3>Запись добавлена</h3><br>
+                    <h5>Для просмотра добавленной записи нажмите на это поле</h5>
+                </div>
+           </button>
+        </form>
+    {% endif %}
+
+    {% if win == False %}
+        <div class="alert alert-danger mt-3" align="center" role="alert"><h3>Ошибка, проверьте правильность заполнения полей!</h3></div>
+    {% endif %}
 
 {% endblock %}
