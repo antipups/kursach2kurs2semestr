@@ -8,7 +8,7 @@
                 {% for i in name_of_rows %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
                       <label for="add">{{i}}</label>
-                      <input class="form-control" id="add" name="{{i}}" value="{{ value }}">
+                      <input class="form-control" id="add" name="{{i}}" value="{{ value }}" autocomplete="off">
                     </div>
                 {% endfor %}
 
@@ -16,7 +16,7 @@
                     <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
                       <label for="add">{{i}}</label>
                         <select id="add" name="{{i}}" class="form-control">
-                            <option selected>Выберите...</option>
+                            <option selected disabled>Выберите...</option>
                             {% for key, value in tables.items %}
                                 {% if i == key %}
                                     {% for j in value %}

@@ -84,7 +84,6 @@ def hw(request, dict_of_tables=dict_of_tables):
                     elif ids[0] == 'id_of_employee':
                         tables.update({ids[i[0]]: tuple(
                             str(j[0]) + ' | ' + j[1] + ' ' + j[2] + ' ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
-            print(tables)
             dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды
                 'name_of_table': string[string.find(':') + 2:],
                 'name_of_rows': rows,
