@@ -1,0 +1,52 @@
+{% extends "content.html" %}
+
+{% block table %}
+
+    <div class="badge badge-secondary p-2 w-100"><h3>Обновление таблицы {{name_of_table}}</h3>
+        <form action="/main/work_with_tables/" method="post">
+            <div class="form-row">    <!-- один строка для ввода -->
+                {% for i in name_of_rows %}
+                    <div class="form-group col-md-3">   <!-- одна форма ввода -->
+                      <label for="add">{{i}}</label>
+                      <input class="form-control" id="add" name="{{i}}" value="{{ value }}" autocomplete="off">
+                    </div>
+                {% endfor %}
+
+                {% for i in ids %}
+                    <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
+                      <label for="add">{{i}}</label>
+                        <select id="add" name="{{i}}" class="form-control">
+                            <option selected disabled>Выберите...</option>
+                            {% for key, value in tables.items %}
+                                {% if i == key %}
+                                    {% for j in value %}
+                                        <option>{{j}}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+
+            </div>
+          <button type="submit" class="btn btn-primary w-100" id="add">Отправить данные на проверку</button>
+        </form>
+    </div>
+
+    {% if win == True and addon == True %}
+        <div class="alert alert-success mt-3" align="center" role="alert">
+            <h3>Данные приняты, введите новые данные для изменния заданной записи</h3>
+        </div>
+    {% endif %}
+
+    {% if win == True and addon == False %}
+        <div class="alert alert-success mt-3" align="center" role="alert">
+            <h3>Данные успешно обновленны</h3>
+        </div>
+    {% endif %}
+
+    {% if win == False %}
+        <div class="alert alert-danger mt-3" align="center" role="alert"><h3>Ошибка, проверьте правильность заполнения полей!</h3></div>
+    {% endif %}
+
+{% endblock %}
