@@ -1,0 +1,65 @@
+{% extends "content.html" %}
+
+{% block table %}
+
+    <div class="badge badge-secondary p-2 w-100"><h3>Найти в таблице {{name_of_table}} (заполняйте поля по желанию)</h3>
+        <form action="/main/work_with_tables/" method="post">
+            <div class="form-row">    <!-- один строка для ввода -->
+                {% for i in name_of_rows %}
+                    <div class="form-group col-md-3">   <!-- одна форма ввода -->
+                      <label for="add">{{i}}</label>
+                      <input class="form-control" id="add" name="{{i}}" value="{{ value }}" autocomplete="off">
+                    </div>
+                {% endfor %}
+
+                {% for i in ids %}
+                    <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
+                      <label for="add">{{i}}</label>
+                        <select id="add" name="{{i}}" class="form-control">
+                            <option selected disabled>Выберите...</option>
+                            {% for key, value in tables.items %}
+                                {% if i == key %}
+                                    {% for j in value %}
+                                        <option>{{j}}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+
+            </div>
+          <button type="submit" class="btn btn-primary w-100" id="add">Найти</button>
+        </form>
+    </div>
+
+    {% if win == True %}
+        <form action="/main/mode/" method="post">
+            <button id="mode" name="mode" class="btn w-100" type="submit" value="смотр : {{name_of_table}}">
+                <div class="alert alert-success mt-3" align="center" role="alert">
+                    <h3>Запись найдена</h3><br>
+                    <h5>
+                        <table class="badge badge-secondary p-3 w-100 table table-hover ">
+                            <tr class="table-bordered"><td class="w-25" colspan="{{data_for_find|length}}">Таблица {{name_of_table}}</td></tr>
+                            <tr class="table table-hover table-bordered">
+                                {% for i in data_for_find %}
+                                    <td class="m-5">{{i}}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="table-bordered">
+                                {% for i in data_of_object %}
+                                    <td class="m-5">{{i}}</td>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </h5>
+                </div>
+           </button>
+        </form>
+    {% endif %}
+
+    {% if win == False %}
+        <div class="alert alert-danger mt-3" align="center" role="alert"><h3>Ошибка, проверьте правильность заполнения полей!</h3></div>
+    {% endif %}
+
+{% endblock %}

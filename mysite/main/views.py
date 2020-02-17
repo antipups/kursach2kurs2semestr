@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import DetailView
+
 from .models import *
 
 
@@ -15,7 +17,7 @@ tuple_with_tables = (('Лекарства',  # кортеж со всеми та
                       ))
 
 dict_of_data = {"Buttons":
-                     (('Добавить в', 'Удалить из', 'Изменить в', 'Просмотреть'),
+                     (('Добавить в', 'Удалить из', 'Изменить в', 'Просмотреть', 'Поиск'),
                       tuple_with_tables,
                      ),
                 "DB":
@@ -44,7 +46,7 @@ def hw(request, dict_of_tables=dict_of_tables):
     dict_of_data['win'], dict_of_data['addon'] = '', False
     if request.method == 'POST':    # если юзер нажал на кнопку
 
-        string = request.POST.get('mode')   # получаем с страницы вс. нужную информацию
+        string = request.POST.get('mode')   # получаем с страницы всю нужную информацию
         table = dict_of_tables.get(string[string.rfind(':') + 2:])
         if string.find('смотр') > -1:   # для кнопки посмотреть
             dict_of_data.update({
@@ -55,6 +57,7 @@ def hw(request, dict_of_tables=dict_of_tables):
             return render(request, 'read_table.html', dict_of_data)
 
         rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
+        dict_of_data.update({'data_for_find': table.readable()})
         ids, rows = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1)
         # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
 
@@ -92,12 +95,16 @@ def hw(request, dict_of_tables=dict_of_tables):
             'tables': tables,
             'mode': string[:string.find(':')]
         })
+        if string.find('Поиск') > -1:
+            return render(request, 'find_in_table.html', dict_of_data)
         if string.find('Добавить') > -1:
             return render(request, 'add_in_table.html', dict_of_data)
         elif string.find('Удалить') > -1:  # для кнопки добавить
             return render(request, 'remove_from_table.html', dict_of_data)
         elif string.find('Изменить') > -1:  # для кнопки добавить
             return render(request, 'update_table.html', dict_of_data)
+        elif string.find('Поиск') > -1:  # для кнопки добавить
+            return render(request, 'find_in_table.html', dict_of_data)
 
 
 @csrf_exempt
@@ -110,11 +117,24 @@ def mode(request, dict_of_tables=dict_of_tables):
             if row[0].find('id_of_') > -1:  # если это id то режем до id
                 if (row[1][0][:row[1][0].find(' ')]).isdigit() is False:
                     return render(request, 'add_in_table.html', dict_of_data)
-                dict_of_post[row[0]] = eval(row[0][row[0].find('_of_') + 4:].capitalize()).objects.get(id=int(row[1][0][:row[1][0].find(' ')]))
+                if dict_of_data.get('mode').find('Поиск') > -1 and row[1][0][:row[1][0].find(' ')].isdigit() is False:  # если режим поиска - все аргументы НЕ обязательны
+                    del dict_of_post[row[0]]
+                else:
+                    dict_of_post[row[0]] = eval(row[0][row[0].find('_of_') + 4:].capitalize()).objects.get(id=int(row[1][0][:row[1][0].find(' ')]))
             else:
-                dict_of_post[row[0]] = row[1][0]
+                if dict_of_data.get('mode').find('Поиск') > -1 and not row[1][0]:
+                    del dict_of_post[row[0]]
+                else:
+                    dict_of_post[row[0]] = row[1][0]
 
-        if dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
+        if dict_of_data.get('mode').find('Поиск') > -1:
+            try:
+                dict_of_data.update({'win': True, 'data_of_object': object_of_table.objects.get(**dict_of_post).getter()})
+                return render(request, 'find_in_table.html', dict_of_data)
+            except:
+                return render(request, 'find_in_table.html', dict_of_data)
+
+        elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
             try:
                 object_of_table.objects.create(**dict_of_post)
             except ValueError:
@@ -131,7 +151,6 @@ def mode(request, dict_of_tables=dict_of_tables):
             return render(request, 'remove_from_table.html', dict_of_data)
 
         elif dict_of_data.get('mode').find('Изме') > -1 and dict_of_data.get('addon') == False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
-            print('Первый блок')
             try:
                 object_of_table.objects.get(**dict_of_post)
                 dict_of_data.update({'win': True, 'addon': True,
@@ -152,4 +171,3 @@ def mode(request, dict_of_tables=dict_of_tables):
             except:
                 dict_of_data.update({'win': False, 'addon': False})
                 return render(request, 'update_table.html', dict_of_data)
-

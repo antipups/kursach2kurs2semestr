@@ -18,6 +18,9 @@ class Country(models.Model):
     def readable():
         return 'id', 'title_of_country'
 
+    def getter(self):
+        return self.id, self.title_of_country
+
 
 class Manufacturer(models.Model):
     """
@@ -35,6 +38,8 @@ class Manufacturer(models.Model):
         return 'id', 'title_of_manufacturer', 'id_of_country', 'address_of_manufacturer', \
                'email_of_manufacturer', 'year_of_manufacturer'
 
+    def getter(self):
+        return self.id, self.title_of_manufacturer, self.id_of_country.title_of_country, self.address_of_manufacturer, self.email_of_manufacturer, self.year_of_manufacturer
 
 ################################################################
 
@@ -53,6 +58,9 @@ class Shape(models.Model):
     def readable():
         return 'id', 'title_of_shape'
 
+    def getter(self):
+        return self.id, self.title_of_shape
+
 
 class Pharma_group(models.Model):
     """
@@ -63,6 +71,9 @@ class Pharma_group(models.Model):
     @staticmethod
     def readable():
         return 'id', 'title_of_pharma_group'
+
+    def getter(self):
+        return self.id, self.title_of_pharma_group
 
 
 class Medicament(models.Model):
@@ -84,6 +95,9 @@ class Medicament(models.Model):
         return 'id', 'title_of_medicament', 'id_of_shape', 'id_of_pharma_group',\
                'comments', 'bar_code', 'id_of_manufacturer'
 
+    def getter(self):
+        return self.id, self.title_of_medicament, self.id_of_shape.title_of_shape, self.id_of_pharma_group.title_of_pharma_group, self.comments, self.bar_code, self.id_of_manufacturer.title_of_manufacturer
+
 ################################################################
 
 # ____________________________АПТЕКИ__________________________ #
@@ -100,6 +114,9 @@ class District(models.Model):
     @staticmethod
     def readable():
         return 'id', 'title_of_district'
+
+    def getter(self):
+        return self.id, self.title_of_district
 
 
 class Pharmacy(models.Model):
@@ -118,6 +135,9 @@ class Pharmacy(models.Model):
     def readable():
         return 'id', 'number_of_pharmacy', 'title_of_pharmacy', \
                'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
+
+    def getter(self):
+        return self.id, self.number_of_pharmacy, self.title_of_pharmacy, self.address_of_pharmacy, self.id_of_district.title_of_district, self.phone_of_pharmacy
 
 
 ################################################################
@@ -141,6 +161,9 @@ class Employee(models.Model):
     def readable():
         return 'id', 'id_of_pharmacy', 'first_name', 'second_name', 'third_name',
 
+    def getter(self):
+        return self.id, self.id_of_pharmacy.title_of_pharmacy, self.first_name, self.second_name, self.third_name
+
 
 class Lot(models.Model):
     """
@@ -162,3 +185,9 @@ class Lot(models.Model):
     def readable():
         return 'id', 'datefact', 'number_of_lot', 'datestart', 'datefinish', \
                'price_manufacturer', 'price_pharmacy', 'id_of_employee', 'defect', 'reason'
+
+    def getter(self):
+        return self.id, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
+               self.price_manufacturer, self.price_pharmacy, \
+               ' '.join(self.id_of_employee.first_name, self.id_of_employee.first_name, self.id_of_employee.second_name, self.id_of_employee.third_name), \
+               self.defect, self.reason
