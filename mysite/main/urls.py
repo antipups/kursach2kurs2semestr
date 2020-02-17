@@ -9,5 +9,5 @@ urlpatterns = [
     path('',
          lambda request: render(request, 'content.html', views.dict_of_data), name='sex'),
     path('mode/', views.hw, name='sex2'),
-    path('add/', views.add_mode, name='sex3'),
+    path('work_with_tables/', views.mode, name='sex2'),
 ]

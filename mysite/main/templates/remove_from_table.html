@@ -2,20 +2,20 @@
 
 {% block table %}
 
-    <div class="badge badge-secondary p-2 w-100"><h3>Добавить в таблицу {{name_of_table}}</h3>
+    <div class="badge badge-secondary p-2 w-100"><h3>Удалить из таблицы {{name_of_table}}</h3>
         <form action="/main/work_with_tables/" method="post">
             <div class="form-row">    <!-- один строка для ввода -->
                 {% for i in name_of_rows %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
-                      <label for="add">{{i}}</label>
-                      <input class="form-control" id="add" name="{{i}}" value="{{ value }}" autocomplete="off">
+                      <label for="remove">{{i}}</label>
+                      <input class="form-control" id="remove" name="{{i}}" value="{{ value }}" autocomplete="off">
                     </div>
                 {% endfor %}
 
                 {% for i in ids %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
-                      <label for="add">{{i}}</label>
-                        <select id="add" name="{{i}}" class="form-control">
+                      <label for="remove">{{i}}</label>
+                        <select id="remove" name="{{i}}" class="form-control">
                             <option selected disabled>Выберите...</option>
                             {% for key, value in tables.items %}
                                 {% if i == key %}
@@ -29,7 +29,7 @@
                 {% endfor %}
 
             </div>
-          <button type="submit" class="btn btn-primary w-100" id="add">Добавить</button>
+          <button type="submit" class="btn btn-primary w-100" id="remove">Удалить</button>
         </form>
     </div>
 
@@ -37,8 +37,7 @@
         <form action="/main/mode/" method="post">
             <button id="mode" name="mode" class="btn w-100" type="submit" value="смотр : {{name_of_table}}">
                 <div class="alert alert-success mt-3" align="center" role="alert">
-                    <h3>Запись добавлена</h3><br>
-                    <h5>Для просмотра добавленной записи нажмите на это поле</h5>
+                    <h3>Записи удалены ({{amount_of_remove}} шт.)</h3>
                 </div>
            </button>
         </form>

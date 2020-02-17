@@ -22,8 +22,8 @@ dict_of_data = {"Buttons":
                      Pharmacy.objects.all(),
                 "Mods":
                      ("Работа с базой данных (Добавление, удаление)", "Задания"),
-                # "Tables":
-                #      (),
+                "mode":
+                    '',
                 }   # начальный словарь, кторый мы и будем таскать
 
 
@@ -46,7 +46,6 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         string = request.POST.get('mode')
         table = dict_of_tables.get(string[string.rfind(':') + 2:])
-
         if string.find('смотр') > -1:   # для кнопки посмотреть
             dict_of_data.update({
                 'name_of_table': string[string.find(':'):],
@@ -55,7 +54,7 @@ def hw(request, dict_of_tables=dict_of_tables):
             })
             return render(request, 'read_table.html', dict_of_data)
 
-        elif string.find('обави') > -1:     # для кнопки добавить
+        elif string.find('Добавить') > -1 or string.find('Удалить') > -1:     # для кнопки добавить
             rows = table.readable()[1:]
             ids, rows = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1)
 
@@ -89,12 +88,16 @@ def hw(request, dict_of_tables=dict_of_tables):
                 'name_of_rows': rows,
                 'ids': ids,
                 'tables': tables,
+                'mode': string[:string.find(':')]
             })
-            return render(request, 'add_in_table.html', dict_of_data)
+            if string.find('Добавить') > -1:
+                return render(request, 'add_in_table.html', dict_of_data)
+            elif string.find('Удалить') > -1:  # для кнопки добавить
+                return render(request, 'remove_from_table.html', dict_of_data)
 
 
 @csrf_exempt
-def add_mode(request, dict_of_tables=dict_of_tables):
+def mode(request, dict_of_tables=dict_of_tables):
     if request.method == 'POST':
         dict_of_data.update({'win': False})
         dict_of_post = dict(request.POST)
@@ -106,10 +109,19 @@ def add_mode(request, dict_of_tables=dict_of_tables):
                 dict_of_post[row[0]] = eval(row[0][row[0].find('_of_') + 4:].capitalize()).objects.get(id=int(row[1][0][:row[1][0].find(' ')]))
             else:
                 dict_of_post[row[0]] = row[1][0]
-        try:
-            object_of_table.objects.create(**dict_of_post)
-        except ValueError:
-            return render(request, 'add_in_table.html', dict_of_data)
-        dict_of_data.update({'win': True})
 
-        return render(request, 'add_in_table.html', dict_of_data)
+        if dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на добавление
+            try:
+                object_of_table.objects.create(**dict_of_post)
+            except ValueError:
+                return render(request, 'add_in_table.html', dict_of_data)
+            dict_of_data.update({'win': True})
+            return render(request, 'add_in_table.html', dict_of_data)
+
+        elif dict_of_data.get('mode').find('Удал') > -1:  # если делаем удаление > проверки на удаление
+            amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()[0]  # количество удалимых записей
+            if amount_of_remove == 0:
+                dict_of_data.update({'win': False})
+            else:
+                dict_of_data.update({'win': True, 'amount_of_remove': '3'})
+            return render(request, 'remove_from_table.html', dict_of_data)
