@@ -1,10 +1,10 @@
 import pprint
-
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
-
 from .models import *
+from random import choice   # для спама
+from string import ascii_uppercase    # для спама
 
 
 tuple_with_tables = (('Лекарства',  # кортеж со всеми таблицами
@@ -63,6 +63,7 @@ def hw(request, dict_of_tables=dict_of_tables):
         dict_of_data.update({'data_for_find': table.readable()})
 
         ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
+        engl_ids = tuple(ids)
 
         # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
 
@@ -93,6 +94,7 @@ def hw(request, dict_of_tables=dict_of_tables):
                     tables.update({ids[i[0]]: tuple(
                         str(j[0]) + ' | ' + j[1] + ' ' + j[2] + ' ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
 
+
         rows, ids, code = [], [], []
 
         for index, value in enumerate(engl_rows):
@@ -103,16 +105,24 @@ def hw(request, dict_of_tables=dict_of_tables):
             else:
                 code.append(rus_rows[index])
 
+        dict_ids = {}
+        for id_ in range(len(ids)):
+            dict_ids.update({ids[id_]:engl_ids[id_]})
+
+        dict_rows = {}
+        for row_ in range(len(engl_rows)):
+            dict_rows.update({rus_rows[row_]: engl_rows[row_]})
+
+        print(dict_rows)
+
         dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
             'name_of_table': string[string.find(':') + 2:],
-            'name_of_rows': rows,
+            'name_of_rows': dict_rows,
             'code': code,
-            'ids': ids,
+            'ids': dict_ids,
             'tables': tables,
             'mode': string[:string.find(':')]
         })
-
-
 
         if string.find('Поиск') > -1:
             return render(request, 'find_in_table.html', dict_of_data)
@@ -135,7 +145,7 @@ def mode(request, dict_of_tables=dict_of_tables):
         object_of_table = dict_of_tables.get(dict_of_data.get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
         for row in dict_of_post.items():    # получаем из html файла данные, они подаеются в словаре в виде списков, перебираем всё, и получаем чистые данные
             if row[0].find('id_of_') > -1:  # если это id то режем до id
-                if (row[1][0][:row[1][0].find(' ')]).isdigit() is False:
+                if (row[1][0][:row[1][0].find(' ')]).isdigit() is False and dict_of_data.get('mode').find('Поиск') == -1:
                     return render(request, 'add_in_table.html', dict_of_data)
                 if dict_of_data.get('mode').find('Поиск') > -1 and row[1][0][:row[1][0].find(' ')].isdigit() is False:  # если режим поиска - все аргументы НЕ обязательны
                     list_to_del.append(row[0])
@@ -150,18 +160,19 @@ def mode(request, dict_of_tables=dict_of_tables):
         for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
             del dict_of_post[remove_element]
 
-        print(dict_of_post)
-        pprint.pprint(dict_of_data)
-
         if dict_of_data.get('mode').find('Поиск') > -1:
-            result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
-            if result_of_search:
-                dict_of_data.update({'win': True, 'data_of_object': result_of_search})
+            try:
+                result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
+                if result_of_search:
+                    dict_of_data.update({'win': True, 'data_of_object': result_of_search})
+                    return render(request, 'find_in_table.html', dict_of_data)
+            except ValueError:
                 return render(request, 'find_in_table.html', dict_of_data)
             else:
                 return render(request, 'find_in_table.html', dict_of_data)
 
         elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
+
             try:
                 object_of_table.objects.create(**dict_of_post)
             except ValueError:
