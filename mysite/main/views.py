@@ -58,9 +58,12 @@ def hw(request, dict_of_tables=dict_of_tables):
             })
             return render(request, 'read_table.html', dict_of_data)
 
-        rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
+        engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
+        rus_rows = table.readable_rus()[1:]
         dict_of_data.update({'data_for_find': table.readable()})
+
         ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
+
         # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
 
         dict_of_tables = {      # кортеж для получения значений со всех таблиц
@@ -90,6 +93,16 @@ def hw(request, dict_of_tables=dict_of_tables):
                     tables.update({ids[i[0]]: tuple(
                         str(j[0]) + ' | ' + j[1] + ' ' + j[2] + ' ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
 
+        rows, ids, code = [], [], []
+
+        for index, value in enumerate(engl_rows):
+            if value.find('id_of_') > -1:
+                ids.append(rus_rows[index])
+            elif value.find('id_of_') == -1 and value.find('code') == -1:
+                rows.append(rus_rows[index])
+            else:
+                code.append(rus_rows[index])
+
         dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
             'name_of_table': string[string.find(':') + 2:],
             'name_of_rows': rows,
@@ -99,7 +112,7 @@ def hw(request, dict_of_tables=dict_of_tables):
             'mode': string[:string.find(':')]
         })
 
-        pprint.pprint(dict_of_data)
+
 
         if string.find('Поиск') > -1:
             return render(request, 'find_in_table.html', dict_of_data)
@@ -136,6 +149,9 @@ def mode(request, dict_of_tables=dict_of_tables):
 
         for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
             del dict_of_post[remove_element]
+
+        print(dict_of_post)
+        pprint.pprint(dict_of_data)
 
         if dict_of_data.get('mode').find('Поиск') > -1:
             result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
