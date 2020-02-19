@@ -170,6 +170,7 @@ class Lot(models.Model):
         Таблица партий, внешние ключи:
             Employee (работник).
     """
+    id_of_medicament = models.ForeignKey(Medicament, models.DO_NOTHING)
     datefact = models.DateField()
     count = models.IntegerField()
     number_of_lot = models.IntegerField()

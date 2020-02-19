@@ -132,11 +132,14 @@ def mode(request, dict_of_tables=dict_of_tables):
         for remove_element in list_to_del:
             del dict_of_post[remove_element]
 
+        print(dict_of_post)
+
         if dict_of_data.get('mode').find('Поиск') > -1:
-            try:
-                dict_of_data.update({'win': True, 'data_of_object': object_of_table.objects.filter(**dict_of_post).values_list()})
+            result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
+            if result_of_search:
+                dict_of_data.update({'win': True, 'data_of_object': result_of_search})
                 return render(request, 'find_in_table.html', dict_of_data)
-            except:
+            else:
                 return render(request, 'find_in_table.html', dict_of_data)
 
         elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
