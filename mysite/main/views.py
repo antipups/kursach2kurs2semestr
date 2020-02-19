@@ -1,3 +1,5 @@
+import pprint
+
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
@@ -51,8 +53,8 @@ def hw(request, dict_of_tables=dict_of_tables):
         if string.find('Просмотреть') > -1:   # для кнопки посмотреть
             dict_of_data.update({
                 'name_of_table': string[string.find(':'):],
-                'name_of_rows': table.readable(),
-                'Table': tuple(row.getter() for row in table.objects.all())
+                'name_of_rows': table.readable_rus(),
+                'Table': tuple(map(lambda row: row.getter, table.objects.all()))
             })
             return render(request, 'read_table.html', dict_of_data)
 
@@ -96,6 +98,9 @@ def hw(request, dict_of_tables=dict_of_tables):
             'tables': tables,
             'mode': string[:string.find(':')]
         })
+
+        pprint.pprint(dict_of_data)
+
         if string.find('Поиск') > -1:
             return render(request, 'find_in_table.html', dict_of_data)
         if string.find('Добавить') > -1:

@@ -18,6 +18,10 @@ class Country(models.Model):
     def readable():
         return 'id', 'title_of_country'
 
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название'
+
     def getter(self):
         return self.id, self.title_of_country
 
@@ -37,6 +41,10 @@ class Manufacturer(models.Model):
     def readable():
         return 'id', 'title_of_manufacturer', 'id_of_country', 'address_of_manufacturer', \
                'email_of_manufacturer', 'year_of_manufacturer'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название', 'Страна', 'Адрес', 'E-mail', 'Год основания'
 
     def getter(self):
         return self.id, self.title_of_manufacturer, self.id_of_country.title_of_country, self.address_of_manufacturer, self.email_of_manufacturer, self.year_of_manufacturer
@@ -58,6 +66,10 @@ class Shape(models.Model):
     def readable():
         return 'id', 'title_of_shape'
 
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название'
+
     def getter(self):
         return self.id, self.title_of_shape
 
@@ -71,6 +83,10 @@ class Pharma_group(models.Model):
     @staticmethod
     def readable():
         return 'id', 'title_of_pharma_group'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название'
 
     def getter(self):
         return self.id, self.title_of_pharma_group
@@ -92,7 +108,12 @@ class Medicament(models.Model):
 
     @staticmethod
     def readable():
-        return 'id', 'Название', 'Форма', 'Фармакалогическая группа',\
+        return 'id', 'title_of_medicament', 'id_of_shape', 'id_of_pharma_group',\
+               'comments', 'bar_code', 'id_of_manufacturer'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название', 'Форма выпуска', 'Фармакологическая группа',\
                'Инструкция', 'Штрих-код', 'Фирма'
 
     def getter(self):
@@ -115,6 +136,10 @@ class District(models.Model):
     def readable():
         return 'id', 'title_of_district'
 
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название'
+
     def getter(self):
         return self.id, self.title_of_district
 
@@ -135,6 +160,10 @@ class Pharmacy(models.Model):
     def readable():
         return 'id', 'number_of_pharmacy', 'title_of_pharmacy', \
                'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Номер', 'Название', 'Адрес', 'Район', 'Телефон'
 
     def getter(self):
         return self.id, self.number_of_pharmacy, self.title_of_pharmacy, self.address_of_pharmacy, self.id_of_district.title_of_district, self.phone_of_pharmacy
@@ -161,6 +190,10 @@ class Employee(models.Model):
     def readable():
         return 'id', 'id_of_pharmacy', 'first_name', 'second_name', 'third_name',
 
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Аптека', 'Имя', 'Фамилия', 'Отчество',
+
     def getter(self):
         return self.id, self.id_of_pharmacy.title_of_pharmacy, self.first_name, self.second_name, self.third_name
 
@@ -186,6 +219,11 @@ class Lot(models.Model):
     def readable():
         return 'id', 'datefact', 'number_of_lot', 'datestart', 'datefinish', \
                'price_manufacturer', 'price_pharmacy', 'id_of_employee', 'defect', 'reason'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Дата доставки', 'Номер', 'Дата выпуска', 'Дата срока годности', \
+               'Цена(Фирма)', 'Цена(Аптека)', 'Работник', 'Дефект', 'Причина возврата'
 
     def getter(self):
         return self.id, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
