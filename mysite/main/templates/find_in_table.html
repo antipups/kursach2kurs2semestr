@@ -39,18 +39,22 @@
                 <div class="alert alert-success mt-3" align="center" role="alert">
                     <h3>Запись найдена</h3><br>
                     <h5>
-                        <table class="badge badge-secondary p-3 w-100 table table-hover ">
-                            <tr class="table-bordered"><td class="w-25" colspan="{{data_for_find|length}}">Таблица {{name_of_table}}</td></tr>
-                            <tr class="table table-hover table-bordered">
-                                {% for i in data_for_find %}
-                                    <td class="m-5">{{i}}</td>
+                        <table class="p-3 w-100 table table-hover ">
+                            <tr class="table-bordered"><td class="w-25" align="center" colspan="{{data_for_find|length}}">Таблица {{name_of_table}}</td></tr>
+                                {% for row in data_for_find %}
+                                    <td class="m-5">{{row}}</td>
                                 {% endfor %}
                             </tr>
-                            <tr class="table-bordered">
-                                {% for i in data_of_object %}
-                                    <td class="m-5">{{i}}</td>
+
+
+                                {% for row in data_of_object %}
+                                    <tr class="table-bordered">
+                                        {% for cell in row %}
+                                            <td class="m-5">{{cell}}</td>
+                                        {% endfor %}
+                                    </tr>
                                 {% endfor %}
-                            </tr>
+
                         </table>
                     </h5>
                 </div>

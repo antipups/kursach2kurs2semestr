@@ -28,6 +28,13 @@
                     </div>
                 {% endfor %}
 
+                {% if code %}
+                    <div class="custom-file w-25 h-50">
+                        <input type="file" class="custom-file-input" id="add" name="bar_code">
+                        <label class="custom-file-label" for="add">Выберите файл</label>
+                    </div>
+                {% endif %}
+
             </div>
           <button type="submit" class="btn btn-primary w-100" id="add">Добавить</button>
         </form>

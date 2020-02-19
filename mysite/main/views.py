@@ -58,7 +58,7 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
         dict_of_data.update({'data_for_find': table.readable()})
-        ids, rows = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1)
+        ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
         # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
 
         dict_of_tables = {      # кортеж для получения значений со всех таблиц
@@ -91,6 +91,7 @@ def hw(request, dict_of_tables=dict_of_tables):
         dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
             'name_of_table': string[string.find(':') + 2:],
             'name_of_rows': rows,
+            'code': code,
             'ids': ids,
             'tables': tables,
             'mode': string[:string.find(':')]
@@ -112,24 +113,28 @@ def mode(request, dict_of_tables=dict_of_tables):
     if request.method == 'POST':
         dict_of_data.update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
         dict_of_post = dict(request.POST)
+        list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
         object_of_table = dict_of_tables.get(dict_of_data.get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
         for row in dict_of_post.items():    # получаем из html файла данные, они подаеются в словаре в виде списков, перебираем всё, и получаем чистые данные
             if row[0].find('id_of_') > -1:  # если это id то режем до id
                 if (row[1][0][:row[1][0].find(' ')]).isdigit() is False:
                     return render(request, 'add_in_table.html', dict_of_data)
                 if dict_of_data.get('mode').find('Поиск') > -1 and row[1][0][:row[1][0].find(' ')].isdigit() is False:  # если режим поиска - все аргументы НЕ обязательны
-                    del dict_of_post[row[0]]
+                    list_to_del.append(row[0])
                 else:
                     dict_of_post[row[0]] = eval(row[0][row[0].find('_of_') + 4:].capitalize()).objects.get(id=int(row[1][0][:row[1][0].find(' ')]))
             else:
                 if dict_of_data.get('mode').find('Поиск') > -1 and not row[1][0]:
-                    del dict_of_post[row[0]]
+                    list_to_del.append(row[0])
                 else:
                     dict_of_post[row[0]] = row[1][0]
 
+        for remove_element in list_to_del:
+            del dict_of_post[remove_element]
+
         if dict_of_data.get('mode').find('Поиск') > -1:
             try:
-                dict_of_data.update({'win': True, 'data_of_object': object_of_table.objects.get(**dict_of_post).getter()})
+                dict_of_data.update({'win': True, 'data_of_object': object_of_table.objects.filter(**dict_of_post).values_list()})
                 return render(request, 'find_in_table.html', dict_of_data)
             except:
                 return render(request, 'find_in_table.html', dict_of_data)
