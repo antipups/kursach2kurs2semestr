@@ -87,13 +87,13 @@ class Medicament(models.Model):
     id_of_shape = models.ForeignKey(Shape, models.PROTECT)
     id_of_pharma_group = models.ForeignKey(Pharma_group, models.PROTECT)
     comments = models.TextField()
-    bar_code = models.ImageField(width_field=100, height_field=100)
+    bar_code = models.ImageField()
     id_of_manufacturer = models.ForeignKey(Manufacturer, models.CASCADE)
 
     @staticmethod
     def readable():
-        return 'id', 'title_of_medicament', 'id_of_shape', 'id_of_pharma_group',\
-               'comments', 'bar_code', 'id_of_manufacturer'
+        return 'id', 'Название', 'Форма', 'Фармакалогическая группа',\
+               'Инструкция', 'Штрих-код', 'Фирма'
 
     def getter(self):
         return self.id, self.title_of_medicament, self.id_of_shape.title_of_shape, self.id_of_pharma_group.title_of_pharma_group, self.comments, self.bar_code, self.id_of_manufacturer.title_of_manufacturer

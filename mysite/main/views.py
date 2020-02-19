@@ -48,11 +48,11 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         string = request.POST.get('mode')   # получаем с страницы всю нужную информацию
         table = dict_of_tables.get(string[string.rfind(':') + 2:])
-        if string.find('смотр') > -1:   # для кнопки посмотреть
+        if string.find('Просмотреть') > -1:   # для кнопки посмотреть
             dict_of_data.update({
                 'name_of_table': string[string.find(':'):],
                 'name_of_rows': table.readable(),
-                'Table': table.objects.values_list()
+                'Table': tuple(row.getter() for row in table.objects.all())
             })
             return render(request, 'read_table.html', dict_of_data)
 
@@ -129,10 +129,8 @@ def mode(request, dict_of_tables=dict_of_tables):
                 else:
                     dict_of_post[row[0]] = row[1][0]
 
-        for remove_element in list_to_del:
+        for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
             del dict_of_post[remove_element]
-
-        print(dict_of_post)
 
         if dict_of_data.get('mode').find('Поиск') > -1:
             result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
