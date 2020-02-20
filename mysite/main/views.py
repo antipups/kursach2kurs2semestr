@@ -1,7 +1,7 @@
 import pprint
 from django.shortcuts import render
+from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import DetailView
 from .models import *
 from random import choice   # для спама
 from string import ascii_uppercase    # для спама
@@ -47,10 +47,9 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
 def hw(request, dict_of_tables=dict_of_tables):
     dict_of_data['win'], dict_of_data['addon'] = '', False
     if request.method == 'POST':    # если юзер нажал на кнопку
-
         string = request.POST.get('mode')   # получаем с страницы всю нужную информацию
         table = dict_of_tables.get(string[string.rfind(':') + 2:])
-        if string.find('Просмотреть') > -1:   # для кнопки посмотреть
+        if string.find('смотр') > -1:   # для кнопки посмотреть
             dict_of_data.update({
                 'name_of_table': string[string.find(':'):],
                 'name_of_rows': table.readable_rus(),
@@ -158,52 +157,49 @@ def mode(request, dict_of_tables=dict_of_tables):
         for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
             del dict_of_post[remove_element]
 
-        if dict_of_data.get('mode').find('Поиск') > -1:
-            try:
+        html = ''   # какая хтмл страница будет вызываться
+
+        try:
+            if dict_of_data.get('mode').find('Поиск') > -1:
+                html = 'find_in_table.html'
                 result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
                 if result_of_search:
                     dict_of_data.update({'win': True, 'data_of_object': result_of_search})
-                    return render(request, 'find_in_table.html', dict_of_data)
-            except ValueError:
-                return render(request, 'find_in_table.html', dict_of_data)
-            else:
-                return render(request, 'find_in_table.html', dict_of_data)
 
-        elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
-
-            try:
+            elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
+                html = 'add_in_table.html'
+                dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
                 object_of_table.objects.create(**dict_of_post)
-            except ValueError:
-                return render(request, 'add_in_table.html', dict_of_data)
-            dict_of_data.update({'win': True})
-            return render(request, 'add_in_table.html', dict_of_data)
 
-        elif dict_of_data.get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
-            amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()[0]  # количество удалимых записей
-            if amount_of_remove == 0:
-                dict_of_data.update({'win': False})
-            else:
-                dict_of_data.update({'win': True, 'amount_of_remove': '3'})
-            return render(request, 'remove_from_table.html', dict_of_data)
+            elif dict_of_data.get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
+                html = 'remove_from_table.html'
+                amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()[0]  # количество удалимых записей
+                if amount_of_remove != 0:
+                    dict_of_data.update({'amount_of_remove': amount_of_remove})
 
-        elif dict_of_data.get('mode').find('Изме') > -1 and dict_of_data.get('addon') == False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
-            try:
+            elif dict_of_data.get('mode').find('Изме') > -1 and dict_of_data.get('addon') == False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
+                html = 'update_table.html'
                 object_of_table.objects.get(**dict_of_post)
-                dict_of_data.update({'win': True, 'addon': True,
-                                     'dict_of_post': dict_of_post})
-                return render(request, 'update_table.html', dict_of_data)
-            except:
-                dict_of_data.update({'win': False, 'addon': False})
-                return render(request, 'update_table.html', dict_of_data)
+                dict_of_data.update({'addon': True, 'dict_of_post': dict_of_post})
 
-        else:
-            try:
+            else:
                 amount_of_update = object_of_table.objects.filter(**dict_of_data.get('dict_of_post')).update(**dict_of_post)
                 if amount_of_update > 0:
                     dict_of_data.update({'win': True, 'addon': False})
                 else:
                     dict_of_data.update({'win': False, 'addon': False})
-                return render(request, 'update_table.html', dict_of_data)
-            except:
-                dict_of_data.update({'win': False, 'addon': False})
-                return render(request, 'update_table.html', dict_of_data)
+
+        except ValueError:
+            dict_of_data.update({'cause': 'Неверно заполненны поля.'})
+            return render(request, html, dict_of_data)
+        except IntegrityError:
+            dict_of_data.update({'cause': 'Такая запись в базе данных уже есть.'})
+            return render(request, html, dict_of_data)
+        else:
+            dict_of_data.update({'win': True})
+            return render(request, html, dict_of_data)
+
+
+        # dict_of_data.update({'win': False, 'addon': False})       # НА АПДЕЙТ, ТЕСТИИИИИИ
+
+        # dict_of_data.update({'win': False, 'addon': False})       # проверить на работу
