@@ -113,8 +113,6 @@ def hw(request, dict_of_tables=dict_of_tables):
         for row_ in range(len(engl_rows)):
             dict_rows.update({rus_rows[row_]: engl_rows[row_]})
 
-        print(dict_rows)
-
         dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
             'name_of_table': string[string.find(':') + 2:],
             'name_of_rows': dict_rows,

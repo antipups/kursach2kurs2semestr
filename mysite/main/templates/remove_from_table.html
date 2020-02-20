@@ -5,21 +5,21 @@
     <div class="badge badge-secondary p-2 w-100"><h3>Удалить из таблицы {{name_of_table}}</h3>
         <form action="/main/work_with_tables/" method="post">
             <div class="form-row">    <!-- один строка для ввода -->
-                {% for i in name_of_rows %}
+                {% for key, znach in name_of_rows.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
-                      <label for="remove">{{i}}</label>
-                      <input class="form-control" id="remove" name="{{i}}" value="{{ value }}" autocomplete="off">
+                      <label for="add">{{key}}</label>
+                      <input class="form-control" id="add" name="{{znach}}" value="{{ value }}" autocomplete="off">
                     </div>
                 {% endfor %}
 
-                {% for i in ids %}
+                {% for key, value in ids.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
-                      <label for="remove">{{i}}</label>
-                        <select id="remove" name="{{i}}" class="form-control">
+                      <label for="add">{{key}}</label>
+                        <select id="add" name="{{value}}" class="form-control">
                             <option selected disabled>Выберите...</option>
-                            {% for key, value in tables.items %}
-                                {% if i == key %}
-                                    {% for j in value %}
+                            {% for key_, value_ in tables.items %}
+                                {% if value == key_ %}
+                                    {% for j in value_ %}
                                         <option>{{j}}</option>
                                     {% endfor %}
                                 {% endif %}
@@ -27,6 +27,13 @@
                         </select>
                     </div>
                 {% endfor %}
+
+                {% if code %}   <!-- если требуется код -->
+                    <div class="custom-file w-25 mt-4 ml-1">
+                        <input type="file" class="custom-file-input" id="add" name="bar_code">
+                        <label class="custom-file-label" for="add">Штрих-код</label>
+                    </div>
+                {% endif %}
 
             </div>
           <button type="submit" class="btn btn-primary w-100" id="remove">Удалить</button>
