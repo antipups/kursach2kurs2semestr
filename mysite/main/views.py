@@ -127,14 +127,19 @@ def hw(request, dict_of_tables=dict_of_tables):
         })
 
         if string.find('Поиск') > -1:
+            dict_of_data.update({'template': 'find_in_table.html'})
             return render(request, 'find_in_table.html', dict_of_data)
         if string.find('Добавить') > -1:
+            dict_of_data.update({'template': 'add_in_table.html'})
             return render(request, 'add_in_table.html', dict_of_data)
         elif string.find('Удалить') > -1:  # для кнопки добавить
+            dict_of_data.update({'template': 'remove_from_table.html'})
             return render(request, 'remove_from_table.html', dict_of_data)
         elif string.find('Изменить') > -1:  # для кнопки добавить
+            dict_of_data.update({'template': 'update_table.html'})
             return render(request, 'update_table.html', dict_of_data)
         elif string.find('Поиск') > -1:  # для кнопки добавить
+            dict_of_data.update({'template': 'find_in_table.html'})
             return render(request, 'find_in_table.html', dict_of_data)
 
 
@@ -143,7 +148,6 @@ def mode(request, dict_of_tables=dict_of_tables):
     if request.method == 'POST':
         dict_of_data.update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
         dict_of_post = dict(request.POST)
-        print(dict_of_post)
         list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
         object_of_table = dict_of_tables.get(dict_of_data.get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
         for row in dict_of_post.items():    # получаем из html файла данные, они подаеются в словаре в виде списков, перебираем всё, и получаем чистые данные
@@ -163,32 +167,27 @@ def mode(request, dict_of_tables=dict_of_tables):
         for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
             del dict_of_post[remove_element]
 
-        html = ''   # какая хтмл страница будет вызываться
-
         try:
+            html = dict_of_data.get('template')
+            if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:   # проверка на данные
+                raise ValueError
+
             if dict_of_data.get('mode').find('Поиск') > -1:
-                html = 'find_in_table.html'
                 result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
                 if result_of_search:
                     dict_of_data.update({'win': True, 'data_of_object': result_of_search})
 
             elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
-                html = 'add_in_table.html'
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
-                result_of_checker = eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)')
-                if result_of_checker is not True:   # доделать!!!!! чтоб форма которая была кривой - была красной
-                    return
                 object_of_table.objects.create(**dict_of_post)
 
             elif dict_of_data.get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
-                html = 'remove_from_table.html'
                 amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()[0]  # количество удалимых записей
                 if amount_of_remove != 0:
                     dict_of_data.update({'amount_of_remove': amount_of_remove})
 
             elif dict_of_data.get('mode').find('Изме') > -1 and dict_of_data.get('addon') == False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
-                html = 'update_table.html'
                 object_of_table.objects.get(**dict_of_post)
                 dict_of_data.update({'addon': True, 'dict_of_post': dict_of_post})
 
