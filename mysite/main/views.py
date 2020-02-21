@@ -169,7 +169,7 @@ def mode(request, dict_of_tables=dict_of_tables):
 
         try:
             html = dict_of_data.get('template')
-            if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:   # проверка на данные
+            if dict_of_data.get('mode').find('Поиск') != 0 and eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:   # проверка на данные
                 raise ValueError
 
             if dict_of_data.get('mode').find('Поиск') > -1:
@@ -187,11 +187,12 @@ def mode(request, dict_of_tables=dict_of_tables):
                 if amount_of_remove != 0:
                     dict_of_data.update({'amount_of_remove': amount_of_remove})
 
-            elif dict_of_data.get('mode').find('Изме') > -1 and dict_of_data.get('addon') == False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
-                object_of_table.objects.get(**dict_of_post)
+            elif dict_of_data.get('mode').find('Изме') > -1 and dict_of_data.get('addon') is False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
+                if len(object_of_table.objects.filter(**dict_of_post)) == 0:
+                    raise ValueError
                 dict_of_data.update({'addon': True, 'dict_of_post': dict_of_post})
 
-            else:
+            elif dict_of_data.get('mode').find('Изме') > -1 and dict_of_data.get('addon') is True:
                 amount_of_update = object_of_table.objects.filter(**dict_of_data.get('dict_of_post')).update(**dict_of_post)
                 if amount_of_update > 0:
                     dict_of_data.update({'win': True, 'addon': False})
@@ -199,10 +200,10 @@ def mode(request, dict_of_tables=dict_of_tables):
                     dict_of_data.update({'win': False, 'addon': False})
 
         except ValueError:
-            dict_of_data.update({'cause': 'Неверно заполненны поля.'})
+            dict_of_data.update({'cause': 'Неверно заполненны поля.', 'win': False, 'addon': False})
             return render(request, html, dict_of_data)
         except IntegrityError:
-            dict_of_data.update({'cause': 'Такая запись в базе данных уже есть.'})
+            dict_of_data.update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
             return render(request, html, dict_of_data)
         else:
             dict_of_data.update({'win': True})
