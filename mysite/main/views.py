@@ -2,6 +2,8 @@ import pprint
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
+
+from . import checker
 from .models import *
 from random import choice   # для спама
 from string import ascii_uppercase    # для спама
@@ -47,8 +49,9 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
 def hw(request, dict_of_tables=dict_of_tables):
     dict_of_data['win'], dict_of_data['addon'] = '', False
     if request.method == 'POST':    # если юзер нажал на кнопку
-        string = request.POST.get('mode')   # получаем с страницы всю нужную информацию
+        string = request.POST.get('mode')
         table = dict_of_tables.get(string[string.rfind(':') + 2:])
+        name_of_table_on_engl = str(table)
         if string.find('смотр') > -1:   # для кнопки посмотреть
             dict_of_data.update({
                 'name_of_table': string[string.find(':'):],
@@ -63,7 +66,6 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
         engl_ids = tuple(ids)
-
         # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
 
         dict_of_tables = {      # кортеж для получения значений со всех таблиц
@@ -104,13 +106,15 @@ def hw(request, dict_of_tables=dict_of_tables):
             else:
                 code.append(rus_rows[index])
 
-        dict_ids = {}
+        dict_ids = {}       # создаем словарь с русским ключем и английский значением, чтоб сортировать их на айди и
         for id_ in range(len(ids)):
             dict_ids.update({ids[id_]:engl_ids[id_]})
 
-        dict_rows = {}
+        dict_rows = {}  # эквивалент верхнему
         for row_ in range(len(engl_rows)):
-            dict_rows.update({rus_rows[row_]: engl_rows[row_]})
+            if engl_rows[row_].find('id_of_') == -1 and engl_rows[row_].find('code') == -1:
+                dict_rows.update({rus_rows[row_]: engl_rows[row_]})
+
 
         dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
             'name_of_table': string[string.find(':') + 2:],
@@ -118,7 +122,8 @@ def hw(request, dict_of_tables=dict_of_tables):
             'code': code,
             'ids': dict_ids,
             'tables': tables,
-            'mode': string[:string.find(':')]
+            'mode': string[:string.find(':')],
+            'model': name_of_table_on_engl[name_of_table_on_engl.rfind('.') + 1:name_of_table_on_engl.rfind("'")].lower()
         })
 
         if string.find('Поиск') > -1:
@@ -138,6 +143,7 @@ def mode(request, dict_of_tables=dict_of_tables):
     if request.method == 'POST':
         dict_of_data.update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
         dict_of_post = dict(request.POST)
+        print(dict_of_post)
         list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
         object_of_table = dict_of_tables.get(dict_of_data.get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
         for row in dict_of_post.items():    # получаем из html файла данные, они подаеются в словаре в виде списков, перебираем всё, и получаем чистые данные
@@ -168,7 +174,11 @@ def mode(request, dict_of_tables=dict_of_tables):
 
             elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
                 html = 'add_in_table.html'
-                dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
+                if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
+                    dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
+                result_of_checker = eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)')
+                if result_of_checker is not True:   # доделать!!!!! чтоб форма которая была кривой - была красной
+                    return
                 object_of_table.objects.create(**dict_of_post)
 
             elif dict_of_data.get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление

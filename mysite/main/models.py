@@ -151,7 +151,7 @@ class Pharmacy(models.Model):
     """
 
     number_of_pharmacy = models.IntegerField()
-    title_of_pharmacy = models.CharField(max_length=15, help_text="Название аптеки")
+    title_of_pharmacy = models.CharField(max_length=15)
     address_of_pharmacy = models.CharField(max_length=12)
     id_of_district = models.ForeignKey(District, models.PROTECT)
     phone_of_pharmacy = models.CharField(max_length=10)
