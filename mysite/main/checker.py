@@ -60,7 +60,7 @@ def medicament(**dict_of_post):
         dict_of_post.get('title_of_medicament'), dict_of_post.get('comments'), dict_of_post.get('bar_code')
     if len(title_of_medicament) == 0 or len(title_of_medicament) > 20 or any(map(lambda x: x.isdigit(), title_of_medicament)):
         return
-    if dict_of_post.get('id_of_shape') is None or dict_of_post.get('id_of_pharma_group') or dict_of_post.get('id_of_manufacturer'):
+    if dict_of_post.get('id_of_shape') is None or dict_of_post.get('id_of_pharma_group') is None or dict_of_post.get('id_of_manufacturer') is None:
         return
     if len(comments) == 0:
         return
@@ -86,9 +86,10 @@ def employee(**dict_of_post):
 
 
 def lot(**dict_of_post):
-    if dict_of_post.get('id_of_medicament') is None or dict_of_post.get('id_of_employee') is None:
-        return
-    datefact, count, number_of_lot, datestart, datefinish, price_manufacturer, price_pharmacy, defect, reason = \
-        dict_of_post.get('datefact'), dict_of_post.get('count'), dict_of_post.get('number_of_lot'), dict_of_post.get('datestart'), dict_of_post.get('datefinish'), \
-        dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy'), dict_of_post.get('defect'), dict_of_post.get('reason')
+    # if dict_of_post.get('id_of_medicament') is None or dict_of_post.get('id_of_employee') is None:
+    #     return
+    # datefact, count, number_of_lot, datestart, datefinish, price_manufacturer, price_pharmacy, defect, reason = \
+    #     dict_of_post.get('datefact'), dict_of_post.get('count'), dict_of_post.get('number_of_lot'), dict_of_post.get('datestart'), dict_of_post.get('datefinish'), \
+    #     dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy'), dict_of_post.get('defect'), dict_of_post.get('reason')
+    return True
 

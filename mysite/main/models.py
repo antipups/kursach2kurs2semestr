@@ -202,6 +202,7 @@ class Lot(models.Model):
     """
         Таблица партий, внешние ключи:
             Employee (работник).
+            Medicament (лекарство)
     """
     id_of_medicament = models.ForeignKey(Medicament, models.DO_NOTHING)
     datefact = models.DateField()
@@ -217,16 +218,16 @@ class Lot(models.Model):
 
     @staticmethod
     def readable():
-        return 'id', 'datefact', 'number_of_lot', 'datestart', 'datefinish', \
+        return 'id', 'id_of_medicament', 'datefact', 'count', 'number_of_lot', 'datestart', 'datefinish', \
                'price_manufacturer', 'price_pharmacy', 'id_of_employee', 'defect', 'reason'
 
     @staticmethod
     def readable_rus():
-        return 'id', 'Дата доставки', 'Номер', 'Дата выпуска', 'Дата срока годности', \
+        return 'id', 'Лекарство', 'Дата доставки', 'Кол-во упаковок', 'Номер', 'Дата выпуска', 'Дата срока годности', \
                'Цена(Фирма)', 'Цена(Аптека)', 'Работник', 'Дефект', 'Причина возврата'
 
     def getter(self):
-        return self.id, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
+        return self.id, self.id_of_medicament.title_of_medicament, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
                self.price_manufacturer, self.price_pharmacy, \
-               ' '.join(self.id_of_employee.first_name, self.id_of_employee.first_name, self.id_of_employee.second_name, self.id_of_employee.third_name), \
+               ' '.join((self.id_of_employee.second_name, self.id_of_employee.first_name[0] + '. ', self.id_of_employee.third_name[0] + '.')), \
                self.defect, self.reason

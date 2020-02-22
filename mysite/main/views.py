@@ -2,7 +2,6 @@ import pprint
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
-
 from . import checker
 from .models import *
 from random import choice   # для спама
@@ -71,6 +70,7 @@ def hw(request, dict_of_tables=dict_of_tables):
         dict_of_tables = {      # кортеж для получения значений со всех таблиц
             'Country': Country.objects.values_list(),
             'Shape': Shape.objects.values_list(),
+            'Medicament': Medicament.objects.values_list(),
             'Pharma_group': Pharma_group.objects.values_list(),
             'Manufacturer': Manufacturer.objects.values_list(),
             'District': District.objects.values_list(),
@@ -83,18 +83,19 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         if ids:
             for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
-                if ids[0] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district'):
+                if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district'):
                     tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})  # можно улудшить + названием, но это лень
-                elif ids[0] == 'id_of_pharmacy':
+                elif ids[i[0]] == 'id_of_pharmacy':
                     tables.update({ids[i[0]]: tuple(
                         str(j[0]) + ' | ' + j[2] for j in i[1])})  # можно улудшить + названием, но это лень
-                elif ids[0] == 'id_of_lot':
+                elif ids[i[0]] == 'id_of_lot':
                     tables.update({ids[i[0]]: tuple(
                         str(j[0]) + ' | ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
-                elif ids[0] == 'id_of_employee':
+                elif ids[i[0]] == 'id_of_employee':
                     tables.update({ids[i[0]]: tuple(
-                        str(j[0]) + ' | ' + j[1] + ' ' + j[2] + ' ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
-
+                        str(j[0]) + ' | ' + j[2] + ' ' + j[3] + ' ' + j[4] for j in i[1])})  # можно улудшить + названием, но это лень
+                elif ids[i[0]] == 'id_of_medicament':
+                    tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})
 
         rows, ids, code = [], [], []
 
@@ -202,14 +203,9 @@ def mode(request, dict_of_tables=dict_of_tables):
         except ValueError:
             dict_of_data.update({'cause': 'Неверно заполненны поля.', 'win': False, 'addon': False})
             return render(request, html, dict_of_data)
-        except IntegrityError:
-            dict_of_data.update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
-            return render(request, html, dict_of_data)
+        # except IntegrityError:
+        #     dict_of_data.update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
+        #     return render(request, html, dict_of_data)
         else:
             dict_of_data.update({'win': True})
             return render(request, html, dict_of_data)
-
-
-        # dict_of_data.update({'win': False, 'addon': False})       # НА АПДЕЙТ, ТЕСТИИИИИИ
-
-        # dict_of_data.update({'win': False, 'addon': False})       # проверить на работу
