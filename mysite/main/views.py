@@ -61,7 +61,7 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
         rus_rows = table.readable_rus()[1:]
-        dict_of_data.update({'data_for_find': table.readable()})
+        dict_of_data.update({'data_for_find': table.readable_rus()})
 
         ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
         engl_ids = tuple(ids)

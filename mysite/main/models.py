@@ -276,7 +276,7 @@ class Lot(models.Model):
     @staticmethod
     def get_attr():
         return {'Дата доставки': ('datefact', '23.03.2012', 15, 'date'),
-                'Кол-во упаковок': ('count', 'Пушкина 16/2', 10, 'number'),
+                'Кол-во упаковок': ('count', '1234567890', 10, 'number'),
                 'Номер': ('number_of_lot', '4321', 4, 'number'),
                 'Дата выпуска': ('datestart', '20.03.2012', 15, 'date'),
                 'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date'),
