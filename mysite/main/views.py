@@ -111,13 +111,7 @@ def hw(request, dict_of_tables=dict_of_tables):
         for id_ in range(len(ids)):
             dict_ids.update({ids[id_]:engl_ids[id_]})
 
-        # dict_rows = {}  # эквивалент верхнему
-        # for row_ in range(len(engl_rows)):
-        #     if engl_rows[row_].find('id_of_') == -1 and engl_rows[row_].find('code') == -1:
-        #         dict_rows.update({rus_rows[row_]: engl_rows[row_]})
-
-        # print(dict_rows)
-        dict_rows = table.get_attr()
+        dict_rows = table.get_attr()    # задаем атрибуты инпутам, что вводить, в каком колве и прочее
 
         dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
             'name_of_table': string[string.find(':') + 2:],
@@ -128,7 +122,7 @@ def hw(request, dict_of_tables=dict_of_tables):
             'mode': string[:string.find(':')],
             'model': name_of_table_on_engl[name_of_table_on_engl.rfind('.') + 1:name_of_table_on_engl.rfind("'")].lower()
         })
-
+        dict_of_data.update({'img': string[string.find(':') + 2:] + '.jpg'})
         if string.find('Поиск') > -1:
             dict_of_data.update({'template': 'find_in_table.html'})
             return render(request, 'find_in_table.html', dict_of_data)
