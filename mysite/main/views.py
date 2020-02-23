@@ -111,11 +111,13 @@ def hw(request, dict_of_tables=dict_of_tables):
         for id_ in range(len(ids)):
             dict_ids.update({ids[id_]:engl_ids[id_]})
 
-        dict_rows = {}  # эквивалент верхнему
-        for row_ in range(len(engl_rows)):
-            if engl_rows[row_].find('id_of_') == -1 and engl_rows[row_].find('code') == -1:
-                dict_rows.update({rus_rows[row_]: engl_rows[row_]})
+        # dict_rows = {}  # эквивалент верхнему
+        # for row_ in range(len(engl_rows)):
+        #     if engl_rows[row_].find('id_of_') == -1 and engl_rows[row_].find('code') == -1:
+        #         dict_rows.update({rus_rows[row_]: engl_rows[row_]})
 
+        # print(dict_rows)
+        dict_rows = table.get_attr()
 
         dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
             'name_of_table': string[string.find(':') + 2:],

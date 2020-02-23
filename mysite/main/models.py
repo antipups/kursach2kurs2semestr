@@ -25,6 +25,10 @@ class Country(models.Model):
     def getter(self):
         return self.id, self.title_of_country
 
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_country', 'РОС', 3, 'text')}
+
 
 class Manufacturer(models.Model):
     """
@@ -48,6 +52,13 @@ class Manufacturer(models.Model):
 
     def getter(self):
         return self.id, self.title_of_manufacturer, self.id_of_country.title_of_country, self.address_of_manufacturer, self.email_of_manufacturer, self.year_of_manufacturer
+
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_manufacturer', 'ООО АвтоРог', 30, 'text'),
+                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 10, 'text'),
+                'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 12, 'text'),
+                'Год': ('year_of_manufacturer', '27.03.2001', 10, 'date')}
 
 ################################################################
 
@@ -73,6 +84,10 @@ class Shape(models.Model):
     def getter(self):
         return self.id, self.title_of_shape
 
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_shape', 'Таблетки', 15, 'text')}
+
 
 class Pharma_group(models.Model):
     """
@@ -90,6 +105,10 @@ class Pharma_group(models.Model):
 
     def getter(self):
         return self.id, self.title_of_pharma_group
+
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_pharma_group', 'Калиев каналов актив', 20, 'text')}
 
 
 class Medicament(models.Model):
@@ -119,6 +138,11 @@ class Medicament(models.Model):
     def getter(self):
         return self.id, self.title_of_medicament, self.id_of_shape.title_of_shape, self.id_of_pharma_group.title_of_pharma_group, self.comments, self.bar_code, self.id_of_manufacturer.title_of_manufacturer
 
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_medicament', 'Алмазол', 20, 'text'),
+                'Инструкция': ('comments', 'Принимать после еды 3 раза в день.', 100, 'text')}
+
 ################################################################
 
 # ____________________________АПТЕКИ__________________________ #
@@ -142,6 +166,10 @@ class District(models.Model):
 
     def getter(self):
         return self.id, self.title_of_district
+
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_district', 'Кировский', 15, 'text')}
 
 
 class Pharmacy(models.Model):
@@ -167,6 +195,13 @@ class Pharmacy(models.Model):
 
     def getter(self):
         return self.id, self.number_of_pharmacy, self.title_of_pharmacy, self.address_of_pharmacy, self.id_of_district.title_of_district, self.phone_of_pharmacy
+
+    @staticmethod
+    def get_attr():
+        return {'Номер': ('number_of_pharmacy', '0123456789', 100, 'number'),
+                'Название': ('title_of_pharmacy', 'Черника', 15, 'text'),
+                'Адрес': ('address_of_pharmacy', 'Пушкина дом 16', 15, 'text'),
+                'Телефон': ('phone_of_pharmacy', '0123456789', 10, 'number')}
 
 
 ################################################################
@@ -196,6 +231,12 @@ class Employee(models.Model):
 
     def getter(self):
         return self.id, self.id_of_pharmacy.title_of_pharmacy, self.first_name, self.second_name, self.third_name
+
+    @staticmethod
+    def get_attr():
+        return {'Имя': ('first_name', 'Василий', 20, 'text'),
+                'Фамилия': ('second_name', 'Пупкин', 20, 'text'),
+                'Отчество': ('third_name', 'Васильевич', 20, 'text')}
 
 
 class Lot(models.Model):
@@ -231,3 +272,15 @@ class Lot(models.Model):
                self.price_manufacturer, self.price_pharmacy, \
                ' '.join((self.id_of_employee.second_name, self.id_of_employee.first_name[0] + '. ', self.id_of_employee.third_name[0] + '.')), \
                self.defect, self.reason
+
+    @staticmethod
+    def get_attr():
+        return {'Дата доставки': ('datefact', '23.03.2012', 15, 'date'),
+                'Кол-во упаковок': ('count', 'Пушкина 16/2', 10, 'number'),
+                'Номер': ('number_of_lot', '4321', 4, 'number'),
+                'Дата выпуска': ('datestart', '20.03.2012', 15, 'date'),
+                'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date'),
+                'Цена(Фирма)': ('price_manufacturer', '1234', 4, 'number'),
+                'Цена(Аптека)': ('price_pharmacy', '9876', 4, 'number'),
+                'Дефект': ('defect', '1', 1, 'number'),
+                'Причина возврата': ('reason', 'Згнившая упаковка', 100, 'text')}
