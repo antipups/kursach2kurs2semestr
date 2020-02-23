@@ -203,9 +203,9 @@ def mode(request, dict_of_tables=dict_of_tables):
         except ValueError:
             dict_of_data.update({'cause': 'Неверно заполненны поля.', 'win': False, 'addon': False})
             return render(request, html, dict_of_data)
-        # except IntegrityError:
-        #     dict_of_data.update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
-        #     return render(request, html, dict_of_data)
+        except IntegrityError:
+            dict_of_data.update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
+            return render(request, html, dict_of_data)
         else:
             dict_of_data.update({'win': True})
             return render(request, html, dict_of_data)

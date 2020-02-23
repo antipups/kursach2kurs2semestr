@@ -3,6 +3,8 @@
     Файл создан для функций проверки вводимых данных;
 
 """
+import re
+import datetime
 
 
 def pharmacy(**dict_of_post):
@@ -86,10 +88,31 @@ def employee(**dict_of_post):
 
 
 def lot(**dict_of_post):
-    # if dict_of_post.get('id_of_medicament') is None or dict_of_post.get('id_of_employee') is None:
-    #     return
-    # datefact, count, number_of_lot, datestart, datefinish, price_manufacturer, price_pharmacy, defect, reason = \
-    #     dict_of_post.get('datefact'), dict_of_post.get('count'), dict_of_post.get('number_of_lot'), dict_of_post.get('datestart'), dict_of_post.get('datefinish'), \
-    #     dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy'), dict_of_post.get('defect'), dict_of_post.get('reason')
+    if dict_of_post.get('id_of_medicament') is None or dict_of_post.get('id_of_employee') is None:
+        return
+    datefact, count, number_of_lot, datestart, datefinish, price_manufacturer, price_pharmacy, defect, reason = \
+        dict_of_post.get('datefact'), dict_of_post.get('count'), dict_of_post.get('number_of_lot'), dict_of_post.get('datestart'), dict_of_post.get('datefinish'), \
+        dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy'), dict_of_post.get('defect'), dict_of_post.get('reason')
+    try:
+        datefact, datestart, datefinish = datetime.date(int(datefact[:4]), int(datefact[5:7]), int(datefact[-2:])), \
+                                          datetime.date(int(datestart[:4]), int(datestart[5:7]), int(datestart[-2:])), \
+                                          datetime.date(int(datefinish[:4]), int(datefinish[5:7]), int(datefinish[-2:]))
+        one_day = datetime.timedelta(days=1)    # переменная разность, чтоб регулировать даты
+        if datefinish - datestart < one_day or datefinish - datefact < one_day or datefact - datestart < one_day:
+            return
+    except:
+        return
+    if len(count) == 0 or count.isdigit() is False:
+        return
+    if len(number_of_lot) == 0 or len(number_of_lot) > 4 or number_of_lot.isdigit() is False:
+        return
+    if len(price_pharmacy) == 0 or len(price_pharmacy) > 4 or price_pharmacy.isdigit() is False:
+        return
+    if len(price_manufacturer) == 0 or len(price_manufacturer) > 4 or price_manufacturer.isdigit() is False:
+        return
+    if defect != '0' and defect != '1':
+        return
+    if len(reason) == 0 and defect == '1':
+        return
     return True
 
