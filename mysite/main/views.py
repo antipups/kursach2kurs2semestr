@@ -1,4 +1,8 @@
 import pprint
+import random
+import re
+
+import requests
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
@@ -17,16 +21,13 @@ tuple_with_tables = (('Лекарства',  # кортеж со всеми та
                       'Рабочий',
                       'Фармакалогическая группа',
                       'Форма лекарства',
+                      'Название лекарства',
                       ))
 
 dict_of_data = {"Buttons":
                      (('Добавить в', 'Удалить из', 'Изменить в', 'Просмотреть', 'Поиск'),
                       tuple_with_tables,
                      ),
-                "DB":
-                     Pharmacy.objects.all(),
-                "Mods":
-                     ("Работа с базой данных (Добавление, удаление)", "Задания"),
                 "mode": '',
                 'addon': False,
                 }   # начальный словарь, кторый мы и будем таскать
@@ -41,6 +42,7 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
                   'Рабочий': Employee,
                   'Фармакалогическая группа': Pharma_group,
                   'Форма лекарства': Shape,
+                  'Название лекарства': Name_of_medicament,
                   }
 
 
@@ -77,13 +79,14 @@ def hw(request, dict_of_tables=dict_of_tables):
             'Pharmacy': Pharmacy.objects.values_list(),
             'Lot': Lot.objects.values_list(),
             'Employee': Employee.objects.values_list(),
+            'Name_of_medicament': Name_of_medicament.objects.values_list(),
         }
 
         tables = {}     # словарь для вывода на html выдвигающихся полей
 
         if ids:
             for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
-                if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district'):
+                if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_medicament'):
                     tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})  # можно улудшить + названием, но это лень
                 elif ids[i[0]] == 'id_of_pharmacy':
                     tables.update({ids[i[0]]: tuple(
@@ -122,7 +125,9 @@ def hw(request, dict_of_tables=dict_of_tables):
             'mode': string[:string.find(':')],
             'model': name_of_table_on_engl[name_of_table_on_engl.rfind('.') + 1:name_of_table_on_engl.rfind("'")].lower()
         })
+
         dict_of_data.update({'img': string[string.find(':') + 2:] + '.jpg'})
+        dict_of_data.update({'spam': dict_of_tables.get('Country')})
         if string.find('Поиск') > -1:
             dict_of_data.update({'template': 'find_in_table.html'})
             return render(request, 'find_in_table.html', dict_of_data)
@@ -164,6 +169,7 @@ def mode(request, dict_of_tables=dict_of_tables):
         for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
             del dict_of_post[remove_element]
 
+        # print(dict_of_post)
         try:
             html = dict_of_data.get('template')
             if dict_of_data.get('mode').find('Поиск') != 0 and eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:   # проверка на данные
@@ -177,7 +183,36 @@ def mode(request, dict_of_tables=dict_of_tables):
             elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
+
                 object_of_table.objects.create(**dict_of_post)
+                # ниже спам бд фирмами
+                # rb = xlrd.open_workbook('C:\\Users\\kurku\\PycharmProjects\\parse_for_five\\books.xls',
+                #                         formatting_info=True)
+                # sheet = rb.sheet_by_index(0)
+                # for row in range(50, 4337):
+                #
+                #     html = requests.get('http://www.yopmail.com/ru/email-generator.php',).text
+                #     url = html[html.find('onmouseup="this.select();" type="text" value="') + 46:]
+                #     dict_of_post['email_of_manufacturer'] = url[:url.find('"')].replace('&#64;', '@')
+                #     dict_of_post['year_of_manufacturer'] = str(random.randint(1990, 2020))
+                #     dict_of_post['title_of_manufacturer'] = sheet.row_values(row)[0]
+                #     if len(dict_of_post.get('title_of_manufacturer')) > 30:
+                #         continue
+                #     dict_of_post['address_of_manufacturer'] = sheet.row_values(row)[2]
+                #     if len(dict_of_post.get('address_of_manufacturer')) > 100:
+                #         continue
+                #     dict_of_post['id_of_country'] = random.choice(Country.objects.all())
+
+                # ниже, спам бд медикаментами
+                # with open('C:\\Users\\kurku\\PycharmProjects\\kursach2kurs2semestr\\medicaments.txt') as f:
+                #     for i in f.read().split('\n'):
+                #         if 0 < len(i) <= 20:
+                #             dict_of_post['title_of_medicament'] = i
+                #             try:
+                #                 object_of_table.objects.create(**dict_of_post)
+                #             except:
+                #                 continue
+
 
             elif dict_of_data.get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
                 amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()[0]  # количество удалимых записей

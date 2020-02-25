@@ -37,8 +37,8 @@ class Manufacturer(models.Model):
     """
     title_of_manufacturer = models.CharField(max_length=30)
     id_of_country = models.ForeignKey(Country, on_delete=models.PROTECT)
-    address_of_manufacturer = models.CharField(max_length=10)
-    email_of_manufacturer = models.CharField(max_length=12)
+    address_of_manufacturer = models.CharField(max_length=100)
+    email_of_manufacturer = models.CharField(max_length=30)
     year_of_manufacturer = models.IntegerField()
 
     @staticmethod
@@ -56,9 +56,9 @@ class Manufacturer(models.Model):
     @staticmethod
     def get_attr():
         return {'Название': ('title_of_manufacturer', 'ООО АвтоРог', 30, 'text'),
-                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 10, 'text'),
-                'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 12, 'text'),
-                'Год': ('year_of_manufacturer', '27.03.2001', 10, 'date')}
+                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 100, 'text'),
+                'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 30, 'text'),
+                'Год': ('year_of_manufacturer', '2001', 4, 'number')}
 
 ################################################################
 
@@ -111,6 +111,28 @@ class Pharma_group(models.Model):
         return {'Название': ('title_of_pharma_group', 'Калиев каналов актив', 20, 'text')}
 
 
+class Name_of_medicament(models.Model):
+    """
+        Таблица названия медикаментов
+    """
+    title_of_medicament = models.CharField(max_length=20)
+
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_medicament'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название'
+
+    def getter(self):
+        return self.id, self.title_of_medicament
+
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_medicament', 'Анадрол', 20, 'text')}
+
+
 class Medicament(models.Model):
     """
         Таблица медикаментов, внешние ключи:
@@ -118,7 +140,7 @@ class Medicament(models.Model):
             Pharma_group (фармак. группа);
             Manufacturer (фирма).
     """
-    title_of_medicament = models.CharField(max_length=20)
+    id_of_medicament = models.ForeignKey(Name_of_medicament, models.CASCADE)
     id_of_shape = models.ForeignKey(Shape, models.PROTECT)
     id_of_pharma_group = models.ForeignKey(Pharma_group, models.PROTECT)
     comments = models.TextField()
@@ -127,7 +149,7 @@ class Medicament(models.Model):
 
     @staticmethod
     def readable():
-        return 'id', 'title_of_medicament', 'id_of_shape', 'id_of_pharma_group',\
+        return 'id', 'id_of_medicament', 'id_of_shape', 'id_of_pharma_group',\
                'comments', 'bar_code', 'id_of_manufacturer'
 
     @staticmethod
@@ -136,12 +158,11 @@ class Medicament(models.Model):
                'Инструкция', 'Штрих-код', 'Фирма'
 
     def getter(self):
-        return self.id, self.title_of_medicament, self.id_of_shape.title_of_shape, self.id_of_pharma_group.title_of_pharma_group, self.comments, self.bar_code, self.id_of_manufacturer.title_of_manufacturer
+        return self.id, self.id_of_medicament.title_of_medicament, self.id_of_shape.title_of_shape, self.id_of_pharma_group.title_of_pharma_group, self.comments, self.bar_code, self.id_of_manufacturer.title_of_manufacturer
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_medicament', 'Алмазол', 20, 'text'),
-                'Инструкция': ('comments', 'Принимать после еды 3 раза в день.', 100, 'text')}
+        return {'Инструкция': ('comments', 'Принимать после еды 3 раза в день.', 100, 'text')}
 
 ################################################################
 

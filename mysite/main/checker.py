@@ -36,11 +36,11 @@ def manufacturer(**dict_of_post):
         return
     if dict_of_post.get('id_of_country') is None:
         return
-    if len(address_of_manufacturer) == 0 or len(address_of_manufacturer) > 10:
+    if len(address_of_manufacturer) == 0 or len(address_of_manufacturer) > 70:
         return
-    if len(email_of_manufacturer) == 0 or len(email_of_manufacturer) > 12:
+    if len(email_of_manufacturer) == 0 or len(email_of_manufacturer) > 30:
         return
-    if (len(year_of_manufacturer) == 0 or len(year_of_manufacturer) > 10) and year_of_manufacturer.isdigit() is False and int(year_of_manufacturer) > 2020:
+    if (len(year_of_manufacturer) == 0 or len(year_of_manufacturer) > 4) and year_of_manufacturer.isdigit() is False and int(year_of_manufacturer) > 2020:
         return
     return True
 
@@ -116,3 +116,8 @@ def lot(**dict_of_post):
         return
     return True
 
+
+def name_of_medicament(**dict_of_post):
+    if len(dict_of_post.get('title_of_medicament')) == 0 or len(dict_of_post.get('title_of_medicament')) > 20 or any(map(lambda x: x.isdigit(), dict_of_post.get('title_of_medicament'))):
+        return
+    return True
