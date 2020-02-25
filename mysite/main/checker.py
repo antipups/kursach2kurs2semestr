@@ -58,11 +58,8 @@ def pharma_group(**dict_of_post):
 
 
 def medicament(**dict_of_post):
-    title_of_medicament, comments, bar_code,  = \
-        dict_of_post.get('title_of_medicament'), dict_of_post.get('comments'), dict_of_post.get('bar_code')
-    if len(title_of_medicament) == 0 or len(title_of_medicament) > 20 or any(map(lambda x: x.isdigit(), title_of_medicament)):
-        return
-    if dict_of_post.get('id_of_shape') is None or dict_of_post.get('id_of_pharma_group') is None or dict_of_post.get('id_of_manufacturer') is None:
+    comments, bar_code,  = dict_of_post.get('comments'), dict_of_post.get('bar_code')
+    if dict_of_post.get('id_of_shape') is None or dict_of_post.get('id_of_pharma_group') is None or dict_of_post.get('id_of_manufacturer') is None or dict_of_post.get('id_of_name_of_medicament') is None :
         return
     if len(comments) == 0:
         return
@@ -119,5 +116,11 @@ def lot(**dict_of_post):
 
 def name_of_medicament(**dict_of_post):
     if len(dict_of_post.get('title_of_medicament')) == 0 or len(dict_of_post.get('title_of_medicament')) > 20 or any(map(lambda x: x.isdigit(), dict_of_post.get('title_of_medicament'))):
+        return
+    return True
+
+
+def type(**dict_of_post):
+    if len(dict_of_post.get('title_of_type')) == 0 or len(dict_of_post.get('title_of_type')) > 15 or any(map(lambda x: x.isdigit(), dict_of_post.get('title_of_type'))):
         return
     return True

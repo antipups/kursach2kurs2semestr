@@ -22,6 +22,7 @@ tuple_with_tables = (('Лекарства',  # кортеж со всеми та
                       'Фармакалогическая группа',
                       'Форма лекарства',
                       'Название лекарства',
+                      'Тип собственности',
                       ))
 
 dict_of_data = {"Buttons":
@@ -43,6 +44,7 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
                   'Фармакалогическая группа': Pharma_group,
                   'Форма лекарства': Shape,
                   'Название лекарства': Name_of_medicament,
+                  'Тип собственности': Type,
                   }
 
 
@@ -80,13 +82,13 @@ def hw(request, dict_of_tables=dict_of_tables):
             'Lot': Lot.objects.values_list(),
             'Employee': Employee.objects.values_list(),
             'Name_of_medicament': Name_of_medicament.objects.values_list(),
+            'Type': Type.objects.values_list(),
         }
-
+        print(ids)
         tables = {}     # словарь для вывода на html выдвигающихся полей
-
         if ids:
             for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
-                if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_medicament'):
+                if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_name_of_medicament', 'id_of_type'):
                     tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})  # можно улудшить + названием, но это лень
                 elif ids[i[0]] == 'id_of_pharmacy':
                     tables.update({ids[i[0]]: tuple(
@@ -98,7 +100,7 @@ def hw(request, dict_of_tables=dict_of_tables):
                     tables.update({ids[i[0]]: tuple(
                         str(j[0]) + ' | ' + j[2] + ' ' + j[3] + ' ' + j[4] for j in i[1])})  # можно улудшить + названием, но это лень
                 elif ids[i[0]] == 'id_of_medicament':
-                    tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})
+                    tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + Name_of_medicament.objects.get(id=j[1]).title_of_medicament for j in i[1])})
 
         rows, ids, code = [], [], []
 

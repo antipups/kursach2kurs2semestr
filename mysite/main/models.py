@@ -37,7 +37,7 @@ class Manufacturer(models.Model):
     """
     title_of_manufacturer = models.CharField(max_length=30)
     id_of_country = models.ForeignKey(Country, on_delete=models.PROTECT)
-    address_of_manufacturer = models.CharField(max_length=100)
+    address_of_manufacturer = models.CharField(max_length=30)
     email_of_manufacturer = models.CharField(max_length=30)
     year_of_manufacturer = models.IntegerField()
 
@@ -56,7 +56,7 @@ class Manufacturer(models.Model):
     @staticmethod
     def get_attr():
         return {'Название': ('title_of_manufacturer', 'ООО АвтоРог', 30, 'text'),
-                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 100, 'text'),
+                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 30, 'text'),
                 'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 30, 'text'),
                 'Год': ('year_of_manufacturer', '2001', 4, 'number')}
 
@@ -140,7 +140,7 @@ class Medicament(models.Model):
             Pharma_group (фармак. группа);
             Manufacturer (фирма).
     """
-    id_of_medicament = models.ForeignKey(Name_of_medicament, models.CASCADE)
+    id_of_name_of_medicament = models.ForeignKey(Name_of_medicament, models.CASCADE)
     id_of_shape = models.ForeignKey(Shape, models.PROTECT)
     id_of_pharma_group = models.ForeignKey(Pharma_group, models.PROTECT)
     comments = models.TextField()
@@ -149,7 +149,7 @@ class Medicament(models.Model):
 
     @staticmethod
     def readable():
-        return 'id', 'id_of_medicament', 'id_of_shape', 'id_of_pharma_group',\
+        return 'id', 'id_of_name_of_medicament', 'id_of_shape', 'id_of_pharma_group',\
                'comments', 'bar_code', 'id_of_manufacturer'
 
     @staticmethod
@@ -158,7 +158,7 @@ class Medicament(models.Model):
                'Инструкция', 'Штрих-код', 'Фирма'
 
     def getter(self):
-        return self.id, self.id_of_medicament.title_of_medicament, self.id_of_shape.title_of_shape, self.id_of_pharma_group.title_of_pharma_group, self.comments, self.bar_code, self.id_of_manufacturer.title_of_manufacturer
+        return self.id, self.id_of_name_of_medicament.title_of_medicament, self.id_of_shape.title_of_shape, self.id_of_pharma_group.title_of_pharma_group, self.comments, self.bar_code, self.id_of_manufacturer.title_of_manufacturer
 
     @staticmethod
     def get_attr():
@@ -169,6 +169,28 @@ class Medicament(models.Model):
 # ____________________________АПТЕКИ__________________________ #
 
 ################################################################
+
+
+class Type(models.Model):
+    """
+        Таблица типов собственности
+    """
+    title_of_type = models.CharField(max_length=15)
+
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_type'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Название'
+
+    def getter(self):
+        return self.id, self.title_of_type
+
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_type', 'Частная', 15, 'text')}
 
 
 class District(models.Model):
@@ -201,21 +223,22 @@ class Pharmacy(models.Model):
 
     number_of_pharmacy = models.IntegerField()
     title_of_pharmacy = models.CharField(max_length=15)
+    id_of_type = models.ForeignKey(Type, models.CASCADE)
     address_of_pharmacy = models.CharField(max_length=12)
     id_of_district = models.ForeignKey(District, models.PROTECT)
     phone_of_pharmacy = models.CharField(max_length=10)
 
     @staticmethod
     def readable():
-        return 'id', 'number_of_pharmacy', 'title_of_pharmacy', \
+        return 'id', 'number_of_pharmacy', 'title_of_pharmacy', 'id_of_type',\
                'address_of_pharmacy', 'id_of_district', 'phone_of_pharmacy'
 
     @staticmethod
     def readable_rus():
-        return 'id', 'Номер', 'Название', 'Адрес', 'Район', 'Телефон'
+        return 'id', 'Номер', 'Название', 'Тип собственности', 'Адрес', 'Район', 'Телефон'
 
     def getter(self):
-        return self.id, self.number_of_pharmacy, self.title_of_pharmacy, self.address_of_pharmacy, self.id_of_district.title_of_district, self.phone_of_pharmacy
+        return self.id, self.number_of_pharmacy, self.title_of_pharmacy, self.id_of_type.title_of_type, self.address_of_pharmacy, self.id_of_district.title_of_district, self.phone_of_pharmacy
 
     @staticmethod
     def get_attr():
@@ -289,7 +312,7 @@ class Lot(models.Model):
                'Цена(Фирма)', 'Цена(Аптека)', 'Работник', 'Дефект', 'Причина возврата'
 
     def getter(self):
-        return self.id, self.id_of_medicament.title_of_medicament, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
+        return self.id, self.id_of_medicament.id_of_name_of_medicament.title_of_medicament, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
                self.price_manufacturer, self.price_pharmacy, \
                ' '.join((self.id_of_employee.second_name, self.id_of_employee.first_name[0] + '. ', self.id_of_employee.third_name[0] + '.')), \
                self.defect, self.reason
