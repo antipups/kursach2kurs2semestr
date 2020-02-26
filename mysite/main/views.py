@@ -1,7 +1,6 @@
 import pprint
 import random
 import re
-
 import requests
 from django.shortcuts import render
 from django.db import IntegrityError
@@ -26,9 +25,11 @@ tuple_with_tables = (('Лекарства',  # кортеж со всеми та
                       ))
 
 dict_of_data = {"Buttons":
-                     (('Добавить в', 'Удалить из', 'Изменить в', 'Просмотреть', 'Поиск'),
-                      tuple_with_tables,
-                     ),
+                    (
+                        ('Добавить в', 'Удалить из', 'Изменить в', 'Просмотреть', 'Поиск'),
+                        tuple_with_tables,
+                    ),
+                "Buttons_for_task": ('Задание №1', 'Задание №2', 'Задание №3'),
                 "mode": '',
                 'addon': False,
                 }   # начальный словарь, кторый мы и будем таскать
@@ -48,11 +49,32 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
                   }
 
 
+def task1(request, dict_of_tables=dict_of_tables):    # для задания №1
+
+    return render(request, 'task1.html', dict_of_data)
+
+
+def task2(request, dict_of_tables=dict_of_tables):  # для задания №2
+
+    return render(request, 'task2.html', dict_of_data)
+
+
+def task3(request, dict_of_tables=dict_of_tables):  # для задания №3
+
+    return render(request, 'task3.html', dict_of_data)
+
+
 @csrf_exempt
 def hw(request, dict_of_tables=dict_of_tables):
     dict_of_data['win'], dict_of_data['addon'] = '', False
     if request.method == 'POST':    # если юзер нажал на кнопку
         string = request.POST.get('mode')
+        if string.find('Задание №1') > -1:
+            return task1(request)
+        elif string.find('Задание №2') > -1:
+            return task2(request)
+        elif string.find('Задание №3') > -1:
+            return task3(request)
         table = dict_of_tables.get(string[string.rfind(':') + 2:])
         name_of_table_on_engl = str(table)
         if string.find('смотр') > -1:   # для кнопки посмотреть
@@ -84,7 +106,6 @@ def hw(request, dict_of_tables=dict_of_tables):
             'Name_of_medicament': Name_of_medicament.objects.values_list(),
             'Type': Type.objects.values_list(),
         }
-        print(ids)
         tables = {}     # словарь для вывода на html выдвигающихся полей
         if ids:
             for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
@@ -129,22 +150,19 @@ def hw(request, dict_of_tables=dict_of_tables):
         })
 
         dict_of_data.update({'img': string[string.find(':') + 2:] + '.jpg'})
-        dict_of_data.update({'spam': dict_of_tables.get('Country')})
+        # dict_of_data.update({'spam': dict_of_tables.get('Country')})
         if string.find('Поиск') > -1:
             dict_of_data.update({'template': 'find_in_table.html'})
             return render(request, 'find_in_table.html', dict_of_data)
         if string.find('Добавить') > -1:
             dict_of_data.update({'template': 'add_in_table.html'})
             return render(request, 'add_in_table.html', dict_of_data)
-        elif string.find('Удалить') > -1:  # для кнопки добавить
+        elif string.find('Удалить') > -1:
             dict_of_data.update({'template': 'remove_from_table.html'})
             return render(request, 'remove_from_table.html', dict_of_data)
-        elif string.find('Изменить') > -1:  # для кнопки добавить
+        elif string.find('Изменить') > -1:
             dict_of_data.update({'template': 'update_table.html'})
             return render(request, 'update_table.html', dict_of_data)
-        elif string.find('Поиск') > -1:  # для кнопки добавить
-            dict_of_data.update({'template': 'find_in_table.html'})
-            return render(request, 'find_in_table.html', dict_of_data)
 
 
 @csrf_exempt
@@ -214,7 +232,6 @@ def mode(request, dict_of_tables=dict_of_tables):
                 #                 object_of_table.objects.create(**dict_of_post)
                 #             except:
                 #                 continue
-
 
             elif dict_of_data.get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
                 amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()[0]  # количество удалимых записей

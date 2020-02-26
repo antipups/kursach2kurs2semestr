@@ -1,0 +1,21 @@
+{% extends "content.html" %}
+
+{% block table %}
+
+    <table class="badge badge-secondary p-3 w-100 table table-hover">
+        <tr class="table-bordered"><td class="w-25" colspan="{{name_of_rows|length}}">Таблица {{name_of_table}}</td></tr>
+        <tr class="table table-hover table-bordered">
+            {% for i in name_of_rows %}
+                <td class="m-5">{{i}}</td>
+            {% endfor %}
+        </tr>
+        {% for i in Table %}
+            <tr class="table-bordered">
+                {% for j in i %}
+                    <td class="m-5">{{j}}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
