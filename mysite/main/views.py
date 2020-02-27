@@ -1,6 +1,8 @@
 import pprint
 import random
 import re
+import datetime
+
 import requests
 from django.shortcuts import render
 from django.db import IntegrityError
@@ -49,9 +51,24 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
                   }
 
 
-def task1(request, dict_of_tables=dict_of_tables):    # для задания №1
-
+def task1(request):    # для задания №1
+    # pprint.pprint(dict_of_data)
+    ids = {'Pharmacy': tuple(),
+           'Country': tuple()}    # айдишники страны и аптек
+    for pharmacy in Manufacturer.objects.raw('SELECT * FROM main_pharmacy'):
+        ids['Pharmacy'] = ids.get('Pharmacy') + (pharmacy.title_of_pharmacy,)
+    for country in Manufacturer.objects.raw('SELECT * FROM main_country'):
+        ids['Country'] = ids.get('Country') + (country.title_of_country,)
+    dict_of_data.update({'ids':ids})
     return render(request, 'task1.html', dict_of_data)
+
+
+@csrf_exempt
+def task1_cont(request, dict_of_tables=dict_of_tables):
+    dict_of_post = request.POST
+    # if dict_of_post.get('Аптека'):
+
+
 
 
 def task2(request, dict_of_tables=dict_of_tables):  # для задания №2
@@ -203,8 +220,28 @@ def mode(request, dict_of_tables=dict_of_tables):
             elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
-
+                print(dict_of_post)
                 object_of_table.objects.create(**dict_of_post)
+                # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
+                # 'reason': 'Просроченный срок годности', 'id_of_medicament': <Medicament: Medicament object (2)>, 'id_of_employee': <Employee: Employee object (1)>}
+
+                # спам партий
+                # for i in range(500):
+                #     year, month, day = random.randint(1990, 2019), random.randint(1, 12), random.randint(1, 28)
+                #     datefact = datetime.datetime(year=year,
+                #                                  month=month,
+                #                                  day=day)
+                #
+                #     datestart = datefact - datetime.datetime(day=datetime.timedelta(days=random.randint(1, 20)))
+                #     datefinish = datefact + datetime.datetime(day=datetime.timedelta(days=random.randint(1, 20)))
+                #     price_manufacturer, price_pharmacy = random.randint(1, 5999), random.randint(6000, 9999)
+                #     defect = random.choice(('0', '1'))
+                #     reason = random.choice(('Згнившая упаковка', 'Ужасное состояние', 'Исчерпан срок годности')) if defect == '1' else 'Нет дефекта'
+                #     count, number_of_lot = random.randint(1, 9999), random.randint(1, 9999)
+                #     dict_of_post.update({'datefact': datefact, 'datestart': datestart, 'datefinish': datefinish,
+                #                          'price_manufacturer': price_manufacturer, 'price_pharmacy': price_pharmacy,
+                #                          'defect': defect, 'reason': reason, 'count': count, 'number_of_lot': number_of_lot,})
+
                 # ниже спам бд фирмами
                 # rb = xlrd.open_workbook('C:\\Users\\kurku\\PycharmProjects\\parse_for_five\\books.xls',
                 #                         formatting_info=True)
@@ -259,3 +296,8 @@ def mode(request, dict_of_tables=dict_of_tables):
         else:
             dict_of_data.update({'win': True})
             return render(request, html, dict_of_data)
+
+
+def out_task1(request, dict_of_tables=dict_of_tables):
+    
+    return render(request, 'task1.html', dict_of_data)

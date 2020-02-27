@@ -8,14 +8,14 @@
                 {% for key, znach in name_of_rows.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
                       <label for="add">{{key}}</label>
-                      <input class="form-control" id="add" name="{{znach.0}}" value="{{ value }}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" type="{{znach.3}}">
+                      <input class="form-control" id="add" name="{{znach.0}}" value="{{ value }}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" tabindex="1" type="{{znach.3}}">
                     </div>
                 {% endfor %}
 
                 {% for key, value in ids.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
                       <label for="add">{{key}}</label>
-                        <select id="add" name="{{value}}" class="form-control">
+                        <select id="add" name="{{value}}" class="form-control" tabindex="1">
                             <option selected disabled>Выберите...</option>
                             {% for key_, value_ in tables.items %}
                                 {% if value == key_ %}

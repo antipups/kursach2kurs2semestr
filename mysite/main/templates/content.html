@@ -30,9 +30,11 @@
 
                 {% endfor%}
 
+                <hr class="mb-2">
+                <h3>Задания</h3>
                 {% for i in Buttons_for_task %}
                     <form action="/main/mode/" method="post">
-                        <button class="mx-auto btn btn-info w-75 m-3" id="mode" name="mode" type="submit" value="{{i}}"> {{i}} </button>
+                        <button class="mx-auto btn btn-info w-75 mb-4" id="mode" name="mode" type="submit" value="{{i}}"> {{i}} </button>
                     </form>
 
                 {% endfor%}
