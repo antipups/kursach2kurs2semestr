@@ -2,7 +2,6 @@ import pprint
 import random
 import re
 import datetime
-
 import requests
 from django.shortcuts import render
 from django.db import IntegrityError
@@ -11,6 +10,7 @@ from . import checker
 from .models import *
 from random import choice   # для спама
 from string import ascii_uppercase    # для спама
+import util
 
 
 tuple_with_tables = (('Лекарства',  # кортеж со всеми таблицами
@@ -59,7 +59,7 @@ def task1(request):    # для задания №1
         ids['Pharmacy'] = ids.get('Pharmacy') + (pharmacy.title_of_pharmacy,)
     for country in Manufacturer.objects.raw('SELECT * FROM main_country'):
         ids['Country'] = ids.get('Country') + (country.title_of_country,)
-    dict_of_data.update({'ids':ids})
+    dict_of_data.update({'ids': ids})
     return render(request, 'task1.html', dict_of_data)
 
 
@@ -67,9 +67,13 @@ def task1(request):    # для задания №1
 def task1_cont(request, dict_of_tables=dict_of_tables):
     dict_of_post = request.POST
     if dict_of_post.get('Аптека'):
-        print(Medicament.objects.raw('SELECT COUNT(title_of_pharmacy), title_of_pharmacy FROM main_lot '
-                                     'INNER JOIN main_employee ON main_lot.id_of_employee_id = main_employee.id '
-                                     'INNER JOIN main_pharmacy ON main_employee.id_of_pharmacy_id = main_pharmacy.id'))
+        result = util.get_all_medicament_from_pharmacy(dict_of_post.get('Аптека'))
+        if result:
+            dict_of_data.update({'win': True,
+                                 'medicaments': result})
+        else:
+            dict_of_data.update({'win': False})
+        return render(request, 'task1.html', dict_of_data)
 
 
 

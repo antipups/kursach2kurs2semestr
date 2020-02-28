@@ -22,17 +22,19 @@
     </div>
 
     {% if win == True %}
-        <form action="/main/mode/" method="post">
-            <button id="mode" name="mode" class="btn w-100" type="submit" value="смотр : {{name_of_table}}">
-                <div class="alert alert-success mt-3" align="center" role="alert">
-                    <h3>Записи найдены</h3><br>
-                </div>
-           </button>
-        </form>
-    {% endif %}
-
-    {% if win == False %}
-        <div class="alert alert-danger mt-3" align="center" role="alert"><h3>{{cause}}</h3></div>
+        <div class="alert alert-success mt-3" align="center" role="alert">
+            <h3>Топ 5 лекарств поставляемых в аптеку:<br>
+                <ol>
+                    {% for i in medicaments %}
+                        <li>{{i}};</li>
+                    {% endfor %}
+                </ol>
+            </h3>
+        </div>
+    {% elif win == False %}
+        <div class="alert alert-danger mt-3" align="center" role="alert">
+            <h3>В аптеку не поставлялись ещё лекарства.</h3>
+        </div>
     {% endif %}
 
 {% endblock %}
