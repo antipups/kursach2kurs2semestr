@@ -66,7 +66,10 @@ def task1(request):    # для задания №1
 @csrf_exempt
 def task1_cont(request, dict_of_tables=dict_of_tables):
     dict_of_post = request.POST
-    # if dict_of_post.get('Аптека'):
+    if dict_of_post.get('Аптека'):
+        print(Medicament.objects.raw('SELECT COUNT(title_of_pharmacy), title_of_pharmacy FROM main_lot '
+                                     'INNER JOIN main_employee ON main_lot.id_of_employee_id = main_employee.id '
+                                     'INNER JOIN main_pharmacy ON main_employee.id_of_pharmacy_id = main_pharmacy.id'))
 
 
 
@@ -136,7 +139,7 @@ def hw(request, dict_of_tables=dict_of_tables):
                         str(j[0]) + ' | ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
                 elif ids[i[0]] == 'id_of_employee':
                     tables.update({ids[i[0]]: tuple(
-                        str(j[0]) + ' | ' + j[2] + ' ' + j[3] + ' ' + j[4] for j in i[1])})  # можно улудшить + названием, но это лень
+                        str(j[0]) + ' | ' + j[3] + ' ' + j[2] + ' ' + j[4] for j in i[1])})  # можно улудшить + названием, но это лень
                 elif ids[i[0]] == 'id_of_medicament':
                     tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + Name_of_medicament.objects.get(id=j[1]).title_of_medicament for j in i[1])})
 

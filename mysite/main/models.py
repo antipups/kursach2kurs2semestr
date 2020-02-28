@@ -299,7 +299,7 @@ class Lot(models.Model):
     price_pharmacy = models.IntegerField()
     id_of_employee = models.ForeignKey(Employee, models.DO_NOTHING)
     defect = models.BooleanField()
-    reason = models.TextField()
+    reason = models.TextField(default=None)
 
     @staticmethod
     def readable():
@@ -319,7 +319,7 @@ class Lot(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Дата доставки': ('datefact', '23.03.2012', 15, 'date'),
+        return {'Дата доставки': ('datefact', '23.03.2012', '15', 'date'),
                 'Кол-во упаковок': ('count', '1234567890', 10, 'number'),
                 'Номер': ('number_of_lot', '4321', 4, 'number'),
                 'Дата выпуска': ('datestart', '20.03.2012', 15, 'date'),
