@@ -52,7 +52,6 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
 
 
 def task1(request):    # для задания №1
-    # pprint.pprint(dict_of_data)
     ids = {'Аптека': tuple(),
            'Район': tuple()}    # айдишники страны и аптек
     for pharmacy in Manufacturer.objects.raw('SELECT * FROM main_pharmacy'):
@@ -82,10 +81,27 @@ def task1_cont(request, dict_of_tables=dict_of_tables):
     return render(request, 'task1.html', dict_of_data)
 
 
-
-
 def task2(request, dict_of_tables=dict_of_tables):  # для задания №2
+    ids = {'Район': tuple()}  # айдишники страны и аптек
+    for district in Manufacturer.objects.raw('SELECT * FROM main_district'):
+        ids['Район'] = ids.get('Район') + (district.title_of_district,)
+    dict_of_data.update({'ids': ids})
+    return render(request, 'task2.html', dict_of_data)
 
+
+@csrf_exempt
+def task2_cont(request, dict_of_tables=dict_of_tables):
+    dict_of_post = request.POST
+    if dict_of_post.get('Район'):
+        result = util.get_all_pharmacy_from_district(dict_of_post.get('Район'))
+    else:
+        dict_of_data.update({'win': "0"})
+        return render(request, 'task2.html', dict_of_data)
+    if result:
+        dict_of_data.update({'win': True,
+                             'amount_of_pharmacy': result})
+    else:
+        dict_of_data.update({'win': False})
     return render(request, 'task2.html', dict_of_data)
 
 
