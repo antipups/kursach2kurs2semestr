@@ -105,9 +105,28 @@ def task2_cont(request, dict_of_tables=dict_of_tables):
     return render(request, 'task2.html', dict_of_data)
 
 
-def task3(request, dict_of_tables=dict_of_tables):  # для задания №3
-
+def task3(request, dict_of_tables=dict_of_tables):  # для задания №3    ВОООООБЩЕ НЕ ДЕЛАЛ, ПЕРЕШЕЛ НА ПАГИНАЦИЮ
+    ids = {'Район': tuple()}  # айдишники страны и аптек
+    for district in Manufacturer.objects.raw('SELECT * FROM main_district'):
+        ids['Район'] = ids.get('Район') + (district.title_of_district,)
+    dict_of_data.update({'ids': ids})
     return render(request, 'task3.html', dict_of_data)
+
+
+@csrf_exempt
+def task3_cont(request, dict_of_tables=dict_of_tables):
+    dict_of_post = request.POST
+    # if dict_of_post.get('Район'):
+    #     result = util.get_all_pharmacy_from_district(dict_of_post.get('Район'))
+    # else:
+    #     dict_of_data.update({'win': "0"})
+    #     return render(request, 'task2.html', dict_of_data)
+    # if result:
+    #     dict_of_data.update({'win': True,
+    #                          'amount_of_pharmacy': result})
+    # else:
+    #     dict_of_data.update({'win': False})
+    return render(request, 'task2.html', dict_of_data)
 
 
 @csrf_exempt
@@ -195,7 +214,7 @@ def hw(request, dict_of_tables=dict_of_tables):
             'model': name_of_table_on_engl[name_of_table_on_engl.rfind('.') + 1:name_of_table_on_engl.rfind("'")].lower()
         })
 
-        dict_of_data.update({'img': string[string.find(':') + 2:] + '.jpg'})
+        dict_of_data.update({'img': 'image/' + string[string.find(':') + 2:] + '.jpg'})
         # dict_of_data.update({'spam': dict_of_tables.get('Country')})
         if string.find('Поиск') > -1:
             dict_of_data.update({'template': 'find_in_table.html'})
