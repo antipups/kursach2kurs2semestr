@@ -53,12 +53,12 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
 
 def task1(request):    # для задания №1
     # pprint.pprint(dict_of_data)
-    ids = {'Pharmacy': tuple(),
-           'Country': tuple()}    # айдишники страны и аптек
+    ids = {'Аптека': tuple(),
+           'Район': tuple()}    # айдишники страны и аптек
     for pharmacy in Manufacturer.objects.raw('SELECT * FROM main_pharmacy'):
-        ids['Pharmacy'] = ids.get('Pharmacy') + (pharmacy.title_of_pharmacy,)
-    for country in Manufacturer.objects.raw('SELECT * FROM main_country'):
-        ids['Country'] = ids.get('Country') + (country.title_of_country,)
+        ids['Аптека'] = ids.get('Аптека') + (pharmacy.title_of_pharmacy,)
+    for district in Manufacturer.objects.raw('SELECT * FROM main_district'):
+        ids['Район'] = ids.get('Район') + (district.title_of_district,)
     dict_of_data.update({'ids': ids})
     return render(request, 'task1.html', dict_of_data)
 
@@ -68,12 +68,18 @@ def task1_cont(request, dict_of_tables=dict_of_tables):
     dict_of_post = request.POST
     if dict_of_post.get('Аптека'):
         result = util.get_all_medicament_from_pharmacy(dict_of_post.get('Аптека'))
-        if result:
-            dict_of_data.update({'win': True,
-                                 'medicaments': result})
-        else:
-            dict_of_data.update({'win': False})
+    elif dict_of_post.get('Район'):
+        result = util.get_all_medicament_from_district(dict_of_post.get('Район'))
+    else:
+        dict_of_data.update({'win': "0"})
         return render(request, 'task1.html', dict_of_data)
+
+    if result:
+        dict_of_data.update({'win': True,
+                             'medicaments': result})
+    else:
+        dict_of_data.update({'win': False})
+    return render(request, 'task1.html', dict_of_data)
 
 
 
@@ -227,7 +233,6 @@ def mode(request, dict_of_tables=dict_of_tables):
             elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
-                print(dict_of_post)
                 object_of_table.objects.create(**dict_of_post)
                 # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
                 # 'reason': 'Просроченный срок годности', 'id_of_medicament': <Medicament: Medicament object (2)>, 'id_of_employee': <Employee: Employee object (1)>}

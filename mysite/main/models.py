@@ -197,7 +197,7 @@ class District(models.Model):
     """
         Таблица районов
     """
-    title_of_district = models.CharField(max_length=15)
+    title_of_district = models.CharField(max_length=15, unique=True)
 
     @staticmethod
     def readable():

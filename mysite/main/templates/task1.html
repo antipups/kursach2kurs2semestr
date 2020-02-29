@@ -8,7 +8,7 @@
                 {% for key, value in ids.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
                       <label for="add">{{key}}</label>
-                        <select id="add" name="Аптека" class="form-control" tabindex="1">
+                        <select id="add" name="{{key}}" class="form-control" tabindex="1">
                             <option selected disabled>Выберите...</option>
                             {% for row in value %}
                                 <option>{{row}}</option>
@@ -34,6 +34,10 @@
     {% elif win == False %}
         <div class="alert alert-danger mt-3" align="center" role="alert">
             <h3>В аптеку не поставлялись ещё лекарства.</h3>
+        </div>
+    {% elif win == "0" %}
+        <div class="alert alert-danger mt-3" align="center" role="alert">
+            <h3>Укажите параметр</h3>
         </div>
     {% endif %}
 
