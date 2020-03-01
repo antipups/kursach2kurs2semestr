@@ -17,16 +17,15 @@
             </tr>
         {% endfor %}
     </table>
-    <nav class="nav navbar">
-        <ul class="pagination nav navbar navbar-left">
-        </ul>
-        <ul class="pagination nav navbar navbar-right">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-        </ul>
-    </nav>
+    {% if pagination == True %}
+        <nav class="pagin">
+            <form action="/main/mode/" method="post">
+                <ul class="pagination">
+                    <li class="page-item"><button class="page-link" href="/main/mode/" name="next" value="test" type="submit"><</button></li>
+                    <li class="page-item"><button class="page-link" href="/main/mode/" name="prev" value="test" type="submit">></button></li>
+                </ul>
+            </form>
+        </nav>
+    {% endif %}
 
 {% endblock %}

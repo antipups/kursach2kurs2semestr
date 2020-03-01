@@ -1,4 +1,4 @@
 .pagin {
-    right: 20px;
-    background-color: red;
+    display: flex;
+    justify-content: flex-end;
 }

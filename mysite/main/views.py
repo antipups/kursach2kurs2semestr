@@ -34,6 +34,7 @@ dict_of_data = {"Buttons":
                 "Buttons_for_task": ('Задание №1', 'Задание №2', 'Задание №3'),
                 "mode": '',
                 'addon': False,
+                'pagination': False,
                 }   # начальный словарь, кторый мы и будем таскать
 
 
@@ -131,7 +132,8 @@ def task3_cont(request, dict_of_tables=dict_of_tables):
 
 @csrf_exempt
 def hw(request, dict_of_tables=dict_of_tables):
-    dict_of_data['win'], dict_of_data['addon'] = '', False
+    print(request.POST)
+    dict_of_data['win'], dict_of_data['addon'], dict_of_data['pagination'] = '', False, False
     if request.method == 'POST':    # если юзер нажал на кнопку
         string = request.POST.get('mode')
         if string.find('Задание №1') > -1:
@@ -141,13 +143,29 @@ def hw(request, dict_of_tables=dict_of_tables):
         elif string.find('Задание №3') > -1:
             return task3(request)
         table = dict_of_tables.get(string[string.rfind(':') + 2:])
+        dict_of_data.update({'img': 'image/' + string[string.find(':') + 2:] + '.jpg'})
         name_of_table_on_engl = str(table)
         if string.find('смотр') > -1:   # для кнопки посмотреть
+            if dict_of_data.get('pages_on_' + string[string.rfind(' ') + 1:]) is None:   # добавляем некий флажок для страниц
+                for key in dict_of_data.keys():     # находим старые страницы и удаляем их
+                    if key.find('pages_on') > -1:
+                        del dict_of_data[key]
+                        break
+                all_rows = tuple(map(lambda row: row.getter, table.objects.all()))
+                if len(all_rows) > 10:
+                    dict_of_data.update({'pages_on_' + string[string.rfind(' ') + 1:]: 1,
+                                         'pagination': True,
+                                         'all_rows': all_rows})
+                    dict_of_data.update({'Table': all_rows[dict_of_data.get('pages_on_' + string[string.rfind(' ') + 1:]) * 10 - 10:
+                                                           dict_of_data.get('pages_on_' + string[string.rfind(' ') + 1:]) * 10]})
+                else:
+                    dict_of_data.update({'Table': all_rows})
+
             dict_of_data.update({
                 'name_of_table': string[string.find(':'):],
                 'name_of_rows': table.readable_rus(),
-                'Table': tuple(map(lambda row: row.getter, table.objects.all()))
             })
+            pprint.pprint(dict_of_data)
             return render(request, 'read_table.html', dict_of_data)
 
         engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
@@ -214,8 +232,6 @@ def hw(request, dict_of_tables=dict_of_tables):
             'model': name_of_table_on_engl[name_of_table_on_engl.rfind('.') + 1:name_of_table_on_engl.rfind("'")].lower()
         })
 
-        dict_of_data.update({'img': 'image/' + string[string.find(':') + 2:] + '.jpg'})
-        # dict_of_data.update({'spam': dict_of_tables.get('Country')})
         if string.find('Поиск') > -1:
             dict_of_data.update({'template': 'find_in_table.html'})
             return render(request, 'find_in_table.html', dict_of_data)
