@@ -2,20 +2,37 @@
 
 {% block table %}
 
-    <table class="badge badge-secondary p-3 w-100 table table-hover">
-        <tr class="table-bordered"><td class="w-25" colspan="{{name_of_rows|length}}">Таблица {{name_of_table}}</td></tr>
-        <tr class="table table-hover table-bordered">
-            {% for i in name_of_rows %}
-                <td class="m-5">{{i}}</td>
-            {% endfor %}
-        </tr>
-        {% for i in Table %}
-            <tr class="table-bordered">
-                {% for j in i %}
-                    <td class="m-5">{{j}}</td>
+    <div class="badge badge-secondary p-2 w-100">
+        <form action="/main/task3/" method="post"><h3>Выберите нужные параметры (один из)</h3>
+            <div class="form-row">    <!-- один строка для ввода -->
+                {% for key, value in ids.items %}
+                    <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
+                      <label for="add">{{key}}</label>
+                        <select id="add" name="{{key}}" class="form-control" tabindex="1">
+                            <option selected disabled>Выберите...</option>
+                            {% for row in value %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+            </div>
+          <button type="submit" class="btn btn-primary w-100" id="add">Найти</button>
+        </form>
+    </div>
+
+    {% if win == True %}
+        <div class="alert alert-success mt-3" align="center" role="alert">
+            <h3>{{result}}</h3>
+        </div>
+    {% elif win == False %}
+        <div class="alert alert-danger mt-3" align="center" role="alert">
+            <h3>Аптек в районе нет.</h3>
+        </div>
+    {% elif win == "0" %}
+        <div class="alert alert-danger mt-3" align="center" role="alert">
+            <h3>Укажите параметр</h3>
+        </div>
+    {% endif %}
 
 {% endblock %}

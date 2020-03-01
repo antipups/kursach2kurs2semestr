@@ -64,7 +64,7 @@ def task1(request):    # для задания №1
 
 
 @csrf_exempt
-def task1_cont(request, dict_of_tables=dict_of_tables):
+def task1_cont(request):
     dict_of_post = request.POST
     if dict_of_post.get('Аптека'):
         result = util.get_all_medicament_from_pharmacy(dict_of_post.get('Аптека'))
@@ -82,7 +82,7 @@ def task1_cont(request, dict_of_tables=dict_of_tables):
     return render(request, 'task1.html', dict_of_data)
 
 
-def task2(request, dict_of_tables=dict_of_tables):  # для задания №2
+def task2(request):  # для задания №2
     ids = {'Район': tuple()}  # айдишники страны и аптек
     for district in Manufacturer.objects.raw('SELECT * FROM main_district'):
         ids['Район'] = ids.get('Район') + (district.title_of_district,)
@@ -91,7 +91,7 @@ def task2(request, dict_of_tables=dict_of_tables):  # для задания №2
 
 
 @csrf_exempt
-def task2_cont(request, dict_of_tables=dict_of_tables):
+def task2_cont(request):
     dict_of_post = request.POST
     if dict_of_post.get('Район'):
         result = util.get_all_pharmacy_from_district(dict_of_post.get('Район'))
@@ -106,33 +106,33 @@ def task2_cont(request, dict_of_tables=dict_of_tables):
     return render(request, 'task2.html', dict_of_data)
 
 
-def task3(request, dict_of_tables=dict_of_tables):  # для задания №3    ВОООООБЩЕ НЕ ДЕЛАЛ, ПЕРЕШЕЛ НА ПАГИНАЦИЮ
-    ids = {'Район': tuple()}  # айдишники страны и аптек
-    for district in Manufacturer.objects.raw('SELECT * FROM main_district'):
-        ids['Район'] = ids.get('Район') + (district.title_of_district,)
+def task3(request):  # для задания №3    ВОООООБЩЕ НЕ ДЕЛАЛ, ПЕРЕШЕЛ НА ПАГИНАЦИЮ
+    ids = {'Фирма': tuple()}  # айдишники страны и аптек
+    for manufacturer in Manufacturer.objects.raw('SELECT * FROM main_manufacturer'):
+        ids['Фирма'] = ids.get('Фирма') + (manufacturer.title_of_manufacturer,)
     dict_of_data.update({'ids': ids})
     return render(request, 'task3.html', dict_of_data)
 
 
 @csrf_exempt
-def task3_cont(request, dict_of_tables=dict_of_tables):
+def task3_cont(request):
     dict_of_post = request.POST
-    # if dict_of_post.get('Район'):
-    #     result = util.get_all_pharmacy_from_district(dict_of_post.get('Район'))
-    # else:
-    #     dict_of_data.update({'win': "0"})
-    #     return render(request, 'task2.html', dict_of_data)
-    # if result:
-    #     dict_of_data.update({'win': True,
-    #                          'amount_of_pharmacy': result})
-    # else:
-    #     dict_of_data.update({'win': False})
-    return render(request, 'task2.html', dict_of_data)
+    if dict_of_post.get('Фирма'):
+        result = util.get_all_comebacks_from_manufacturer(dict_of_post.get('Фирма'))
+    else:
+        dict_of_data.update({'win': "0"})
+        return render(request, 'task3.html', dict_of_data)
+    if result:
+        dict_of_data.update({'win': True,
+                             'result': result[0]})
+    else:
+        dict_of_data.update({'win': False})
+    return render(request, 'task3.html', dict_of_data)
 
 
 @csrf_exempt
 def hw(request, dict_of_tables=dict_of_tables):
-    print(request.POST)
+    # print(request.POST)
     dict_of_data['win'], dict_of_data['addon'], dict_of_data['pagination'] = '', False, False
     if request.method == 'POST':    # если юзер нажал на кнопку
         string = request.POST.get('mode')
