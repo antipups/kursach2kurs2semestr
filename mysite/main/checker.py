@@ -107,10 +107,6 @@ def lot(**dict_of_post):
         return
     if len(price_manufacturer) == 0 or len(price_manufacturer) > 4 or price_manufacturer.isdigit() is False:
         return
-    if defect != '0' and defect != '1':
-        return
-    if len(reason) == 0 and defect == '1':
-        return
     return True
 
 

@@ -284,6 +284,8 @@ def mode(request, dict_of_tables=dict_of_tables):
             elif dict_of_data.get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
+                if dict_of_post.get('defect') == '':
+                    del dict_of_post['defect']
                 object_of_table.objects.create(**dict_of_post)
                 # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
                 # 'reason': 'Просроченный срок годности', 'id_of_medicament': <Medicament: Medicament object (2)>, 'id_of_employee': <Employee: Employee object (1)>}

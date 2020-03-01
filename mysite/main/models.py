@@ -27,7 +27,7 @@ class Country(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_country', 'РОС', 3, 'text')}
+        return {'Название': ('title_of_country', 'РОС', 3, 'text', 'required')}
 
 
 class Manufacturer(models.Model):
@@ -55,10 +55,10 @@ class Manufacturer(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_manufacturer', 'ООО АвтоРог', 30, 'text'),
-                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 30, 'text'),
-                'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 30, 'text'),
-                'Год': ('year_of_manufacturer', '2001', 4, 'number')}
+        return {'Название': ('title_of_manufacturer', 'ООО АвтоРог', 30, 'text', 'required'),
+                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 30, 'text', 'required'),
+                'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 30, 'text', 'required'),
+                'Год': ('year_of_manufacturer', '2001', 4, 'number', 'required')}
 
 ################################################################
 
@@ -86,7 +86,7 @@ class Shape(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_shape', 'Таблетки', 15, 'text')}
+        return {'Название': ('title_of_shape', 'Таблетки', 15, 'text', 'required')}
 
 
 class Pharma_group(models.Model):
@@ -108,7 +108,7 @@ class Pharma_group(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_pharma_group', 'Калиев каналов актив', 20, 'text')}
+        return {'Название': ('title_of_pharma_group', 'Калиев каналов актив', 20, 'text', 'required')}
 
 
 class Name_of_medicament(models.Model):
@@ -130,7 +130,7 @@ class Name_of_medicament(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_medicament', 'Анадрол', 20, 'text')}
+        return {'Название': ('title_of_medicament', 'Анадрол', 20, 'text', 'required')}
 
 
 class Medicament(models.Model):
@@ -162,7 +162,7 @@ class Medicament(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Инструкция': ('comments', 'Принимать после еды 3 раза в день.', 100, 'text')}
+        return {'Инструкция': ('comments', 'Принимать после еды 3 раза в день.', 100, 'text', 'required')}
 
 ################################################################
 
@@ -190,7 +190,7 @@ class Type(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_type', 'Частная', 15, 'text')}
+        return {'Название': ('title_of_type', 'Частная', 15, 'text', 'required')}
 
 
 class District(models.Model):
@@ -212,7 +212,7 @@ class District(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_district', 'Кировский', 15, 'text')}
+        return {'Название': ('title_of_district', 'Кировский', 15, 'text', 'required')}
 
 
 class Pharmacy(models.Model):
@@ -242,10 +242,10 @@ class Pharmacy(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Номер': ('number_of_pharmacy', '0123456789', 100, 'number'),
-                'Название': ('title_of_pharmacy', 'Черника', 15, 'text'),
-                'Адрес': ('address_of_pharmacy', 'Пушкина дом 16', 15, 'text'),
-                'Телефон': ('phone_of_pharmacy', '0123456789', 10, 'number')}
+        return {'Номер': ('number_of_pharmacy', '0123456789', 100, 'number', 'required'),
+                'Название': ('title_of_pharmacy', 'Черника', 15, 'text', 'required'),
+                'Адрес': ('address_of_pharmacy', 'Пушкина дом 16', 15, 'text', 'required'),
+                'Телефон': ('phone_of_pharmacy', '0123456789', 10, 'number', 'required')}
 
 
 ################################################################
@@ -278,9 +278,9 @@ class Employee(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Имя': ('first_name', 'Василий', 20, 'text'),
-                'Фамилия': ('second_name', 'Пупкин', 20, 'text'),
-                'Отчество': ('third_name', 'Васильевич', 20, 'text')}
+        return {'Имя': ('first_name', 'Василий', 20, 'text', 'required'),
+                'Фамилия': ('second_name', 'Пупкин', 20, 'text', 'required'),
+                'Отчество': ('third_name', 'Васильевич', 20, 'text', 'required')}
 
 
 class Lot(models.Model):
@@ -298,7 +298,7 @@ class Lot(models.Model):
     price_manufacturer = models.IntegerField()
     price_pharmacy = models.IntegerField()
     id_of_employee = models.ForeignKey(Employee, models.DO_NOTHING)
-    defect = models.BooleanField()
+    defect = models.BooleanField(default=False)
     reason = models.TextField(default=None)
 
     @staticmethod
@@ -319,12 +319,12 @@ class Lot(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Дата доставки': ('datefact', '23.03.2012', '15', 'date'),
-                'Кол-во упаковок': ('count', '1234567890', 10, 'number'),
-                'Номер': ('number_of_lot', '4321', 4, 'number'),
-                'Дата выпуска': ('datestart', '20.03.2012', 15, 'date'),
-                'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date'),
-                'Цена(Фирма)': ('price_manufacturer', '1234', 4, 'number'),
-                'Цена(Аптека)': ('price_pharmacy', '9876', 4, 'number'),
+        return {'Дата доставки': ('datefact', '23.03.2012', 15, 'date', 'required'),
+                'Кол-во упаковок': ('count', '1234567890', 10, 'number', 'required'),
+                'Номер': ('number_of_lot', '4321', 4, 'number', 'required'),
+                'Дата выпуска': ('datestart', '20.03.2012', 15, 'date', 'required'),
+                'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date', 'required'),
+                'Цена(Фирма)': ('price_manufacturer', '1234', 4, 'number', 'required'),
+                'Цена(Аптека)': ('price_pharmacy', '9876', 4, 'number', 'required'),
                 'Дефект': ('defect', '1', 1, 'number'),
-                'Причина возврата': ('reason', 'Згнившая упаковка', 100, 'text')}
+                'Причина возврата': ('reason', 'Прошел срок годности.', 100, 'text')}
