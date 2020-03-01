@@ -57,7 +57,7 @@ def get_all_medicament_from_pharmacy(name_of_pharmacy):
                               'GROUP BY title_of_medicament '
                               'ORDER BY count DESC'
                               )
-    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query)
+    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query[:5])
 
 
 def get_all_medicament_from_district(name_of_district):
@@ -72,7 +72,7 @@ def get_all_medicament_from_district(name_of_district):
                               'GROUP BY title_of_medicament '
                               'ORDER BY count DESC'
                               )
-    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query)
+    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query[:5])
 
 
 def get_all_pharmacy_from_district(name_of_district):
