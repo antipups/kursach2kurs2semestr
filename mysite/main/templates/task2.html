@@ -25,8 +25,8 @@
         <div class="alert alert-success mt-3" align="center" role="alert">
             <h3>Среднее количество аптек в районе:<br>
                 <ol>
-                    {% for key, value in amount_of_pharmacy.items %}
-                        <li>{{key}}: {{value}};</li>
+                    {% for pharmacy_plus_count in amount_of_pharmacy %}
+                        <li>{{pharmacy_plus_count}};</li>
                     {% endfor %}
                 </ol>
             </h3>

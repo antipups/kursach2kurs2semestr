@@ -76,15 +76,12 @@ def get_all_medicament_from_district(name_of_district):
 
 
 def get_all_pharmacy_from_district(name_of_district):
-    dict_of_amount_type = {}
-    for row in execute('SELECT title_of_type FROM main_district '     # по итогу выводим список с названиеями всех лекарств доставленных в аптеку 
-                       'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id AND '
-                       f'main_district.id = (SELECT id FROM main_district WHERE title_of_district = "{name_of_district}") '    # получаю необходимую аптеку
-                       'INNER JOIN main_type ON main_type.id = main_pharmacy.id_of_type_id'
-                       ):
-        if not dict_of_amount_type.get(row.get('title_of_type')):
-            dict_of_amount_type.update({row.get('title_of_type'): 1})
-        else:
-            dict_of_amount_type[row.get('title_of_type')] += 1
-    return dict_of_amount_type
+    result_of_query = execute('SELECT title_of_type, COUNT(title_of_type) as count FROM main_district '     # по итогу выводим список с названиеями всех лекарств доставленных в аптеку 
+                              'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id AND '
+                              f'main_district.id = (SELECT id FROM main_district WHERE title_of_district = "{name_of_district}") '    # получаю необходимую аптеку
+                              'INNER JOIN main_type ON main_type.id = main_pharmacy.id_of_type_id '
+                              'GROUP BY title_of_type '
+                              'ORDER BY count DESC'
+                              )
+    return tuple(row.get('title_of_type') + ': ' + str(row.get('count')) for row in result_of_query)
 
