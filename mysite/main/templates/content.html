@@ -9,7 +9,7 @@
 
                 {% for i in Buttons.0 %}
 
-                    <div class="mx-auto dropright m-4">     <!-- Вывод кнопок -->
+                    <div class="mx-auto dropright m-3">     <!-- Вывод кнопок -->
                         <button class="btn btn-info dropdown-toggle w-75" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{i}}
                         </button>
@@ -34,7 +34,7 @@
                 <h3>Задания</h3>
                 {% for i in Buttons_for_task %}
                     <form action="/main/mode/" method="post">
-                        <button class="mx-auto btn btn-info w-75 mb-4" id="mode" name="mode" type="submit" value="{{i}}"> {{i}} </button>
+                        <button class="mx-auto btn btn-info w-75 mb-3" id="mode" name="mode" type="submit" value="{{i}}"> {{i}} </button>
                     </form>
 
                 {% endfor%}

@@ -1,15 +1,10 @@
 import pprint
-import random
-import re
-import datetime
-import requests
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
-from . import checker
+from django.template import Template, Context
+from . import graphics
 from .models import *
-from random import choice   # для спама
-from string import ascii_uppercase    # для спама
 import util
 
 
@@ -76,7 +71,10 @@ def task1_cont(request):
 
     if result:
         dict_of_data.update({'win': True,
-                             'medicaments': result})
+                             'medicaments': result,
+                             'graphic1d': graphics.first_graphic(),
+                             'graphic2d': graphics.second_graphic(),
+                             'graphic3d': graphics.third_graphic()})
     else:
         dict_of_data.update({'win': False})
     return render(request, 'task1.html', dict_of_data)
@@ -361,8 +359,3 @@ def mode(request, dict_of_tables=dict_of_tables):
         else:
             dict_of_data.update({'win': True})
             return render(request, html, dict_of_data)
-
-
-def out_task1(request, dict_of_tables=dict_of_tables):
-    
-    return render(request, 'task1.html', dict_of_data)

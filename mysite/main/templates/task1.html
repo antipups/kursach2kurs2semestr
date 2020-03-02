@@ -30,6 +30,11 @@
                     {% endfor %}
                 </ol>
             </h3>
+            <div class="pagin">
+                {{ graphic1d|safe }}
+                {{ graphic2d|safe }}
+                {{ graphic3d|safe }}
+            </div>
         </div>
     {% elif win == False %}
         <div class="alert alert-danger mt-3" align="center" role="alert">
