@@ -7,6 +7,7 @@ from . import graphics
 from .models import *
 import util
 import checker
+from django.core.paginator import Paginator
 
 
 tuple_with_tables = (('Лекарства',  # кортеж со всеми таблицами
@@ -131,117 +132,125 @@ def task3_cont(request):
 
 @csrf_exempt
 def hw(request, dict_of_tables=dict_of_tables):
-    # print(request.POST)
     dict_of_data['win'], dict_of_data['addon'], dict_of_data['pagination'] = '', False, False
-    if request.method == 'POST':    # если юзер нажал на кнопку
-        string = request.POST.get('mode')
-        if string.find('Задание №1') > -1:
-            return task1(request)
-        elif string.find('Задание №2') > -1:
-            return task2(request)
-        elif string.find('Задание №3') > -1:
-            return task3(request)
-        table = dict_of_tables.get(string[string.rfind(':') + 2:])
-        dict_of_data.update({'img': 'image/' + string[string.find(':') + 2:] + '.jpg'})
-        name_of_table_on_engl = str(table)
-        if string.find('смотр') > -1:   # для кнопки посмотреть
-            if dict_of_data.get('pages_on_' + string[string.rfind(' ') + 1:]) is None:   # добавляем некий флажок для страниц
-                for key in dict_of_data.keys():     # находим старые страницы и удаляем их
-                    if key.find('pages_on') > -1:
-                        del dict_of_data[key]
-                        break
-                all_rows = tuple(map(lambda row: row.getter, table.objects.all()))
-                if len(all_rows) > 10:
-                    dict_of_data.update({'pages_on_' + string[string.rfind(' ') + 1:]: 1,
-                                         'pagination': True,
-                                         'all_rows': all_rows})
-                    dict_of_data.update({'Table': all_rows})
-                else:
-                    dict_of_data.update({'Table': all_rows})
+    string = request.POST.get('mode') if request.POST.get('mode') else 'Просмотреть : ' + request.POST.get('cursor')[2:-6]
+    #####################################
+    # если задания, то переходим в них
+    if string.find('Задание №1') > -1:
+        return task1(request)
+    elif string.find('Задание №2') > -1:
+        return task2(request)
+    elif string.find('Задание №3') > -1:
+        return task3(request)
+    #####################################
 
-            dict_of_data.update({
-                'name_of_table': string[string.find(':'):],
-                'name_of_rows': table.readable_rus(),
-            })
-            pprint.pprint(dict_of_data)
-            return render(request, 'read_table.html', dict_of_data)
+    table = dict_of_tables.get(string[string.rfind(':') + 2:])  # получение таблицы из БД по названию (спец словарик который иниц. выше)
+    dict_of_data.update({'img': 'image/' + string[string.find(':') + 2:] + '.jpg'})     # картинка колторая выводится бекграундом
+    name_of_table_on_engl = str(table)  # получаем имя таблицы (строку с именем)
 
-        engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
-        rus_rows = table.readable_rus()[1:]
-        dict_of_data.update({'data_for_find': table.readable_rus()})
-
-        ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
-        engl_ids = tuple(ids)
-        # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
-
-        dict_of_tables = {      # кортеж для получения значений со всех таблиц
-            'Country': Country.objects.values_list(),
-            'Shape': Shape.objects.values_list(),
-            'Medicament': Medicament.objects.values_list(),
-            'Pharma_group': Pharma_group.objects.values_list(),
-            'Manufacturer': Manufacturer.objects.values_list(),
-            'District': District.objects.values_list(),
-            'Pharmacy': Pharmacy.objects.values_list(),
-            'Lot': Lot.objects.values_list(),
-            'Employee': Employee.objects.values_list(),
-            'Name_of_medicament': Name_of_medicament.objects.values_list(),
-            'Type': Type.objects.values_list(),
-        }
-        tables = {}     # словарь для вывода на html выдвигающихся полей
-        if ids:
-            for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
-                if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_name_of_medicament', 'id_of_type'):
-                    tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})  # можно улудшить + названием, но это лень
-                elif ids[i[0]] == 'id_of_pharmacy':
-                    tables.update({ids[i[0]]: tuple(
-                        str(j[0]) + ' | ' + j[2] for j in i[1])})  # можно улудшить + названием, но это лень
-                elif ids[i[0]] == 'id_of_lot':
-                    tables.update({ids[i[0]]: tuple(
-                        str(j[0]) + ' | ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
-                elif ids[i[0]] == 'id_of_employee':
-                    tables.update({ids[i[0]]: tuple(
-                        str(j[0]) + ' | ' + j[3] + ' ' + j[2] + ' ' + j[4] for j in i[1])})  # можно улудшить + названием, но это лень
-                elif ids[i[0]] == 'id_of_medicament':
-                    tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + Name_of_medicament.objects.get(id=j[1]).title_of_medicament for j in i[1])})
-
-        rows, ids, code = [], [], []
-
-        for index, value in enumerate(engl_rows):
-            if value.find('id_of_') > -1:
-                ids.append(rus_rows[index])
-            elif value.find('id_of_') == -1 and value.find('code') == -1:
-                rows.append(rus_rows[index])
-            else:
-                code.append(rus_rows[index])
-
-        dict_ids = {}       # создаем словарь с русским ключем и английский значением, чтоб сортировать их на айди и
-        for id_ in range(len(ids)):
-            dict_ids.update({ids[id_]:engl_ids[id_]})
-
-        dict_rows = table.get_attr()    # задаем атрибуты инпутам, что вводить, в каком колве и прочее
-
-        dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
-            'name_of_table': string[string.find(':') + 2:],
-            'name_of_rows': dict_rows,
-            'code': code,
-            'ids': dict_ids,
-            'tables': tables,
-            'mode': string[:string.find(':')],
-            'model': name_of_table_on_engl[name_of_table_on_engl.rfind('.') + 1:name_of_table_on_engl.rfind("'")].lower()
+    if string.find('смотр') > -1:   # для кнопки посмотреть
+        dict_of_data.update({
+            'name_of_table': string[string.find(':'):],
+            'name_of_rows': table.readable_rus(),
         })
 
-        if string.find('Поиск') > -1:
-            dict_of_data.update({'template': 'find_in_table.html'})
-            return render(request, 'find_in_table.html', dict_of_data)
-        if string.find('Добавить') > -1:
-            dict_of_data.update({'template': 'add_in_table.html'})
-            return render(request, 'add_in_table.html', dict_of_data)
-        elif string.find('Удалить') > -1:
-            dict_of_data.update({'template': 'remove_from_table.html'})
-            return render(request, 'remove_from_table.html', dict_of_data)
-        elif string.find('Изменить') > -1:
-            dict_of_data.update({'template': 'update_table.html'})
-            return render(request, 'update_table.html', dict_of_data)
+        if table.objects.filter(id=11):     # если данных слишком много
+            if not dict_of_data.get('name_of_table_for_pagin') or dict_of_data.get('name_of_table_for_pagin') != string[string.find(':') + 2:]:
+                dict_of_data.update({'pg': Paginator(table.objects.all(), 10),
+                                     'page': 1,
+                                     'pagination': True,
+                                     'name_of_table_for_pagin': string[string.find(':') + 2:]})
+            elif dict_of_data.get('name_of_table_for_pagin') and dict_of_data.get('name_of_table_for_pagin') == string[string.find(':') + 2:]:
+                new_page = dict_of_data.get('page') + 1 if request.POST.get('cursor').find('next') > -1 else dict_of_data.get('page') - 1
+                dict_of_data.update({'page': new_page,
+                                     'pagination': True})
+            else:   # если смотрим другую таблицу
+                del dict_of_data['pg'], dict_of_data['name_of_table_for_pagin']
+
+            dict_of_data.update({'Table': tuple(map(lambda row: row.getter, dict_of_data.get('pg').get_page(dict_of_data.get('page')).object_list))})
+        else:   # если таблица мала
+            dict_of_data.update({'Table': tuple(map(lambda row: row.getter, table.objects.all()))})
+
+        return render(request, 'read_table.html', dict_of_data)
+    else:  # если прекратили просмотр таблиц
+        del dict_of_data['pg'], dict_of_data['name_of_table_for_pagin']
+
+    engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
+    rus_rows = table.readable_rus()[1:]
+    dict_of_data.update({'data_for_find': table.readable_rus()})
+
+    ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
+    engl_ids = tuple(ids)
+    # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
+
+    dict_of_tables = {      # кортеж для получения значений со всех таблиц
+        'Country': Country.objects.values_list(),
+        'Shape': Shape.objects.values_list(),
+        'Medicament': Medicament.objects.values_list(),
+        'Pharma_group': Pharma_group.objects.values_list(),
+        'Manufacturer': Manufacturer.objects.values_list(),
+        'District': District.objects.values_list(),
+        'Pharmacy': Pharmacy.objects.values_list(),
+        'Lot': Lot.objects.values_list(),
+        'Employee': Employee.objects.values_list(),
+        'Name_of_medicament': Name_of_medicament.objects.values_list(),
+        'Type': Type.objects.values_list(),
+    }
+    tables = {}     # словарь для вывода на html выдвигающихся полей
+    if ids:
+        for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
+            if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_name_of_medicament', 'id_of_type'):
+                tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_pharmacy':
+                tables.update({ids[i[0]]: tuple(
+                    str(j[0]) + ' | ' + j[2] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_lot':
+                tables.update({ids[i[0]]: tuple(
+                    str(j[0]) + ' | ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_employee':
+                tables.update({ids[i[0]]: tuple(
+                    str(j[0]) + ' | ' + j[3] + ' ' + j[2] + ' ' + j[4] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_medicament':
+                tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + Name_of_medicament.objects.get(id=j[1]).title_of_medicament for j in i[1])})
+
+    rows, ids, code = [], [], []
+
+    for index, value in enumerate(engl_rows):
+        if value.find('id_of_') > -1:
+            ids.append(rus_rows[index])
+        elif value.find('id_of_') == -1 and value.find('code') == -1:
+            rows.append(rus_rows[index])
+        else:
+            code.append(rus_rows[index])
+
+    dict_ids = {}       # создаем словарь с русским ключем и английский значением, чтоб сортировать их на айди и
+    for id_ in range(len(ids)):
+        dict_ids.update({ids[id_]:engl_ids[id_]})
+
+    dict_rows = table.get_attr()    # задаем атрибуты инпутам, что вводить, в каком колве и прочее
+
+    dict_of_data.update({   # в инфу о гет запросе суем назву таблицы, её ряды, внешние id, ключи с внешних таблиц, и мод, в котором пашем, добавить или удалить
+        'name_of_table': string[string.find(':') + 2:],
+        'name_of_rows': dict_rows,
+        'code': code,
+        'ids': dict_ids,
+        'tables': tables,
+        'mode': string[:string.find(':')],
+        'model': name_of_table_on_engl[name_of_table_on_engl.rfind('.') + 1:name_of_table_on_engl.rfind("'")].lower()
+    })
+
+    if string.find('Поиск') > -1:
+        dict_of_data.update({'template': 'find_in_table.html'})
+        return render(request, 'find_in_table.html', dict_of_data)
+    if string.find('Добавить') > -1:
+        dict_of_data.update({'template': 'add_in_table.html'})
+        return render(request, 'add_in_table.html', dict_of_data)
+    elif string.find('Удалить') > -1:
+        dict_of_data.update({'template': 'remove_from_table.html'})
+        return render(request, 'remove_from_table.html', dict_of_data)
+    elif string.find('Изменить') > -1:
+        dict_of_data.update({'template': 'update_table.html'})
+        return render(request, 'update_table.html', dict_of_data)
 
 
 @csrf_exempt
