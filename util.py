@@ -55,9 +55,10 @@ def get_all_medicament_from_pharmacy(name_of_pharmacy):
                               'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id '   # получаю лекарства из всех партий
                               'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' # получаем все названия лекарств + их кол-во
                               'GROUP BY title_of_medicament '
-                              'ORDER BY count DESC'
+                              'ORDER BY count DESC '
+                              'LIMIT 5'
                               )
-    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query[:5])
+    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query)
 
 
 def get_all_medicament_from_district(name_of_district):
@@ -91,6 +92,5 @@ def get_all_comebacks_from_manufacturer(name_of_manufacturer):
                               'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id AND '
                               f'main_manufacturer.id = (SELECT id FROM main_manufacturer WHERE title_of_manufacturer = "{name_of_manufacturer}") '    # получаю необходимую аптеку
                               'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id WHERE defect="1" '
-                              # 'GROUP BY main_lot.defect'
                               )
     return tuple('Сумма: ' + str(row.get('SUM(main_lot.price_manufacturer)')) + ', Количество возвратов: ' + str(row.get('COUNT(main_lot.defect)')) + '.' for row in result_of_query)

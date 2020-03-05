@@ -6,6 +6,7 @@ from django.template import Template, Context
 from . import graphics
 from .models import *
 import util
+import checker
 
 
 tuple_with_tables = (('Лекарства',  # кортеж со всеми таблицами
@@ -154,8 +155,7 @@ def hw(request, dict_of_tables=dict_of_tables):
                     dict_of_data.update({'pages_on_' + string[string.rfind(' ') + 1:]: 1,
                                          'pagination': True,
                                          'all_rows': all_rows})
-                    dict_of_data.update({'Table': all_rows[dict_of_data.get('pages_on_' + string[string.rfind(' ') + 1:]) * 10 - 10:
-                                                           dict_of_data.get('pages_on_' + string[string.rfind(' ') + 1:]) * 10]})
+                    dict_of_data.update({'Table': all_rows})
                 else:
                     dict_of_data.update({'Table': all_rows})
 
