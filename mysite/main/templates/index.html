@@ -62,7 +62,11 @@
 
             {% endblock %}
         {% else %}
-            <h1><span class="badge badge-danger w-100">Вы не авторизованы.<br>Для авторизации нажми - войти.</span></h1>
+            {% if error %}
+                <h1><span class="badge badge-danger w-100">Такой пользователь не зарегистрирован.<br>Проверьте данные или обратитесь к СИСТЕМНОМУ АДМИНИСТРАТОРУ.</span></h1>
+            {% else %}
+                <h1><span class="badge badge-danger w-100">Вы не авторизованы.<br>Для авторизации нажми - войти.</span></h1>
+            {% endif %}
         {% endif %}
 
     <!-- Optional JavaScript -->

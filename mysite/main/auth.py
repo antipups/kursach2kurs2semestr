@@ -12,4 +12,5 @@ def login_menu(request):
                                    'username': user.get_full_name()})
         return render(request, 'content.html', views.dict_of_data)
     else:
+        views.dict_of_data.update({'error': True})
         return render(request, 'content.html', views.dict_of_data)
