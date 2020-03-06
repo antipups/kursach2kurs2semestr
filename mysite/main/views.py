@@ -3,6 +3,8 @@ from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.template import Template, Context
+from django.views.generic import TemplateView
+from django.contrib.auth import authenticate
 from . import graphics
 from .models import *
 import util
@@ -32,6 +34,7 @@ dict_of_data = {"Buttons":
                 "mode": '',
                 'addon': False,
                 'pagination': False,
+                'user': False,
                 }   # начальный словарь, кторый мы и будем таскать
 
 
@@ -368,3 +371,9 @@ def mode(request, dict_of_tables=dict_of_tables):
         else:
             dict_of_data.update({'win': True})
             return render(request, html, dict_of_data)
+
+
+
+# ========================================= АВТОРИЗАЦИЯ ================================================
+
+
