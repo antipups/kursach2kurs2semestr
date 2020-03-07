@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import path
 from django.views.generic import TemplateView
 from .models import *
-from . import views, test, auth
+from . import views, querys, auth
 
 urlpatterns = [
     path('',
@@ -15,4 +15,5 @@ urlpatterns = [
     path('auth/',
          lambda request: render(request, 'auth.html', {}), name='8'),
     path('login/', auth.login_menu, name='9'),
+    path('запросы/', querys.start, name='9'),
 ]

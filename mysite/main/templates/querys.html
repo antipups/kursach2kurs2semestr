@@ -1,0 +1,15 @@
+{% extends "content.html" %}
+
+{% block table %}
+    <div class="badge badge-secondary p-2 w-100"><h3>Все заданные по лабораторным вариантам запросы</h3>
+
+        <div class="alert alert-success">
+            <h6>Вывод количества аптек разных типов в районе Полишкино</h6>
+            {% for row in get_amount_pharmacy_type_in_district.0 %}
+                {{row}}<br>
+            {% endfor %}
+            <h6>Сам запрос: {{get_amount_pharmacy_type_in_district.2}}</h6>
+        </div>
+
+    </div>
+{% endblock %}

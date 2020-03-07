@@ -31,6 +31,7 @@ dict_of_data = {"Buttons":
                         tuple_with_tables,
                     ),
                 "Buttons_for_task": ('Задание №1', 'Задание №2', 'Задание №3'),
+                "Buttons_for_query": 'Запросы',
                 "mode": '',
                 'addon': False,
                 'pagination': False,
