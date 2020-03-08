@@ -27,14 +27,15 @@ def third_graphic():
                              full_html=False, )
 
 
-def second_graphic():
-    fig1 = go.Scatter(x=tuple(x for x in range(10000)),
-                      y=tuple(x for x in range(10000)),
-                      mode='markers')
+def second_graphic(**kwargs):
+    fig1 = go.Scatter(x=kwargs.get('x'),
+                      y=kwargs.get('y'),
+                      # line=
+                      mode='lines')     # как именно представить
 
     # Создаём layout
-    mylayout = go.Layout(xaxis=dict(title="curb-weight"),
-                         yaxis=dict(title="price"),
+    mylayout = go.Layout(xaxis=dict(title=kwargs.get('name_x')),
+                         yaxis=dict(title=kwargs.get('name_y')),
                          height=400,
                          width=350,
                          title='2Д График',

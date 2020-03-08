@@ -2,36 +2,72 @@
 
 {% block table %}
     <div class="badge badge-secondary p-2 w-100"><h3>Все заданные по лабораторным вариантам запросы</h3></div>
-        <div class="badge badge-secondary mt-2 w-100"><h3>Вывод количества аптек разных типов в районе Полишкино<br>(внутренний запрос по внешнему ключу)</h3>
-        <div class="navbar">
-            <div class="alert alert-success h-100">
-                <h5>Результат</h5>
-                <table>
-                    <tr class="table table-hover table-bordered">
-                        {% for cell in get_amount_pharmacy_type_in_district.0.0.keys%}
-                            <td>{{cell}}</td>
-                        {% endfor %}
-                    </tr>
-                    {% for row in get_amount_pharmacy_type_in_district.0 %}
-                        <tr>
-                            {% for cell in row.items %}
-                                <td>{{cell.1}}</td>
+
+        <div class="badge badge-secondary mt-2 w-100"><h3>1. Вывод количества аптек разных типов в районе Полишкино<br>(первый внутренний запрос по внешнему ключу)</h3>
+            <div class="navbar">
+                <div class="alert alert-success h-100">
+                    <h5>Результат</h5>
+                    <table>
+                        <tr class="table table-hover table-bordered">
+                            {% for cell in get_amount_pharmacy_type_in_district.0.0.keys %}
+                                <td>{{cell}}</td>
                             {% endfor %}
                         </tr>
+                        {% for row in get_amount_pharmacy_type_in_district.0 %}
+                            <tr>
+                                {% for cell in row.items %}
+                                    <td>{{cell.1}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="alert alert-danger">
+                    <h5>Запрос</h5>
+                    {% for string in get_amount_pharmacy_type_in_district.1 %}
+                        {{string}}<br>
                     {% endfor %}
-                </table>
+                </div>
             </div>
-            <div class="alert alert-danger">
-                <h5>Запрос</h5>
-                {% for string in get_amount_pharmacy_type_in_district.2 %}
-                    {{string}}<br>
-                {% endfor %}
+            <div class="navbar">
+                <h1></h1>
+                {{get_amount_pharmacy_type_in_district.2|safe}}
+                <h1></h1>
             </div>
         </div>
-        <div class="navbar">
+
+
+    <div class="badge badge-secondary mt-2 w-100"><h3>2. Вывод длин названий аптек района Полишкино<br>(второй внутренний запрос по внешнему ключу)</h3>
+            <div class="navbar">
+                <div class="alert alert-success h-100">
+                    <h5>Результат</h5>
+                    <table>
+                        <tr class="table table-hover table-bordered">
+                            {% for cell in get_len_title_of_pharmacy_in_district.0.0.keys %}
+                                <td>{{cell}}</td>
+                            {% endfor %}
+                        </tr>
+                        {% for row in get_len_title_of_pharmacy_in_district.0 %}
+                            <tr>
+                                {% for cell in row.items %}
+                                    <td>{{cell.1}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="alert alert-danger">
+                    <h5>Запрос</h5>
+                    {% for string in get_len_title_of_pharmacy_in_district.1 %}
+                        {{string}}<br>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="navbar">
                 <h1></h1>
-                {{get_amount_pharmacy_type_in_district.3|safe}}
+                {{get_len_title_of_pharmacy_in_district.2|safe}}
                 <h1></h1>
+            </div>
         </div>
-</div>
+
 {% endblock %}

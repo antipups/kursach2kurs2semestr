@@ -110,7 +110,7 @@ def get_amount_pharmacy_type_in_district():     # получение колич�
             '   AND main_district.id = "1" ' \
             'GROUP BY main_pharmacy.id_of_type_id'
     result_of_query = execute(query)
-    return result_of_query, tuple((row.get('id_типа'), row.get('Количество_аптек_данного_типа')) for row in result_of_query), \
+    return result_of_query, \
            'SELECT main_pharmacy.id_of_type_id as id_типа, COUNT(main_pharmacy.id_of_type_id) as Количество_аптек_данного_типа ||' \
            'FROM main_district ||' \
            'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ||' \
@@ -120,14 +120,21 @@ def get_amount_pharmacy_type_in_district():     # получение колич�
                                   values=tuple(row.get('Количество_аптек_данного_типа') for row in result_of_query))
 
 
-
 def get_len_title_of_pharmacy_in_district():    # получение длин названий аптек по району с ID 1 (для двумерного графика)
     query = 'SELECT main_pharmacy.title_of_pharmacy, ROUND(LENGTH(main_pharmacy.title_of_pharmacy) / 2) as len ' \
             'FROM main_district ' \
             'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ' \
             '   AND main_district.id = "1" '
     result_of_query = execute(query)
-    return result_of_query, tuple((row.get('title_of_pharmacy'), row.get('len')) for row in result_of_query), query
+    return result_of_query, \
+            'SELECT main_pharmacy.title_of_pharmacy as Название аптеки, ROUND(LENGTH(main_pharmacy.title_of_pharmacy) / 2) as len ||' \
+            'FROM main_district ||' \
+            'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ||' \
+            '   AND main_district.id = "1" ||'.split('||'), \
+           graphics.second_graphic(x=tuple(row.get('title_of_pharmacy') for row in result_of_query),
+                                   y=tuple(row.get('len') for row in result_of_query),
+                                   name_x='Название аптеки',
+                                   name_y='Длина названия')
 
 
 def get_lot_of_after():    # получение партий после определенного числа
@@ -137,7 +144,12 @@ def get_lot_of_after():    # получение партий после опре
             '   AND main_medicament.id = "1" '  \
             '   AND datefact > "2020-02-13" '
     result_of_query = execute(query)
-    return result_of_query, query
+    return result_of_query, \
+           'SELECT main_lot.id ||' \
+           'FROM main_medicament ||' \
+           'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ||' \
+           '   AND main_medicament.id = "1" ||' \
+           '   AND datefact > "2020-02-13" ||'.split('||')
 
 
 def get_lot_of_between():    # получение партий после определенного числа
@@ -146,7 +158,11 @@ def get_lot_of_between():    # получение партий после опр
             'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id '  \
             '   AND main_lot.datefact BETWEEN "2020-02-13" AND "2020-02-17"'
     result_of_query = execute(query)
-    return result_of_query, query
+    return result_of_query, \
+           'SELECT main_lot.id ||' \
+           'FROM main_medicament ||' \
+           'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ||' \
+           '   AND main_lot.datefact BETWEEN "2020-02-13" AND "2020-02-17" ||'.split('||')
 
 
 def get_all_pharmacy():     # для 3д графика
@@ -155,7 +171,11 @@ def get_all_pharmacy():     # для 3д графика
             'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id '  \
             'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id'
     result_of_query = execute(query)
-    return result_of_query, query
+    return result_of_query, \
+           'SELECT main_lot.datefact, main_lot.count, main_name_of_medicament.title_of_medicament ||' \
+           'FROM main_lot ||' \
+           'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id ||' \
+           'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id '.split('||')
 
 
 def get_all_medicaments():
@@ -163,7 +183,10 @@ def get_all_medicaments():
             'FROM main_name_of_medicament '  \
             'INNER JOIN main_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '
     result_of_query = execute(query)
-    return result_of_query, query
+    return result_of_query, \
+           'SELECT main_name_of_medicament.title_of_medicament ||' \
+           'FROM main_name_of_medicament ||' \
+           'INNER JOIN main_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '.split('||')
 
 
 def get_all_employeers():
@@ -171,7 +194,10 @@ def get_all_employeers():
             'FROM main_pharmacy '  \
             'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id '
     result_of_query = execute(query)
-    return result_of_query, query
+    return result_of_query, \
+           'SELECT main_employee.second_name , main_employee.first_name , main_employee.third_name ||' \
+           'FROM main_pharmacy ||' \
+           'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id '.split('||')
 
 
 def get_medicament_with_left_join():
@@ -179,7 +205,10 @@ def get_medicament_with_left_join():
             'FROM main_medicament '  \
             'LEFT JOIN main_name_of_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '
     result_of_query = execute(query)
-    return result_of_query, query
+    return result_of_query, \
+           'SELECT * ||' \
+           'FROM main_medicament ||' \
+           'LEFT JOIN main_name_of_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '.split('||')
 
 
 def get_medicament_with_right_join():
@@ -187,7 +216,10 @@ def get_medicament_with_right_join():
             'FROM main_name_of_medicament '  \
             'RIGHT JOIN main_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '
     result_of_query = execute(query)
-    return result_of_query, query
+    return result_of_query, \
+           'SELECT * ||' \
+           'FROM main_name_of_medicament ||' \
+           'RIGHT JOIN main_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '.split('||')
 
 
 def sum_all_methods_for_querys():
