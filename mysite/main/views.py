@@ -1,14 +1,9 @@
-import pprint
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
-from django.template import Template, Context
-from django.views.generic import TemplateView
-from django.contrib.auth import authenticate
-from . import graphics
+import graphics
 from .models import *
 import util
-import checker
 from django.core.paginator import Paginator
 
 

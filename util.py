@@ -1,5 +1,6 @@
 import pymysql.cursors
 import config
+import graphics
 
 paramstyle = "%s"
 
@@ -109,7 +110,15 @@ def get_amount_pharmacy_type_in_district():     # получение колич�
             '   AND main_district.id = "1" ' \
             'GROUP BY main_pharmacy.id_of_type_id'
     result_of_query = execute(query)
-    return result_of_query, tuple((row.get('id_типа'), row.get('Количество_аптек_данного_типа')) for row in result_of_query), query
+    return result_of_query, tuple((row.get('id_типа'), row.get('Количество_аптек_данного_типа')) for row in result_of_query), \
+           'SELECT main_pharmacy.id_of_type_id as id_типа, COUNT(main_pharmacy.id_of_type_id) as Количество_аптек_данного_типа ||' \
+           'FROM main_district ||' \
+           'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ||' \
+           '   AND main_district.id = "1" ||' \
+           'GROUP BY main_pharmacy.id_of_type_id ||'.split('||'), \
+           graphics.first_graphic(labels=tuple(row.get('id_типа') for row in result_of_query),
+                                  values=tuple(row.get('Количество_аптек_данного_типа') for row in result_of_query))
+
 
 
 def get_len_title_of_pharmacy_in_district():    # получение длин названий аптек по району с ID 1 (для двумерного графика)

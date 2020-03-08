@@ -46,9 +46,9 @@ def second_graphic():
                              full_html=False, )
 
 
-def first_graphic():
-    fig = go.Pie(labels=['1', '2', '3', '4', '5', ],
-                 values=(10, 20, 30, 40, 50))
+def first_graphic(**kwargs):
+    fig = go.Pie(labels=kwargs.get('labels'),
+                 values=kwargs.get('values'))
     mylayout = go.Layout(
                          height=400,
                          width=350,
