@@ -138,14 +138,14 @@ def get_len_title_of_pharmacy_in_district():    # получение длин н
 
 
 def get_lot_of_after():    # получение партий после определенного числа
-    query = 'SELECT main_lot.id '   \
+    query = 'SELECT * '   \
             'FROM main_medicament '  \
             'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id '  \
             '   AND main_medicament.id = "1" '  \
             '   AND datefact > "2020-02-13" '
     result_of_query = execute(query)
     return result_of_query, \
-           'SELECT main_lot.id ||' \
+           'SELECT * ||' \
            'FROM main_medicament ||' \
            'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ||' \
            '   AND main_medicament.id = "1" ||' \
@@ -175,7 +175,10 @@ def get_all_pharmacy():     # для 3д графика
            'SELECT main_lot.datefact, main_lot.count, main_name_of_medicament.title_of_medicament ||' \
            'FROM main_lot ||' \
            'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id ||' \
-           'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id '.split('||')
+           'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id '.split('||'), \
+           graphics.third_graphic(x=tuple(row.get('datefact') for row in result_of_query),
+                                  y=tuple(row.get('count') for row in result_of_query),
+                                  z=tuple(row.get('title_of_medicament') for row in result_of_query))
 
 
 def get_all_medicaments():
@@ -223,15 +226,15 @@ def get_medicament_with_right_join():
 
 
 def sum_all_methods_for_querys():
-    return {'get_amount_pharmacy_type_in_district': get_amount_pharmacy_type_in_district(),
-            'get_len_title_of_pharmacy_in_district': get_len_title_of_pharmacy_in_district(),
-            'get_lot_of_after': get_lot_of_after(),
-            'get_lot_of_between': get_lot_of_between(),
-            'get_all_pharmacy': get_all_pharmacy(),
-            'get_all_medicaments': get_all_medicaments(),
-            'get_all_employeers': get_all_employeers(),
-            'get_medicament_with_left_join': get_medicament_with_left_join(),
-            'get_medicament_with_right_join': get_medicament_with_right_join(),
+    return {'<h3>Вывод количества аптек разных типов<br>(первый внутренний запрос по внешнему ключу)</h3>': get_amount_pharmacy_type_in_district(),
+            '<h3>Вывод длин названий все аптек по региону<br>(второй внутренний запрос по внешнему ключу)</h3>': get_len_title_of_pharmacy_in_district(),
+            '<h3>Получение всех партий после 2020-02-13<br>(первый внутренний запрос по дате)</h3>': get_lot_of_after(),
+            '<h3>Получение всех партий между 2020-02-13 и 2020-02-17<br>(второй внутренний запрос по дате)</h3>': get_lot_of_between(),
+            '<h3>Получение всех аптек<br>(первый внутренне симметричный запрос)</h3>': get_all_pharmacy(),
+            '<h3>Получение всех лекарств<br>(второй внутренне симметричный запрос)</h3>': get_all_medicaments(),
+            '<h3>Получение всех работников<br>(третий внутренне симметричный запрос)</h3>': get_all_employeers(),
+            '<h3>Получение всех лекарств путем левого соединения<br>(левое внешнее соединение)</h3>': get_medicament_with_left_join(),
+            '<h3>Получение всех лекарств путем правого соединения<br>(правое внешнее соединение)</h3>': get_medicament_with_right_join(),
             }
 
 

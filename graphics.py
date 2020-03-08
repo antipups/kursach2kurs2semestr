@@ -2,22 +2,20 @@ import plotly
 import plotly.graph_objs as go
 
 
-def third_graphic():
-    fig1 = go.Scatter3d(x=tuple(x for x in range(10000)),
-                        y=tuple(x for x in range(10000)),
-                        z=tuple(x for x in range(10000)),
+def third_graphic(**kwargs):
+    fig1 = go.Scatter3d(x=kwargs.get('x'),
+                        y=kwargs.get('y'),
+                        z=kwargs.get('z'),
                         marker=dict(opacity=0.9,
                                     reversescale=True,
                                     colorscale='Blues',
                                     size=5),
-                        line=dict(width=0.02),
-                        mode='markers')
+                        mode='lines+markers')
 
     # Создаём layout
     mylayout = go.Layout(xaxis=dict(title="curb-weight"),
                          yaxis=dict(title="price"),
                          height=400,
-                         width=350,
                          title='3Д График',
                          )
 
@@ -30,14 +28,12 @@ def third_graphic():
 def second_graphic(**kwargs):
     fig1 = go.Scatter(x=kwargs.get('x'),
                       y=kwargs.get('y'),
-                      # line=
-                      mode='lines')     # как именно представить
+                      mode='lines+markers')     # как именно представить
 
     # Создаём layout
     mylayout = go.Layout(xaxis=dict(title=kwargs.get('name_x')),
                          yaxis=dict(title=kwargs.get('name_y')),
                          height=400,
-                         width=350,
                          title='2Д График',
                          )
 
@@ -52,7 +48,6 @@ def first_graphic(**kwargs):
                  values=kwargs.get('values'))
     mylayout = go.Layout(
                          height=400,
-                         width=350,
                          title='1Д График',
                          )
     return plotly.io.to_html({"data": [fig],
