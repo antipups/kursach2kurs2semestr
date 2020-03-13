@@ -120,21 +120,29 @@ def get_amount_pharmacy_type_in_district():     # получение колич�
                                   values=tuple(row.get('Количество_аптек_данного_типа') for row in result_of_query))
 
 
-def get_len_title_of_pharmacy_in_district():    # получение длин названий аптек по району с ID 1 (для двумерного графика)
-    query = 'SELECT main_pharmacy.title_of_pharmacy, ROUND(LENGTH(main_pharmacy.title_of_pharmacy) / 2) as len ' \
-            'FROM main_district ' \
-            'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ' \
-            '   AND main_district.id = "1" '
+def get_amount_of_medicaments():    # получение длин названий аптек по району с ID 1 (для двумерного графика)
+    query = 'SELECT title_of_medicament AS Название_медикамента, COUNT(title_of_medicament) AS Количество_доставок FROM ' \
+            '   (SELECT main_lot.id_of_medicament_id ' \
+            '   FROM main_lot ' \
+            '   INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
+            '   INNER JOIN main_pharmacy ON main_pharmacy.id = main_employee.id_of_pharmacy_id ' \
+            '       AND main_pharmacy.id = "4") AS medicament_in_pharm ' \
+            'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = medicament_in_pharm.id_of_medicament_id ' \
+            'GROUP BY title_of_medicament'
     result_of_query = execute(query)
     return result_of_query, \
-            'SELECT main_pharmacy.title_of_pharmacy as Название аптеки, ROUND(LENGTH(main_pharmacy.title_of_pharmacy) / 2) as len ||' \
-            'FROM main_district ||' \
-            'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ||' \
-            '   AND main_district.id = "1" ||'.split('||'), \
-           graphics.second_graphic(x=tuple(row.get('title_of_pharmacy') for row in result_of_query),
-                                   y=tuple(row.get('len') for row in result_of_query),
-                                   name_x='Название аптеки',
-                                   name_y='Длина названия')
+           'SELECT title_of_medicament AS Название_медикамента, COUNT(title_of_medicament) AS Количество_доставок FROM ||' \
+           '   (SELECT main_lot.id_of_medicament_id ||' \
+           '   FROM main_lot ||' \
+           '   INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ||' \
+           '   INNER JOIN main_pharmacy ON main_pharmacy.id = main_employee.id_of_pharmacy_id ||' \
+           '       AND main_pharmacy.id = "4") AS medicament_in_pharm ||' \
+           'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = medicament_in_pharm.id_of_medicament_id ||' \
+           'GROUP BY title_of_medicament'.split('||'), \
+           graphics.second_graphic(x=tuple(row.get('Название_медикамента') for row in result_of_query),
+                                   y=tuple(row.get('Количество_доставок') for row in result_of_query),
+                                   name_x='Название медикамента',
+                                   name_y='Количество доставок')
 
 
 def get_lot_of_after():    # получение партий после определенного числа
@@ -240,7 +248,7 @@ def sum_all_methods_for_querys():
 
 if __name__ == '__main__':
     # print(get_amount_pharmacy_type_in_district())
-    # print(get_len_title_of_pharmacy_in_district())
+    print(get_len_title_of_pharmacy_in_district())
     # print(get_lot_of_after())
     # print(get_lot_of_between())
     # print(get_all_pharmacy())

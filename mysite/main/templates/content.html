@@ -37,16 +37,16 @@
                         <button class="mx-auto btn btn-info w-75 mb-3" id="mode" name="mode" type="submit" value="{{i}}"> {{i}} </button>
                     </form>
                 {% endfor%}
-                <form action="/запросы/" method="post">
+                <form action="/pre_querys/" method="post">
                     <button class="mx-auto btn btn-info w-75 mb-3" id="mode" name="mode" type="submit" value="querys">Запросы</button>
                 </form>
             </div>
     </div>
 
     <div class="col-sm-10 pl-5 pr-4">
-            {% block table %}
+    {% block table %}
 
-            {% endblock %}
+    {% endblock %}
     </div>
   </div>
 </div>

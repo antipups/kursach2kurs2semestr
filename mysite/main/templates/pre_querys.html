@@ -1,0 +1,26 @@
+{% extends "content.html"%}
+
+{% block table %}
+
+    <div class="badge badge-secondary p-2 w-100"><h3>Введите желаемые данные</h3>
+
+        <form action="/запросы/" method="post">
+            <div class="form-group">
+                <label for="type_of_pharmacy">Типы больниц:</label>
+                <select class="form-control" id="type_of_pharmacy" name="first_querys">
+                    {% for row in first_querys %}
+                        <option>{{row}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+
+
+
+            <button class="btn btn-info" id="type_of_pharmacy" type="submit">Продолжить</button>
+        </form>
+
+    </div>
+
+{% endblock %}

@@ -1,2 +1,2 @@
-$('#exampleModal').modal('show')
+alert(1)
 
