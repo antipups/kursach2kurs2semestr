@@ -7,5 +7,6 @@ import util
 @csrf_exempt
 def start(request):
     print(request.POST)
-    views.dict_of_data.update({'dict_of_all': util.sum_all_methods_for_querys(request.POST)})
+    dict_of_data = dict(request.POST)
+    views.dict_of_data.update({'dict_of_all': dict(util.sum_all_methods_for_querys(dict_of_data))})
     return render(request, "querys.html", views.dict_of_data)

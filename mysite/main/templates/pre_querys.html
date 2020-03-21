@@ -23,12 +23,18 @@
                 </select>
             </div>
 
-            <div class="mb-3">
+            <div class="form-row ml-5">
+                <label for="pre_querys" class="ml-5">Аптеки:</label>
+                <select class="form-control w-25 ml-3 mr-3" id="pre_querys" name="third_querys">
+                    {% for row in second_querys %}
+                        <option>{{row}}</option>
+                    {% endfor %}
+                </select>
                 <label for="pre_querys">Введите дату:</label>
-                <input class="form-control" id="pre_querys" name="third_querys" type="date" tabindex="1" required>
+                <input class="form-control ml-3 w-25" id="pre_querys" name="third_querys" type="date" tabindex="1" required>
             </div>
 
-            <div class="form-row ml-5">
+            <div class="form-row mt-3 ml-5">
                 <label class="ml-5 mr-2 mt-3" for="pre_querys">Введите Первую дату:</label>
                 <input class="form-control mb-3 w-25" id="pre_querys" name="fourth_querys" type="date" tabindex="1" required>
                 <label class="ml-2 mr-2 mt-3" for="pre_querys">Введите Вторую дату:</label>
