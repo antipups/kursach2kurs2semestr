@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 import graphics
 from .models import *
 import util
+import checker
 from django.core.paginator import Paginator
 
 

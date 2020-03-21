@@ -6,8 +6,8 @@ from . import views
 
 @csrf_exempt
 def zapolnenie(request):
-    print()
     views.dict_of_data.update({
         'first_querys': tuple(str(row.getter()[0]) + ' | ' + row.getter()[1] for row in Type.objects.all()),
+        'second_querys': tuple(str(row.getter()[0]) + ' | ' + row.getter()[2] for row in Pharmacy.objects.all()),
     })
     return render(request, 'pre_querys.html', views.dict_of_data)

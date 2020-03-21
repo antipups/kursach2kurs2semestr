@@ -1,4 +1,5 @@
 from django.db import models
+# from PIL import Image
 
 
 ################################################################
@@ -144,7 +145,7 @@ class Medicament(models.Model):
     id_of_shape = models.ForeignKey(Shape, models.PROTECT)
     id_of_pharma_group = models.ForeignKey(Pharma_group, models.PROTECT)
     comments = models.TextField()
-    bar_code = models.ImageField()
+    bar_code = models.TextField()
     id_of_manufacturer = models.ForeignKey(Manufacturer, models.CASCADE)
 
     @staticmethod

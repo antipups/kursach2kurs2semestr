@@ -103,24 +103,24 @@ def get_all_comebacks_from_manufacturer(name_of_manufacturer):
 #   ========================================    ЗАПРОСЫ     ================================================
 
 
-def get_amount_pharmacy_type_in_district():     # получение количества типов аптек по району с ID 1 (для одномерного графика)
+def get_amount_pharmacy_type_in_district(main_district_id):     # получение количества типов аптек по району с ID 1 (для одномерного графика)
     query = 'SELECT main_pharmacy.id_of_type_id as id_типа, COUNT(main_pharmacy.id_of_type_id) as Количество_аптек_данного_типа ' \
             'FROM main_district ' \
             'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ' \
-            '   AND main_district.id = "1" ' \
+            f'   AND main_district.id = "{main_district_id}" ' \
             'GROUP BY main_pharmacy.id_of_type_id'
     result_of_query = execute(query)
     return result_of_query, \
            'SELECT main_pharmacy.id_of_type_id as id_типа, COUNT(main_pharmacy.id_of_type_id) as Количество_аптек_данного_типа ||' \
            'FROM main_district ||' \
            'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ||' \
-           '   AND main_district.id = "1" ||' \
+           f'   AND main_district.id = "{main_district_id}" ||' \
            'GROUP BY main_pharmacy.id_of_type_id ||'.split('||'), \
            graphics.first_graphic(labels=tuple(row.get('id_типа') for row in result_of_query),
                                   values=tuple(row.get('Количество_аптек_данного_типа') for row in result_of_query))
 
 
-def get_amount_of_medicaments():    # получение длин названий аптек по району с ID 1 (для двумерного графика)
+def get_amount_of_medicaments():    # получение медикаментов из аптеки
     query = 'SELECT title_of_medicament AS Название_медикамента, COUNT(title_of_medicament) AS Количество_доставок FROM ' \
             '   (SELECT main_lot.id_of_medicament_id ' \
             '   FROM main_lot ' \
@@ -160,7 +160,7 @@ def get_lot_of_after():    # получение партий после опре
            '   AND datefact > "2020-02-13" ||'.split('||')
 
 
-def get_lot_of_between():    # получение партий после определенного числа
+def get_lot_of_between():    # получение партий между отпределенными датами
     query = 'SELECT main_lot.id '  \
             'FROM main_medicament '  \
             'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id '  \
@@ -173,53 +173,61 @@ def get_lot_of_between():    # получение партий после опр
            '   AND main_lot.datefact BETWEEN "2020-02-13" AND "2020-02-17" ||'.split('||')
 
 
-def get_all_pharmacy():     # для 3д графика
-    query = 'SELECT main_lot.datefact, main_lot.count, main_name_of_medicament.title_of_medicament '  \
-            'FROM main_lot '  \
-            'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id '  \
-            'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id'
+def get_defect_from_manufact():     # смотрим все дефекты для определенной фирмы
+    query = 'SELECT name.title_of_medicament as Название_лекарства, main_lot.reason as Причина_возврата, main_lot.datestart as Дата_создания '  \
+            'FROM main_manufacturer '  \
+            'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id ' \
+            '   AND main_manufacturer.id = "1" '  \
+            'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ' \
+            '   AND main_lot.defect = "1"' \
+            'LEFT JOIN main_name_of_medicament as name ON name.id = main_medicament.id_of_name_of_medicament_id '
     result_of_query = execute(query)
     return result_of_query, \
-           'SELECT main_lot.datefact, main_lot.count, main_name_of_medicament.title_of_medicament ||' \
-           'FROM main_lot ||' \
-           'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id ||' \
-           'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id '.split('||'), \
-           graphics.third_graphic(x=tuple(row.get('datefact') for row in result_of_query),
-                                  y=tuple(row.get('count') for row in result_of_query),
-                                  z=tuple(row.get('title_of_medicament') for row in result_of_query))
+           'SELECT name.title_of_medicament, main_lot.reason, main_lot.datestart ||'  \
+           'FROM main_manufacturer ||'  \
+           'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id ||' \
+           '   AND main_manufacturer.id = "1" ||'  \
+           'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ||' \
+           '   AND main_lot.defect = "1" ||' \
+           'LEFT JOIN main_name_of_medicament as name ON name.id = name.id_of_name_of_medicament_id '.split('||'), \
+           graphics.third_graphic(x=tuple(row.get('Название_лекарства') for row in result_of_query),
+                                  y=tuple(row.get('Причина_возврата') for row in result_of_query),
+                                  z=tuple(row.get('Дата_создания') for row in result_of_query), )
 
 
-def get_all_medicaments():
-    query = 'SELECT main_name_of_medicament.title_of_medicament '  \
-            'FROM main_name_of_medicament '  \
-            'INNER JOIN main_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '
+def get_all_about_medicaments():    # получение определенного лекарства в определенном районе
+    query = 'SELECT main_lot.count AS Количество_на_складе, ' \
+            '       main_lot.datefinish AS Срок_годности, ' \
+            '       main_lot.price_pharmacy AS Цена, ' \
+            '       main_pharmacy.title_of_pharmacy AS Название_аптеки '  \
+            'FROM main_district ' \
+            'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id ' \
+            '   AND main_district.id = "1" '  \
+            'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_pharmacy.id ' \
+            '   AND main_lot.defect = "0" AND main_lot.id_of_medicament_id = "1" '
     result_of_query = execute(query)
     return result_of_query, \
-           'SELECT main_name_of_medicament.title_of_medicament ||' \
-           'FROM main_name_of_medicament ||' \
-           'INNER JOIN main_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '.split('||')
+           'SELECT main_lot.count AS Количество_на_складе, ||' \
+           '    main_lot.datefinish AS Срок_годности, ||' \
+           '    main_lot.price_pharmacy AS Цена, ||' \
+           '    main_pharmacy.title_of_pharmacy AS Название_аптеки  ||'  \
+           'FROM main_district ||' \
+           'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id ||' \
+           '   AND main_district.id = "1" ||'  \
+           'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_pharmacy.id ||' \
+           '   AND main_lot.defect = "0" AND main_lot.id_of_medicament_id = "1" '.split('||')
 
 
-def get_all_employeers():
-    query = 'SELECT main_employee.second_name , main_employee.first_name , main_employee.third_name '  \
+def get_all_employeers():   # получение всех работников определенной аптеки
+    query = 'SELECT main_employee.second_name AS Фамилия, main_employee.first_name AS Имя, main_employee.third_name AS Отчество '  \
             'FROM main_pharmacy '  \
-            'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id '
+            'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id ' \
+            '   AND main_pharmacy.id = "4"'
     result_of_query = execute(query)
     return result_of_query, \
            'SELECT main_employee.second_name , main_employee.first_name , main_employee.third_name ||' \
            'FROM main_pharmacy ||' \
            'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id '.split('||')
-
-
-def get_medicament_with_left_join():
-    query = 'SELECT * '  \
-            'FROM main_medicament '  \
-            'LEFT JOIN main_name_of_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '
-    result_of_query = execute(query)
-    return result_of_query, \
-           'SELECT * ||' \
-           'FROM main_medicament ||' \
-           'LEFT JOIN main_name_of_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '.split('||')
 
 
 def get_medicament_with_right_join():
@@ -233,26 +241,26 @@ def get_medicament_with_right_join():
            'RIGHT JOIN main_medicament ON main_medicament.id_of_name_of_medicament_id = main_name_of_medicament.id '.split('||')
 
 
-def sum_all_methods_for_querys():
-    return {'<h3>Вывод количества аптек разных типов<br>(первый внутренний запрос по внешнему ключу)</h3>': get_amount_pharmacy_type_in_district(),
-            '<h3>Вывод длин названий все аптек по региону<br>(второй внутренний запрос по внешнему ключу)</h3>': get_len_title_of_pharmacy_in_district(),
+def sum_all_methods_for_querys(get_all_data):
+    return {'<h3>Вывод всех типов аптек (и количество аптек) по заданному району.<br>(первый внутренний запрос по внешнему ключу)</h3>':
+                get_amount_pharmacy_type_in_district(get_all_data.get('first_querys')[:get_all_data.get('first_querys').find('|') -1]),
+            '<h3>Вывод всех медикаментов из заданной аптеки.<br>(второй внутренний запрос по внешнему ключу)</h3>': get_amount_of_medicaments(),
             '<h3>Получение всех партий после 2020-02-13<br>(первый внутренний запрос по дате)</h3>': get_lot_of_after(),
             '<h3>Получение всех партий между 2020-02-13 и 2020-02-17<br>(второй внутренний запрос по дате)</h3>': get_lot_of_between(),
-            '<h3>Получение всех аптек<br>(первый внутренне симметричный запрос)</h3>': get_all_pharmacy(),
-            '<h3>Получение всех лекарств<br>(второй внутренне симметричный запрос)</h3>': get_all_medicaments(),
+            '<h3>Получение всех возвратов и их причин по определенной фирме<br>(первый внутренне симметричный запрос + левое соединение)</h3>': get_defect_from_manufact(),
+            '<h3>Получение всего об определенном лекартсве по району<br>(второй внутренне симметричный запрос)</h3>': get_all_about_medicaments(),
             '<h3>Получение всех работников<br>(третий внутренне симметричный запрос)</h3>': get_all_employeers(),
-            '<h3>Получение всех лекарств путем левого соединения<br>(левое внешнее соединение)</h3>': get_medicament_with_left_join(),
             '<h3>Получение всех лекарств путем правого соединения<br>(правое внешнее соединение)</h3>': get_medicament_with_right_join(),
             }
 
 
 if __name__ == '__main__':
     # print(get_amount_pharmacy_type_in_district())
-    print(get_len_title_of_pharmacy_in_district())
+    # print(get_len_title_of_pharmacy_in_district())
     # print(get_lot_of_after())
     # print(get_lot_of_between())
-    # print(get_all_pharmacy())
-    # print(get_all_medicaments())
+    # print(get_all_about_medicaments())
+    # print(get_defect_from_manufact())
     # print(get_all_employeers())
     # print(get_medicament_with_left_join())
     # print(get_medicament_with_right_join())

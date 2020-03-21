@@ -6,19 +6,40 @@
 
         <form action="/запросы/" method="post">
             <div class="form-group">
-                <label for="type_of_pharmacy">Типы больниц:</label>
-                <select class="form-control" id="type_of_pharmacy" name="first_querys">
+                <label for="pre_querys">Типы аптек:</label>
+                <select class="form-control" id="pre_querys" name="first_querys">
                     {% for row in first_querys %}
                         <option>{{row}}</option>
                     {% endfor %}
                 </select>
             </div>
 
+            <div class="form-group">
+                <label for="pre_querys">Аптеки:</label>
+                <select class="form-control" id="pre_querys" name="second_querys">
+                    {% for row in second_querys %}
+                        <option>{{row}}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
+            <div class="mb-3">
+                <label for="pre_querys">Введите дату:</label>
+                <input class="form-control" id="pre_querys" name="third_querys" type="date" tabindex="1" required>
+            </div>
 
+            <div class="form-row ml-5">
+                <label class="ml-5 mr-2 mt-3" for="pre_querys">Введите Первую дату:</label>
+                <input class="form-control mb-3 w-25" id="pre_querys" name="fourth_querys" type="date" tabindex="1" required>
+                <label class="ml-2 mr-2 mt-3" for="pre_querys">Введите Вторую дату:</label>
+                <input class="form-control w-25" id="pre_querys" name="fourth_querys" type="date" tabindex="1" required>
+            </div>
 
+            <div>
 
-            <button class="btn btn-info" id="type_of_pharmacy" type="submit">Продолжить</button>
+            </div>
+
+            <button class="btn btn-info" id="pre_querys" type="submit" tabindex="1">Продолжить</button>
         </form>
 
     </div>
