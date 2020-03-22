@@ -155,7 +155,7 @@ def hw(request, dict_of_tables=dict_of_tables):
         })
 
         if table.objects.filter(id=11):     # если данных слишком много
-            if not dict_of_data.get('name_of_table_for_pagin') or dict_of_data.get('name_of_table_for_pagin') != string[string.find(':') + 2:]:
+            if not request.POST.get('cursor') or not dict_of_data.get('name_of_table_for_pagin') or dict_of_data.get('name_of_table_for_pagin') != string[string.find(':') + 2:]:
                 dict_of_data.update({'pg': Paginator(table.objects.all(), 10),
                                      'page': 1,
                                      'pagination': True,
@@ -173,8 +173,8 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         return render(request, 'read_table.html', dict_of_data)
     else:  # если прекратили просмотр таблиц
-        if dict_of_data.get('pg') is not None:
-            del dict_of_data['pg'], dict_of_data['name_of_table_for_pagin']
+        # if dict_of_data.get('pg') is not None:
+        del dict_of_data['pg'], dict_of_data['name_of_table_for_pagin']
 
     engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
     rus_rows = table.readable_rus()[1:]

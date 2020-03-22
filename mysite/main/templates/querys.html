@@ -5,12 +5,17 @@
 
     {% for name_of_querys, self_querys in dict_of_all.items %}
 
-<!--        <div class="badge badge-secondary mt-2 w-100"><h3>Вывод количества аптек разных типов в районе Полишкино<br>(первый внутренний запрос по внешнему ключу)</h3>-->
             <div class="badge badge-secondary mt-2 w-100"><h3>{{name_of_querys|safe}}</h3>
             <div class="navbar">
-                <div class="alert alert-success h-100">
+                <div class="alert alert-danger w-100">
+                    <h5>Запрос</h5>
+                    {% for string in self_querys.1 %}
+                        {{string}}<br>
+                    {% endfor %}
+                </div>
+                <div class="alert alert-success h-100 w-100">
                     <h5>Результат</h5>
-                    <table>
+                    <table align="center">
                         <tr class="table table-hover table-bordered">
                             {% for cell in self_querys.0.0.keys %}
                                 <td>{{cell}}</td>
@@ -25,12 +30,7 @@
                         {% endfor %}
                     </table>
                 </div>
-                <div class="alert alert-danger">
-                    <h5>Запрос</h5>
-                    {% for string in self_querys.1 %}
-                        {{string}}<br>
-                    {% endfor %}
-                </div>
+
             </div>
             <div class="navbar">
                 <h1></h1>
