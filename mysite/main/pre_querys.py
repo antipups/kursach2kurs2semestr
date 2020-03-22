@@ -13,5 +13,8 @@ def zapolnenie(request):
         'sixth_querys_district': tuple(str(row.getter()[0]) + ' | ' + row.getter()[1] for row in District.objects.all()),
         'sixth_querys_medicament': tuple(str(row.getter()[0]) + ' | ' + row.getter()[1] for row in Medicament.objects.all()),
         'eigth_querys': tuple(str(row.getter()[0]) + ' | ' + row.getter()[3] + ' ' + row.getter()[2][0] + '. ' + row.getter()[4][0] + '.' for row in Employee.objects.all()),
+        'tenth_querys': tuple(str(row.getter()[0]) + ' | ' + row.getter()[1] for row in Shape.objects.all()),
+        'tenth_querys_name_of_medicament': tuple(str(row.getter()[0]) + ' | ' + row.getter()[1] for row in Name_of_medicament.objects.all()),
+
     })
     return render(request, 'pre_querys.html', views.dict_of_data)

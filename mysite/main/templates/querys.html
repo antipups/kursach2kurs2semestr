@@ -5,32 +5,29 @@
 
     {% for name_of_querys, self_querys in dict_of_all.items %}
 
-            <div class="badge badge-secondary mt-2 w-100"><h3>{{name_of_querys|safe}}</h3>
-            <div class="navbar">
-                <div class="alert alert-danger w-100">
-                    <h5>Запрос</h5>
-                    {% for string in self_querys.1 %}
-                        {{string}}<br>
-                    {% endfor %}
-                </div>
-                <div class="alert alert-success h-100 w-100">
-                    <h5>Результат</h5>
-                    <table align="center">
-                        <tr class="table table-hover table-bordered">
-                            {% for cell in self_querys.0.0.keys %}
-                                <td>{{cell}}</td>
+        <div class="badge badge-secondary mt-2 w-100"><h3>{{name_of_querys|safe}}</h3>
+            <div class="alert alert-danger w-100">
+                <h5>Запрос</h5>
+                {% for string in self_querys.1 %}
+                    {{string}}<br>
+                {% endfor %}
+            </div>
+            <div class="alert alert-success h-100 w-100">
+                <h5>Результат</h5>
+                <table class="table table-bordered table-dark" align="center">
+                    <tr class="">
+                        {% for cell in self_querys.0.0.keys %}
+                            <td>{{cell}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% for row in self_querys.0 %}
+                        <tr>
+                            {% for cell in row.items %}
+                                <td>{{cell.1}}</td>
                             {% endfor %}
                         </tr>
-                        {% for row in self_querys.0 %}
-                            <tr>
-                                {% for cell in row.items %}
-                                    <td>{{cell.1}}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-
+                    {% endfor %}
+                </table>
             </div>
             <div class="navbar">
                 <h1></h1>
