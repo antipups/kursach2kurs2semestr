@@ -1,9 +1,5 @@
-.pagin {
+.pagin
+{
     display: flex;
     justify-content: flex-end;
-}
-
-.test
-{
-    font-size: 10%;
 }

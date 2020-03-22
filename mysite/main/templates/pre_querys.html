@@ -2,96 +2,127 @@
 
 {% block table %}
 
-    <div class="badge badge-secondary p-2 w-100"><h3>Введите желаемые данные</h3>
+<div class="badge badge-secondary p-2 w-100"><h3>Введите желаемые данные</h3></div>
 
         <form action="/запросы/" method="post">
-            <div class="form-group">
-                <label for="pre_querys">Типы аптек:</label>
-                <select class="form-control" id="pre_querys" name="first_querys">
-                    {% for row in first_querys %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
+            <div class="container-fluid mt-3">
+                <div class="row">
+
+                    <div class="form-group badge badge-secondary col p-2 mr-3">
+                        <h4><label for="pre_querys">1. Типы аптек:</label></h4>
+                        <select class="form-control w-50 m-auto" id="pre_querys" name="first_querys">
+                            {% for row in first_querys %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group badge badge-secondary col p-2">
+                        <h4><label for="pre_querys">2. Аптеки:</label></h4>
+                        <select class="form-control w-50 m-auto" id="pre_querys" name="second_querys">
+                            {% for row in second_querys %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="pre_querys">Аптеки:</label>
-                <select class="form-control" id="pre_querys" name="second_querys">
-                    {% for row in second_querys %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
+
+            <div class="badge badge-secondary p-2 w-100">
+                <div class="form-row">
+                    <div class="w-25 ml-auto">
+                        <h4><label for="pre_querys">3.Аптеки:</label></h4>
+                        <select class="form-control" id="pre_querys" name="third_querys">
+                            {% for row in second_querys %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="w-25 ml-auto mr-auto">
+                        <h4><label for="pre_querys">Введите дату:</label></h4>
+                        <input class="form-control" id="pre_querys" name="third_querys" type="date" tabindex="1" required>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-row ml-5">
-                <label for="pre_querys" class="ml-5">Аптеки:</label>
-                <select class="form-control w-25 ml-3 mr-3" id="pre_querys" name="third_querys">
-                    {% for row in second_querys %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
-                <label for="pre_querys">Введите дату:</label>
-                <input class="form-control ml-3 w-25" id="pre_querys" name="third_querys" type="date" tabindex="1" required>
+            <div class="mt-3 badge badge-secondary p-2 w-100">
+                <div class="form-row">
+                    <div class="col">
+                        <h4><label for="pre_querys" class="">4.Аптеки:</label></h4>
+                        <select class="form-control w-75 m-auto" id="pre_querys" name="fourth_querys">
+                            {% for row in second_querys %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <h4><label class="" for="pre_querys">Первая дата:</label></h4>
+                        <input class="form-control w-75 m-auto" id="pre_querys" name="fourth_querys" type="date" tabindex="1" required>
+                    </div>
+                    <div class="col">
+                        <h4><label class="" for="pre_querys">Вторая дата:</label></h4>
+                        <input class="form-control w-75 m-auto" id="pre_querys" name="fourth_querys" type="date" tabindex="1" required>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-row mt-3">
-                <label for="pre_querys" class="ml-3 mt-3 mr-3">Аптеки:</label>
-                <select class="form-control w-25" id="pre_querys" name="fourth_querys">
-                    {% for row in second_querys %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
-                <label class="ml-3 mt-3 mr-3" for="pre_querys">Первая дата:</label>
-                <input class="form-control mb-3 w-25" id="pre_querys" name="fourth_querys" type="date" tabindex="1" required>
-                <label class="ml-3 mt-3 mr-3" for="pre_querys">Вторая дата:</label>
-                <input class="form-control w-25" id="pre_querys" name="fourth_querys" type="date" tabindex="1" required>
-            </div>
-
-            <div class="form-group">
-                <label for="pre_querys">Фирмы:</label>
-                <select class="form-control" id="pre_querys" name="fifth_querys">
+            <div class="form-group badge badge-secondary p-2 mt-3 col">
+                <h4><label for="pre_querys">5.Фирмы:</label></h4>
+                <select class="form-control w-25 m-auto" id="pre_querys" name="fifth_querys">
                     {% for row in fifth_querys %}
                         <option>{{row}}</option>
                     {% endfor %}
                 </select>
             </div>
 
-            <div class="form-row mt-3">
-                <label for="pre_querys" class="ml-3 mt-3 mr-3">Районы:</label>
-                <select class="form-control w-25" id="pre_querys" name="sixth_querys">
-                    {% for row in sixth_querys_district %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
-                <label for="pre_querys" class="ml-3 mt-3 mr-3">Лекарства:</label>
-                <select class="form-control w-25" id="pre_querys" name="sixth_querys">
-                    {% for row in sixth_querys_medicament %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
+            <div class="badge badge-secondary p-2 col">
+                <div class="form-row">
+                    <div class="col">
+                        <h4><label for="pre_querys" class="">6.Районы:</label></h4>
+                        <select class="form-control w-50 m-auto" id="pre_querys" name="sixth_querys">
+                            {% for row in sixth_querys_district %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <h4><label for="pre_querys" class="">Лекарства:</label></h4>
+                        <select class="form-control w-50 m-auto" id="pre_querys" name="sixth_querys">
+                            {% for row in sixth_querys_medicament %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="pre_querys" class="mt-3">Аптеки:</label>
-                <select class="form-control" id="pre_querys" name="seventh_querys">
-                    {% for row in second_querys %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
+            <div class="container-fluid mt-3">
+                <div class="row">
+
+                    <div class="form-group badge badge-secondary p-2 col">
+                        <h4><label for="pre_querys" class="">7.Аптеки:</label></h4>
+                        <select class="form-control w-50 m-auto" id="pre_querys" name="seventh_querys">
+                            {% for row in second_querys %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group badge badge-secondary p-2 ml-3 col">
+                        <h4><label for="pre_querys" class="">8.Работник:</label></h4>
+                        <select class="form-control w-50 m-auto" id="pre_querys" name="eigth_querys">
+                            {% for row in eigth_querys %}
+                                <option>{{row}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
             </div>
 
-            <div class="form-row mt-3">
-                <label for="pre_querys" class="ml-3 mt-3 mr-3">Работник:</label>
-                <select class="form-control w-25" id="pre_querys" name="eigth_querys">
-                    {% for row in eigth_querys %}
-                        <option>{{row}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <button class="btn btn-info mt-3" id="pre_querys" type="submit" tabindex="1">Продолжить</button>
+            <button class="p-3 w-100 btn btn-info mb-5" id="pre_querys" type="submit" tabindex="1">Продолжить</button>
         </form>
-
-    </div>
 
 {% endblock %}

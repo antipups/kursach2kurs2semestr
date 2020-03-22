@@ -2,9 +2,11 @@
 
 {% block table %}
 
-    <table class="badge badge-secondary p-3 w-100 table table-hover">
-        <tr class="table-bordered"><td class="w-25" colspan="{{name_of_rows|length}}">Таблица {{name_of_table}}</td></tr>
-        <tr class="table table-hover table-bordered">
+    <table class="table table-bordered table-dark">
+        <tr>
+            <td class="w-25" colspan="{{name_of_rows|length}}" align="center">Таблица {{name_of_table}}</td>
+        </tr>
+        <tr>
             {% for i in name_of_rows %}
                 <td class="m-5">{{i}}</td>
             {% endfor %}
@@ -17,6 +19,7 @@
             </tr>
         {% endfor %}
     </table>
+
     {% if pagination == True %}
         <nav class="pagin">
             <form action="/main/mode/" method="post">
