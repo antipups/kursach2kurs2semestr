@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
-import graphics
 from .models import *
+import graphics
 import util
 import checker
 from django.core.paginator import Paginator
@@ -11,20 +11,22 @@ from django.core.paginator import Paginator
 tuple_with_tables = (('Лекарства',  # кортеж со всеми таблицами
                       'Аптека',
                       'Фирма',
-                      'Партия'),
+                      'Партия',
+                      'Рабочий'),
                      ('Страна',
                       'Район',
-                      'Рабочий',
                       'Фармакалогическая группа',
                       'Форма лекарства',
                       'Название лекарства',
                       'Тип собственности',
+                      'Причина'
                       ))
 
 dict_of_data = {"Buttons":
                     (
                         ('Добавить в', 'Удалить из', 'Изменить в', 'Просмотреть', 'Поиск'),
                         tuple_with_tables,
+                        ('Удалить', 'Изменить'),
                     ),
                 "Buttons_for_task": ('Задание №1', 'Задание №2', 'Задание №3'),
                 "Buttons_for_query": 'Запросы',
@@ -46,6 +48,7 @@ dict_of_tables = {'Лекарства': Medicament,  # словарь с наи�
                   'Форма лекарства': Shape,
                   'Название лекарства': Name_of_medicament,
                   'Тип собственности': Type,
+                  'Причина': Reason
                   }
 
 
@@ -156,7 +159,7 @@ def hw(request, dict_of_tables=dict_of_tables):
 
         if table.objects.filter(id=11):     # если данных слишком много
             if not request.POST.get('cursor') or not dict_of_data.get('name_of_table_for_pagin') or dict_of_data.get('name_of_table_for_pagin') != string[string.find(':') + 2:]:
-                dict_of_data.update({'pg': Paginator(table.objects.all(), 10),
+                dict_of_data.update({'pg': Paginator(table.objects.all(), 6),
                                      'page': 1,
                                      'pagination': True,
                                      'name_of_table_for_pagin': string[string.find(':') + 2:]})
@@ -170,7 +173,7 @@ def hw(request, dict_of_tables=dict_of_tables):
             dict_of_data.update({'Table': tuple(map(lambda row: row.getter, dict_of_data.get('pg').get_page(dict_of_data.get('page')).object_list))})
         else:   # если таблица мала
             dict_of_data.update({'Table': tuple(map(lambda row: row.getter, table.objects.all()))})
-
+        print(dict_of_data)
         return render(request, 'read_table.html', dict_of_data)
     else:  # если прекратили просмотр таблиц
         if dict_of_data.get('pg') is not None:
@@ -179,7 +182,6 @@ def hw(request, dict_of_tables=dict_of_tables):
     engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
     rus_rows = table.readable_rus()[1:]
     dict_of_data.update({'data_for_find': table.readable_rus()})
-
     ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
     engl_ids = tuple(ids)
     # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
@@ -196,11 +198,12 @@ def hw(request, dict_of_tables=dict_of_tables):
         'Employee': Employee.objects.values_list(),
         'Name_of_medicament': Name_of_medicament.objects.values_list(),
         'Type': Type.objects.values_list(),
+        'Reason': Reason.objects.values_list(),
     }
     tables = {}     # словарь для вывода на html выдвигающихся полей
     if ids:
         for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
-            if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_name_of_medicament', 'id_of_type'):
+            if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_name_of_medicament', 'id_of_type', 'id_of_reason'):
                 tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})  # можно улудшить + названием, но это лень
             elif ids[i[0]] == 'id_of_pharmacy':
                 tables.update({ids[i[0]]: tuple(
@@ -293,8 +296,10 @@ def mode(request, dict_of_tables=dict_of_tables):
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
                 if dict_of_post.get('defect') == '':
+                    dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
                     del dict_of_post['defect']
                 object_of_table.objects.create(**dict_of_post)
+
                 # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
                 # 'reason': 'Просроченный срок годности', 'id_of_medicament': <Medicament: Medicament object (2)>, 'id_of_employee': <Employee: Employee object (1)>}
 
@@ -369,9 +374,3 @@ def mode(request, dict_of_tables=dict_of_tables):
         else:
             dict_of_data.update({'win': True})
             return render(request, html, dict_of_data)
-
-
-
-# ========================================= АВТОРИЗАЦИЯ ================================================
-
-

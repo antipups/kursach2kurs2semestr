@@ -2,7 +2,7 @@
 
 {% block table %}
 
-    <table class="table table-bordered table-dark">
+    <table class="table table-bordered table-dark table-hover">
         <tr>
             <td class="w-25" colspan="{{name_of_rows|length}}" align="center">Таблица {{name_of_table}}</td>
         </tr>
@@ -12,7 +12,7 @@
             {% endfor %}
         </tr>
         {% for i in Table %}
-            <tr class="table-bordered">
+            <tr class="table-bordered" onclick="js()">
                 {% for j in i %}
                     <td class="m-5">{{j}}</td>
                 {% endfor %}

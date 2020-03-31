@@ -89,7 +89,7 @@ def lot(**dict_of_post):
         return
     datefact, count, number_of_lot, datestart, datefinish, price_manufacturer, price_pharmacy, defect, reason = \
         dict_of_post.get('datefact'), dict_of_post.get('count'), dict_of_post.get('number_of_lot'), dict_of_post.get('datestart'), dict_of_post.get('datefinish'), \
-        dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy'), dict_of_post.get('defect'), dict_of_post.get('reason')
+        dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy'), dict_of_post.get('defect'), dict_of_post.get('id_of_reason')
     try:
         datefact, datestart, datefinish = datetime.date(int(datefact[:4]), int(datefact[5:7]), int(datefact[-2:])), \
                                           datetime.date(int(datestart[:4]), int(datestart[5:7]), int(datestart[-2:])), \
@@ -107,6 +107,8 @@ def lot(**dict_of_post):
         return
     if len(price_manufacturer) == 0 or len(price_manufacturer) > 4 or price_manufacturer.isdigit() is False:
         return
+    if defect == '1' and reason is None:
+        return
     return True
 
 
@@ -118,5 +120,11 @@ def name_of_medicament(**dict_of_post):
 
 def type(**dict_of_post):
     if len(dict_of_post.get('title_of_type')) == 0 or len(dict_of_post.get('title_of_type')) > 15 or any(map(lambda x: x.isdigit(), dict_of_post.get('title_of_type'))):
+        return
+    return True
+
+
+def reason(**dict_of_post):
+    if len(dict_of_post.get('title_of_reason')) == 0 or len(dict_of_post.get('title_of_reason')) > 100:
         return
     return True

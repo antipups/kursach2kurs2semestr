@@ -270,19 +270,40 @@ def get_medicament_with_right_join(worker):    # получаем все лек�
             '       main_lot.defect AS Наличие_дефекта, '  \
             '       main_lot.reason AS Причина_дефекта '  \
             'FROM main_lot ' \
-            'RIGHT JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
+            'INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
             f'   AND main_employee.id = "{worker}" ' \
-            'GROUP BY main_lot.id ' \
-            'HAVING MIN(main_lot.id) - 1 < main_lot.id '
+            'GROUP BY main_lot.id '
     result_of_query = execute(query)
     return result_of_query, \
-           'SELECT main_name_of_medicament.title_of_medicament AS Название_лекарства, ||' \
-           '       main_lot.datefact AS Дата_приема ||'  \
-           'FROM main_lot ||' \
-           'RIGHT JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ||' \
-           f'   AND main_employee.id = "{worker}" ||' \
-           'RIGHT JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id ||' \
-           'RIGHT JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id '.split('||')
+           'SELECT main_lot.id, ||' \
+            '       main_lot.number_of_lot AS Номер_партии, ||' \
+            '       main_lot.datefact AS Дата_приема, ||'  \
+            '       main_lot.datestart AS Дата_создания, ||'  \
+            '       main_lot.datefinish AS Срок_годности, ||'  \
+            '       main_lot.price_manufacturer AS Цена_фирмы, ||'  \
+            '       main_lot.price_pharmacy AS Цена_аптеки, ||'  \
+            '       main_lot.defect AS Наличие_дефекта, ||'  \
+            '       main_lot.reason AS Причина_дефекта ||'  \
+            'FROM main_lot ||' \
+            'INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ||' \
+            f'   AND main_employee.id = "{worker}" ||' \
+            'GROUP BY main_lot.id '.split('||')
+
+
+def get_all_unknown_medicaments(main_pharmacy_id=5):
+    query = 'SELECT ' \
+            '       * ' \
+            'FROM main_medicament ' \
+            'LEFT OUTER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ' \
+            'LEFT OUTER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' \
+            'LEFT OUTER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
+            'LEFT OUTER JOIN main_pharmacy ON main_pharmacy.id = main_employee.id_of_pharmacy_id ' \
+            f'   AND main_pharmacy.id = {main_pharmacy_id} ' \
+            f'WHERE main_lot.id_of_medicament_id IS NULL'
+    result_of_query = execute(query)
+    for i in result_of_query:
+        print(i)
+    return result_of_query
 
 
 def get_all_employeers_in_db():
@@ -467,4 +488,5 @@ if __name__ == '__main__':
     # print(get_medicament_with_define_shape(['8 | Абакавир-АВС', '1 | Таблетки', '1 | Полишкина']))
     # for i in get_cheap_medicaments(['1 ', '1 | Полишкина']):
     #     print(i)
+    print(get_all_unknown_medicaments())
     pass

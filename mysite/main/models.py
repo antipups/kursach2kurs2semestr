@@ -31,6 +31,28 @@ class Country(models.Model):
         return {'Название': ('title_of_country', 'РОС', 3, 'text', 'required')}
 
 
+class Reason(models.Model):
+    """
+        Таблица с причинами
+    """
+    title_of_reason = models.CharField(max_length=100)
+
+    @staticmethod
+    def readable():
+        return 'id', 'title_of_reason'
+
+    @staticmethod
+    def readable_rus():
+        return 'id', 'Причина'
+
+    def getter(self):
+        return self.id, self.title_of_reason
+
+    @staticmethod
+    def get_attr():
+        return {'Название': ('title_of_reason', 'Поломанная упаковка', 100, 'text', 'required')}
+
+
 class Manufacturer(models.Model):
     """
         Таблица с фирмами, внешние ключи:
@@ -300,12 +322,12 @@ class Lot(models.Model):
     price_pharmacy = models.IntegerField()
     id_of_employee = models.ForeignKey(Employee, models.DO_NOTHING)
     defect = models.BooleanField(default=False)
-    reason = models.TextField(default=None)
+    id_of_reason = models.ForeignKey(Reason, models.DO_NOTHING, default=None)
 
     @staticmethod
     def readable():
         return 'id', 'id_of_medicament', 'datefact', 'count', 'number_of_lot', 'datestart', 'datefinish', \
-               'price_manufacturer', 'price_pharmacy', 'id_of_employee', 'defect', 'reason'
+               'price_manufacturer', 'price_pharmacy', 'id_of_employee', 'defect', 'id_of_reason'
 
     @staticmethod
     def readable_rus():
@@ -316,7 +338,7 @@ class Lot(models.Model):
         return self.id, self.id_of_medicament.id_of_name_of_medicament.title_of_medicament, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
                self.price_manufacturer, self.price_pharmacy, \
                ' '.join((self.id_of_employee.second_name, self.id_of_employee.first_name[0] + '. ', self.id_of_employee.third_name[0] + '.')), \
-               self.defect, self.reason
+               self.defect, self.id_of_reason.title_of_reason
 
     @staticmethod
     def get_attr():
@@ -327,5 +349,4 @@ class Lot(models.Model):
                 'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date', 'required'),
                 'Цена(Фирма)': ('price_manufacturer', '1234', 4, 'number', 'required'),
                 'Цена(Аптека)': ('price_pharmacy', '9876', 4, 'number', 'required'),
-                'Дефект': ('defect', '1', 1, 'number'),
-                'Причина возврата': ('reason', 'Прошел срок годности.', 100, 'text')}
+                'Дефект': ('defect', '1', 1, 'number'),}

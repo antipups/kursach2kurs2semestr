@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="keksik" id="Project_4b8dc79" database="MySql" >
+	<schema name="school_work" >
+		<table name="auth_group" row_count="0" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="name" type="varchar" length="150" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_auth_group" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="name" unique="UNIQUE" >
+				<column name="name" />
+			</index>
+		</table>
+		<table name="auth_group_permissions" row_count="0" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="group_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="permission_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_auth_group_permissions" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="auth_group_permissions_group_id_permission_id_0cd325b0_uniq" unique="UNIQUE" >
+				<column name="group_id" />
+				<column name="permission_id" />
+			</index>
+			<index name="auth_group_permissio_permission_id_84c5c92e_fk_auth_perm" unique="NORMAL" >
+				<column name="permission_id" />
+			</index>
+			<fk name="auth_group_permissions_group_id_b120cbf9_fk_auth_group_id" to_schema="school_work" to_table="auth_group" delete_action="restrict" update_action="restrict" >
+				<fk_column name="group_id" pk="id" />
+			</fk>
+			<fk name="auth_group_permissio_permission_id_84c5c92e_fk_auth_perm" to_schema="school_work" to_table="auth_permission" delete_action="restrict" update_action="restrict" >
+				<fk_column name="permission_id" pk="id" />
+			</fk>
+		</table>
+		<table name="auth_permission" row_count="76" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="name" type="varchar" length="255" decimal="0" jt="12" mandatory="y" />
+			<column name="content_type_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="codename" type="varchar" length="100" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_auth_permission" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="auth_permission_content_type_id_codename_01ab375a_uniq" unique="UNIQUE" >
+				<column name="content_type_id" />
+				<column name="codename" />
+			</index>
+			<fk name="auth_permission_content_type_id_2f476e4b_fk_django_co" to_schema="school_work" to_table="django_content_type" delete_action="restrict" update_action="restrict" >
+				<fk_column name="content_type_id" pk="id" />
+			</fk>
+		</table>
+		<table name="auth_user" row_count="2" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="password" type="varchar" length="128" decimal="0" jt="12" mandatory="y" />
+			<column name="last_login" type="datetime" length="26" decimal="0" jt="93" />
+			<column name="is_superuser" type="boolean" length="1" decimal="0" jt="-7" mandatory="y" />
+			<column name="username" type="varchar" length="150" decimal="0" jt="12" mandatory="y" />
+			<column name="first_name" type="varchar" length="30" decimal="0" jt="12" mandatory="y" />
+			<column name="last_name" type="varchar" length="150" decimal="0" jt="12" mandatory="y" />
+			<column name="email" type="varchar" length="254" decimal="0" jt="12" mandatory="y" />
+			<column name="is_staff" type="boolean" length="1" decimal="0" jt="-7" mandatory="y" />
+			<column name="is_active" type="boolean" length="1" decimal="0" jt="-7" mandatory="y" />
+			<column name="date_joined" type="datetime" length="26" decimal="0" jt="93" mandatory="y" />
+			<index name="pk_auth_user" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="username" unique="UNIQUE" >
+				<column name="username" />
+			</index>
+		</table>
+		<table name="auth_user_groups" row_count="0" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="user_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="group_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_auth_user_groups" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="auth_user_groups_user_id_group_id_94350c0c_uniq" unique="UNIQUE" >
+				<column name="user_id" />
+				<column name="group_id" />
+			</index>
+			<index name="auth_user_groups_group_id_97559544_fk_auth_group_id" unique="NORMAL" >
+				<column name="group_id" />
+			</index>
+			<fk name="auth_user_groups_group_id_97559544_fk_auth_group_id" to_schema="school_work" to_table="auth_group" delete_action="restrict" update_action="restrict" >
+				<fk_column name="group_id" pk="id" />
+			</fk>
+			<fk name="auth_user_groups_user_id_6a12ed8b_fk_auth_user_id" to_schema="school_work" to_table="auth_user" delete_action="restrict" update_action="restrict" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="auth_user_user_permissions" row_count="0" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="user_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="permission_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_auth_user_user_permissions" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="auth_user_user_permissions_user_id_permission_id_14a6b632_uniq" unique="UNIQUE" >
+				<column name="user_id" />
+				<column name="permission_id" />
+			</index>
+			<index name="auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm" unique="NORMAL" >
+				<column name="permission_id" />
+			</index>
+			<fk name="auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm" to_schema="school_work" to_table="auth_permission" delete_action="restrict" update_action="restrict" >
+				<fk_column name="permission_id" pk="id" />
+			</fk>
+			<fk name="auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id" to_schema="school_work" to_table="auth_user" delete_action="restrict" update_action="restrict" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+		</table>
+		<table name="django_admin_log" row_count="26" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="action_time" type="datetime" length="26" decimal="0" jt="93" mandatory="y" />
+			<column name="object_id" type="longtext" length="2147483647" decimal="0" jt="-1" />
+			<column name="object_repr" type="varchar" length="200" decimal="0" jt="12" mandatory="y" />
+			<column name="action_flag" type="smallint" length="5" decimal="0" jt="5" mandatory="y" unsigned="y" />
+			<column name="change_message" type="longtext" length="2147483647" decimal="0" jt="-1" mandatory="y" />
+			<column name="content_type_id" type="int" length="10" decimal="0" jt="4" />
+			<column name="user_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_django_admin_log" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="django_admin_log_content_type_id_c4bce8eb_fk_django_co" unique="NORMAL" >
+				<column name="content_type_id" />
+			</index>
+			<index name="django_admin_log_user_id_c564eba6_fk_auth_user_id" unique="NORMAL" >
+				<column name="user_id" />
+			</index>
+			<fk name="django_admin_log_user_id_c564eba6_fk_auth_user_id" to_schema="school_work" to_table="auth_user" delete_action="restrict" update_action="restrict" >
+				<fk_column name="user_id" pk="id" />
+			</fk>
+			<fk name="django_admin_log_content_type_id_c4bce8eb_fk_django_co" to_schema="school_work" to_table="django_content_type" delete_action="restrict" update_action="restrict" >
+				<fk_column name="content_type_id" pk="id" />
+			</fk>
+		</table>
+		<table name="django_content_type" row_count="19" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="app_label" type="varchar" length="100" decimal="0" jt="12" mandatory="y" />
+			<column name="model" type="varchar" length="100" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_django_content_type" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="django_content_type_app_label_model_76bd3d3b_uniq" unique="UNIQUE" >
+				<column name="app_label" />
+				<column name="model" />
+			</index>
+		</table>
+		<table name="django_migrations" row_count="29" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="app" type="varchar" length="255" decimal="0" jt="12" mandatory="y" />
+			<column name="name" type="varchar" length="255" decimal="0" jt="12" mandatory="y" />
+			<column name="applied" type="datetime" length="26" decimal="0" jt="93" mandatory="y" />
+			<index name="pk_django_migrations" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="django_session" row_count="3" >
+			<column name="session_key" type="varchar" length="40" decimal="0" jt="12" mandatory="y" />
+			<column name="session_data" type="longtext" length="2147483647" decimal="0" jt="-1" mandatory="y" />
+			<column name="expire_date" type="datetime" length="26" decimal="0" jt="93" mandatory="y" />
+			<index name="pk_django_session" unique="PRIMARY_KEY" >
+				<column name="session_key" />
+			</index>
+			<index name="django_session_expire_date_a5c62663" unique="NORMAL" >
+				<column name="expire_date" />
+			</index>
+		</table>
+		<table name="main_country" row_count="173" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_country" type="varchar" length="3" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_main_country" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="title_of_country" unique="UNIQUE" >
+				<column name="title_of_country" />
+			</index>
+		</table>
+		<table name="main_district" row_count="3" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_district" type="varchar" length="15" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_main_district" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="main_district_title_of_district_542dd029_uniq" unique="UNIQUE" >
+				<column name="title_of_district" />
+			</index>
+		</table>
+		<table name="main_employee" row_count="3" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="first_name" type="varchar" length="20" decimal="0" jt="12" mandatory="y" />
+			<column name="second_name" type="varchar" length="20" decimal="0" jt="12" mandatory="y" />
+			<column name="third_name" type="varchar" length="20" decimal="0" jt="12" mandatory="y" />
+			<column name="id_of_pharmacy_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_main_employee" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="main_employee_id_of_pharmacy_id_6e127f65_fk_main_pharmacy_id" unique="NORMAL" >
+				<column name="id_of_pharmacy_id" />
+			</index>
+			<fk name="main_employee_id_of_pharmacy_id_6e127f65_fk_main_pharmacy_id" to_schema="school_work" to_table="main_pharmacy" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_pharmacy_id" pk="id" />
+			</fk>
+		</table>
+		<table name="main_lot" row_count="17" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="datefact" type="date" length="10" decimal="0" jt="91" mandatory="y" />
+			<column name="count" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="number_of_lot" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="datestart" type="date" length="10" decimal="0" jt="91" mandatory="y" />
+			<column name="datefinish" type="date" length="10" decimal="0" jt="91" mandatory="y" />
+			<column name="price_manufacturer" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="price_pharmacy" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="defect" type="boolean" length="1" decimal="0" jt="-7" mandatory="y" />
+			<column name="id_of_employee_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="id_of_medicament_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="if_of_reason_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_main_lot" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="main_lot_id_of_employee_id_23eb8731_fk_main_employee_id" unique="NORMAL" >
+				<column name="id_of_employee_id" />
+			</index>
+			<index name="main_lot_id_of_medicament_id_2496f185_fk_main_medicament_id" unique="NORMAL" >
+				<column name="id_of_medicament_id" />
+			</index>
+			<index name="main_lot_if_of_reason_id_2508afc6_fk_main_reason_id" unique="NORMAL" >
+				<column name="if_of_reason_id" />
+			</index>
+			<fk name="main_lot_id_of_employee_id_23eb8731_fk_main_employee_id" to_schema="school_work" to_table="main_employee" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_employee_id" pk="id" />
+			</fk>
+			<fk name="main_lot_id_of_medicament_id_2496f185_fk_main_medicament_id" to_schema="school_work" to_table="main_medicament" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_medicament_id" pk="id" />
+			</fk>
+			<fk name="main_lot_if_of_reason_id_2508afc6_fk_main_reason_id" to_schema="school_work" to_table="main_reason" delete_action="restrict" update_action="restrict" >
+				<fk_column name="if_of_reason_id" pk="id" />
+			</fk>
+		</table>
+		<table name="main_manufacturer" row_count="0" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_manufacturer" type="varchar" length="30" decimal="0" jt="12" mandatory="y" />
+			<column name="address_of_manufacturer" type="varchar" length="30" decimal="0" jt="12" mandatory="y" />
+			<column name="email_of_manufacturer" type="varchar" length="30" decimal="0" jt="12" mandatory="y" />
+			<column name="year_of_manufacturer" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="id_of_country_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_main_manufacturer" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="main_manufacturer_id_of_country_id_3f57d94c_fk_main_country_id" unique="NORMAL" >
+				<column name="id_of_country_id" />
+			</index>
+			<fk name="main_manufacturer_id_of_country_id_3f57d94c_fk_main_country_id" to_schema="school_work" to_table="main_country" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_country_id" pk="id" />
+			</fk>
+		</table>
+		<table name="main_medicament" row_count="8" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="comments" type="longtext" length="2147483647" decimal="0" jt="-1" mandatory="y" />
+			<column name="bar_code" type="longtext" length="2147483647" decimal="0" jt="-1" mandatory="y" />
+			<column name="id_of_pharma_group_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="id_of_manufacturer_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="id_of_shape_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="id_of_name_of_medicament_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_main_medicament" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="main_medicament_id_of_manufacturer_i_b82b6045_fk_main_manu" unique="NORMAL" >
+				<column name="id_of_manufacturer_id" />
+			</index>
+			<index name="main_medicament_id_of_name_of_medica_719b2665_fk_main_name" unique="NORMAL" >
+				<column name="id_of_name_of_medicament_id" />
+			</index>
+			<index name="main_medicament_id_of_pharma_group_i_ec00356b_fk_main_phar" unique="NORMAL" >
+				<column name="id_of_pharma_group_id" />
+			</index>
+			<index name="main_medicament_id_of_shape_id_73aaf5aa_fk_main_shape_id" unique="NORMAL" >
+				<column name="id_of_shape_id" />
+			</index>
+			<fk name="main_medicament_id_of_manufacturer_i_b82b6045_fk_main_manu" to_schema="school_work" to_table="main_manufacturer" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_manufacturer_id" pk="id" />
+			</fk>
+			<fk name="main_medicament_id_of_name_of_medica_719b2665_fk_main_name" to_schema="school_work" to_table="main_name_of_medicament" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_name_of_medicament_id" pk="id" />
+			</fk>
+			<fk name="main_medicament_id_of_pharma_group_i_ec00356b_fk_main_phar" to_schema="school_work" to_table="main_pharma_group" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_pharma_group_id" pk="id" />
+			</fk>
+			<fk name="main_medicament_id_of_shape_id_73aaf5aa_fk_main_shape_id" to_schema="school_work" to_table="main_shape" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_shape_id" pk="id" />
+			</fk>
+		</table>
+		<table name="main_name_of_medicament" row_count="8566" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_medicament" type="varchar" length="20" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_main_name_of_medicament" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="title_of_medicament" unique="UNIQUE" >
+				<column name="title_of_medicament" />
+			</index>
+		</table>
+		<table name="main_pharma_group" row_count="3" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_pharma_group" type="varchar" length="20" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_main_pharma_group" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="main_pharmacy" row_count="6" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="number_of_pharmacy" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="title_of_pharmacy" type="varchar" length="15" decimal="0" jt="12" mandatory="y" />
+			<column name="address_of_pharmacy" type="varchar" length="12" decimal="0" jt="12" mandatory="y" />
+			<column name="phone_of_pharmacy" type="varchar" length="10" decimal="0" jt="12" mandatory="y" />
+			<column name="id_of_district_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="id_of_type_id" type="int" length="10" decimal="0" jt="4" mandatory="y" />
+			<index name="pk_main_pharmacy" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="main_pharmacy_id_of_district_id_8f86a051_fk_main_district_id" unique="NORMAL" >
+				<column name="id_of_district_id" />
+			</index>
+			<index name="main_pharmacy_id_of_type_id_771e7b2a_fk_main_type_id" unique="NORMAL" >
+				<column name="id_of_type_id" />
+			</index>
+			<fk name="main_pharmacy_id_of_district_id_8f86a051_fk_main_district_id" to_schema="school_work" to_table="main_district" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_district_id" pk="id" />
+			</fk>
+			<fk name="main_pharmacy_id_of_type_id_771e7b2a_fk_main_type_id" to_schema="school_work" to_table="main_type" delete_action="restrict" update_action="restrict" >
+				<fk_column name="id_of_type_id" pk="id" />
+			</fk>
+		</table>
+		<table name="main_reason" row_count="2" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_reason" type="varchar" length="100" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_main_reason" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="main_shape" row_count="0" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_shape" type="varchar" length="15" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_main_shape" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="main_type" row_count="0" >
+			<column name="id" type="int" length="10" decimal="0" jt="4" mandatory="y" autoincrement="y" />
+			<column name="title_of_type" type="varchar" length="15" decimal="0" jt="12" mandatory="y" />
+			<index name="pk_main_type" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+	</schema>
+	<connector name="keksik" database="MySql" driver_class="com.mysql.jdbc.Driver" driver_jar="mysql-connector-java-8.0.18.jar" driver_desc="Standard" host="localhost" port="3306" instance="school_work" user="root" />
+	<layout name="Default Layout" id="Layout_5131111" show_relation="columns" >
+		<entity schema="school_work" name="auth_group" color="BEBEF4" x="1440" y="48" />
+		<entity schema="school_work" name="auth_group_permissions" color="BEBEF4" x="1616" y="48" />
+		<entity schema="school_work" name="auth_permission" color="BEBEF4" x="1008" y="48" />
+		<entity schema="school_work" name="auth_user" color="BEBEF4" x="1232" y="48" />
+		<entity schema="school_work" name="auth_user_groups" color="BEBEF4" x="1232" y="368" />
+		<entity schema="school_work" name="auth_user_user_permissions" color="BEBEF4" x="1440" y="368" />
+		<entity schema="school_work" name="django_admin_log" color="BED3F4" x="1856" y="48" />
+		<entity schema="school_work" name="django_content_type" color="BED3F4" x="2048" y="48" />
+		<entity schema="school_work" name="django_migrations" color="BED3F4" x="2048" y="288" />
+		<entity schema="school_work" name="django_session" color="BED3F4" x="1856" y="288" />
+		<entity schema="school_work" name="main_country" color="C7F4BE" x="512" y="480" />
+		<entity schema="school_work" name="main_district" color="F4DDBE" x="1232" y="896" />
+		<entity schema="school_work" name="main_employee" color="C7F4BE" x="768" y="48" />
+		<entity schema="school_work" name="main_lot" color="C7F4BE" x="544" y="48" />
+		<entity schema="school_work" name="main_manufacturer" color="C7F4BE" x="272" y="272" />
+		<entity schema="school_work" name="main_medicament" color="C7F4BE" x="272" y="48" />
+		<entity schema="school_work" name="main_name_of_medicament" color="C7F4BE" x="48" y="272" />
+		<entity schema="school_work" name="main_pharma_group" color="F4DDBE" x="1232" y="672" />
+		<entity schema="school_work" name="main_pharmacy" color="F4DDBE" x="1008" y="672" />
+		<entity schema="school_work" name="main_reason" color="C7F4BE" x="768" y="352" />
+		<entity schema="school_work" name="main_shape" color="C7F4BE" x="96" y="128" />
+		<entity schema="school_work" name="main_type" color="F4DDBE" x="1008" y="896" />
+	</layout>
+	<layout name="Sample Layout with Tools" id="Layout_47c2537" show_column_type="y" show_relation="columns" >
+		<entity schema="school_work" name="auth_group" color="BEBEF4" x="1600" y="80" />
+		<entity schema="school_work" name="auth_group_permissions" color="BEBEF4" x="1824" y="80" />
+		<entity schema="school_work" name="auth_permission" color="BEBEF4" x="1088" y="80" />
+		<entity schema="school_work" name="auth_user" color="BEBEF4" x="1344" y="80" />
+		<entity schema="school_work" name="auth_user_groups" color="BEBEF4" x="1344" y="400" />
+		<entity schema="school_work" name="auth_user_user_permissions" color="BEBEF4" x="1600" y="400" />
+		<entity schema="school_work" name="django_admin_log" color="BED3F4" x="2064" y="80" />
+		<entity schema="school_work" name="django_content_type" color="BED3F4" x="2304" y="80" />
+		<entity schema="school_work" name="django_migrations" color="BED3F4" x="2304" y="320" />
+		<entity schema="school_work" name="django_session" color="BED3F4" x="2064" y="320" />
+		<entity schema="school_work" name="main_country" color="C7F4BE" x="592" y="656" />
+		<entity schema="school_work" name="main_district" color="F4DDBE" x="1360" y="1072" />
+		<entity schema="school_work" name="main_employee" color="C7F4BE" x="816" y="224" />
+		<entity schema="school_work" name="main_lot" color="C7F4BE" x="592" y="224" />
+		<entity schema="school_work" name="main_manufacturer" color="C7F4BE" x="304" y="448" />
+		<entity schema="school_work" name="main_medicament" color="C7F4BE" x="320" y="224" />
+		<entity schema="school_work" name="main_name_of_medicament" color="C7F4BE" x="48" y="304" />
+		<entity schema="school_work" name="main_pharma_group" color="F4DDBE" x="1360" y="848" />
+		<entity schema="school_work" name="main_pharmacy" color="F4DDBE" x="1088" y="848" />
+		<entity schema="school_work" name="main_reason" color="C7F4BE" x="352" y="80" />
+		<entity schema="school_work" name="main_shape" color="C7F4BE" x="80" y="80" />
+		<entity schema="school_work" name="main_type" color="F4DDBE" x="1088" y="1072" />
+		<callout x="320" y="112" pointer="Round" >
+			<comment><![CDATA[This is a sample layout with tools. 
+For better understanding the schema create multiple layouts with same or different tables. 
+Double-click on any table, column or foreign key to edit.]]></comment>
+		</callout>
+		<group name="django_admin_log" color="ECF0F7" >
+			<entity schema="school_work" name="django_admin_log" />
+			<entity schema="school_work" name="django_content_type" />
+			<entity schema="school_work" name="django_migrations" />
+			<entity schema="school_work" name="django_session" />
+		</group>
+		<group name="main_pharmacy" color="F7F2EC" >
+			<entity schema="school_work" name="main_pharmacy" />
+			<entity schema="school_work" name="main_pharma_group" />
+			<entity schema="school_work" name="main_district" />
+			<entity schema="school_work" name="main_type" />
+		</group>
+		<group name="auth_permission" color="ECECF7" >
+			<entity schema="school_work" name="auth_permission" />
+			<entity schema="school_work" name="auth_user" />
+			<entity schema="school_work" name="auth_group" />
+			<entity schema="school_work" name="auth_group_permissions" />
+			<entity schema="school_work" name="auth_user_user_permissions" />
+			<entity schema="school_work" name="auth_user_groups" />
+		</group>
+		<group name="main_medicament" color="EEF7EC" >
+			<entity schema="school_work" name="main_medicament" />
+			<entity schema="school_work" name="main_lot" />
+			<entity schema="school_work" name="main_manufacturer" />
+			<entity schema="school_work" name="main_employee" />
+			<entity schema="school_work" name="main_country" />
+			<entity schema="school_work" name="main_name_of_medicament" />
+			<entity schema="school_work" name="main_shape" />
+			<entity schema="school_work" name="main_reason" />
+		</group>
+		<script name="Sample SQL Editor" id="Editor_2fc1631" language="SQL" >
+			<string><![CDATA[SELECT id, comments, bar_code, id_of_pharma_group_id, id_of_manufacturer_id, id_of_shape_id, id_of_name_of_medicament_id
+FROM
+	school_work.main_medicament t;]]></string>
+		</script>
+		<browser id="Browse_b64888" name="Sample Relational Data Browse" confirm_updates="y" >
+			<browse_table schema="school_work" entity="main_medicament" x="20" y="20" width="400" height="300" >
+				<browse_table schema="school_work" entity="main_lot" fk="main_lot_id_of_medicament_id_2496f185_fk_main_medicament_id" x="440" y="20" width="500" height="350" >
+					<browse_table schema="school_work" entity="main_employee" fk="main_lot_id_of_employee_id_23eb8731_fk_main_employee_id" x="960" y="20" width="500" height="350" record_view="y" />
+				</browse_table>
+			</browse_table>
+		</browser>
+		<query id="Query_55932f" name="Sample Query Builder" >
+			<query_table schema="school_work" name="main_medicament" alias="mm" x="48" y="48" >
+				<column name="id" />
+				<column name="comments" />
+				<column name="bar_code" />
+				<column name="id_of_pharma_group_id" />
+				<column name="id_of_manufacturer_id" />
+				<column name="id_of_shape_id" />
+				<column name="id_of_name_of_medicament_id" />
+				<query_table schema="school_work" name="main_lot" alias="ml" x="320" y="48" fk="main_lot_id_of_medicament_id_2496f185_fk_main_medicament_id" type="Inner Join" >
+					<column name="id" />
+					<column name="datefact" />
+					<column name="count" />
+					<column name="number_of_lot" />
+					<column name="datestart" />
+					<column name="datefinish" />
+					<column name="price_manufacturer" />
+					<column name="price_pharmacy" />
+					<column name="defect" />
+					<column name="id_of_employee_id" />
+					<column name="id_of_medicament_id" />
+					<column name="if_of_reason_id" />
+					<query_table schema="school_work" name="main_employee" alias="me" x="560" y="48" fk="main_lot_id_of_employee_id_23eb8731_fk_main_employee_id" type="Inner Join" >
+						<column name="id" />
+						<column name="first_name" />
+						<column name="second_name" />
+						<column name="third_name" />
+						<column name="id_of_pharmacy_id" />
+					</query_table>
+				</query_table>
+			</query_table>
+		</query>
+	</layout>
+</project>
