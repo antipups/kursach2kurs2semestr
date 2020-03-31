@@ -10,9 +10,9 @@
 
                     <div class="form-group badge badge-secondary col p-2 mr-3">
                         <h5><p>1.Вывод всех типов аптек (и их количество)<br> по заданному району.</p></h5>
-                        <label for="pre_querys">Выберите тип желаемой аптеки:</label>
+                        <label for="pre_querys">Выберите тип желаемый район:</label>
                         <select class="form-control w-50 m-auto" id="pre_querys" name="first_querys">
-                            {% for row in first_querys %}
+                            {% for row in sixth_querys_district %}
                                 <option>{{row}}</option>
                             {% endfor %}
                         </select>
@@ -163,6 +163,22 @@
                         <option>{{row}}</option>
                     {% endfor %}
                 </select>
+            </div>
+
+            <div class="form-group badge badge-secondary p-2 col">
+                <h5><p>12.Получение всех дешевых лекарств опредленного типа по району.</p></h5>
+                <div class="row">
+                    <select class="form-control w-25 m-auto" id="pre_querys" name="twelveth_querys">
+                        {% for row in sixth_querys_medicament %}
+                            <option>{{row}}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control w-25 m-auto" id="pre_querys" name="twelveth_querys">
+                        {% for row in sixth_querys_district %}
+                            <option>{{row}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
 
             <button class="p-3 w-100 btn btn-info mb-5" id="pre_querys" type="submit" tabindex="1">Продолжить</button>
