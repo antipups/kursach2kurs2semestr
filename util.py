@@ -187,7 +187,7 @@ def get_lot_of_after(datefact):    # получение партий после 
 
 def get_lot_of_between(datefact):    # получение партий между отпределенными датами
     """
-        Десятый запрос на внутренний джоин но по датам
+        Четвертый запрос на внутренний джоин но по датам
     :param datefact:
     :return:
     """
@@ -212,38 +212,6 @@ def get_lot_of_between(datefact):    # получение партий межд�
             f'   AND main_pharmacy.id = "{main_pharmacy_id}" ||'  \
             'INNER JOIN main_lot as lot ON lot.id_of_employee_id = main_employee.id ||'  \
             f'   AND lot.datefact BETWEEN "{datefact[1]}" AND "{datefact[2]}" '.split('||')
-
-
-def get_defect_from_manufact(main_manufacturer_id):     # смотрим все дефекты для определенной фирмы
-    """
-        Девятый запрос на inner с leftom.
-    :param main_manufacturer_id:
-    :return:
-    """
-    query = 'SELECT name.title_of_medicament AS Название_лекарства, ' \
-            '       main_reason.title_of_reason AS Причина_возврата, ' \
-            '       main_lot.datestart AS Дата_создания '  \
-            'FROM main_manufacturer '  \
-            'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id ' \
-            f'   AND main_manufacturer.id = "{main_manufacturer_id}" '  \
-            'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ' \
-            '   AND main_lot.defect = "1" ' \
-            'LEFT JOIN main_name_of_medicament as name ON name.id = main_medicament.id_of_name_of_medicament_id ' \
-            'INNER JOIN main_reason ON main_reason.id = main_lot.id_of_reason_id'
-    result_of_query = execute(query)
-    return result_of_query, \
-           'SELECT name.title_of_medicament AS Название_лекарства, main_lot.reason AS Причина_возврата, ||' \
-            '   main_lot.datestart AS Дата_создания ||'  \
-            'FROM main_manufacturer ||'  \
-            'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id ||' \
-            f'   AND main_manufacturer.id = "{main_manufacturer_id}" ||'  \
-            'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ||' \
-            '   AND main_lot.defect = "1" ||' \
-            'LEFT JOIN main_name_of_medicament as name ON name.id = main_medicament.id_of_name_of_medicament_id ||' \
-            'INNER JOIN main_reason ON main_reason.id = main_lot.id_of_reason'.split('||'), \
-            graphics.third_graphic(x=tuple(row.get('Название_лекарства') for row in result_of_query),
-                                   y=tuple(row.get('Причина_возврата') for row in result_of_query),
-                                   z=tuple(row.get('Дата_создания') for row in result_of_query), )
 
 
 def get_all_about_medicaments():    # получение всех существующих лекарств
@@ -396,38 +364,50 @@ def get_all_employee_who_not_get_lot():
            'WHERE main_lot.id IS NULL'.split('||')
 
 
-def get_medicament_with_right_join(worker):    # получаем все лекарства принимаемые каким-то одним работником
-    query = 'SELECT main_lot.id, ' \
-            '       main_lot.number_of_lot AS Номер_партии, ' \
-            '       main_lot.datefact AS Дата_приема, '  \
-            '       main_lot.datestart AS Дата_создания, '  \
-            '       main_lot.datefinish AS Срок_годности, '  \
-            '       main_lot.price_manufacturer AS Цена_фирмы, '  \
-            '       main_lot.price_pharmacy AS Цена_аптеки, '  \
-            '       main_lot.defect AS Наличие_дефекта, '  \
-            '       main_lot.reason AS Причина_дефекта '  \
-            'FROM main_lot ' \
-            'INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
-            f'   AND main_employee.id = "{worker}" ' \
-            'GROUP BY main_lot.id '
+def get_defect_from_manufact(main_manufacturer_id):     # смотрим все дефекты для определенной фирмы
+    """
+        Десятый запрос на inner с leftom.
+    :param main_manufacturer_id:
+    :return:
+    """
+    query = 'SELECT name.title_of_medicament AS Название_лекарства, ' \
+            '       main_reason.title_of_reason AS Причина_возврата, ' \
+            '       main_lot.datestart AS Дата_создания '  \
+            'FROM main_manufacturer '  \
+            'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id ' \
+            f'   AND main_manufacturer.id = "{main_manufacturer_id}" '  \
+            'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ' \
+            '   AND main_lot.defect = "1" ' \
+            'LEFT JOIN main_name_of_medicament as name ON name.id = main_medicament.id_of_name_of_medicament_id ' \
+            'INNER JOIN main_reason ON main_reason.id = main_lot.id_of_reason_id'
     result_of_query = execute(query)
     return result_of_query, \
-           'SELECT main_lot.id, ||' \
-            '       main_lot.number_of_lot AS Номер_партии, ||' \
-            '       main_lot.datefact AS Дата_приема, ||'  \
-            '       main_lot.datestart AS Дата_создания, ||'  \
-            '       main_lot.datefinish AS Срок_годности, ||'  \
-            '       main_lot.price_manufacturer AS Цена_фирмы, ||'  \
-            '       main_lot.price_pharmacy AS Цена_аптеки, ||'  \
-            '       main_lot.defect AS Наличие_дефекта, ||'  \
-            '       main_lot.reason AS Причина_дефекта ||'  \
-            'FROM main_lot ||' \
-            'INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ||' \
-            f'   AND main_employee.id = "{worker}" ||' \
-            'GROUP BY main_lot.id '.split('||')
+           'SELECT name.title_of_medicament AS Название_лекарства, main_lot.reason AS Причина_возврата, ||' \
+            '   main_lot.datestart AS Дата_создания ||'  \
+            'FROM main_manufacturer ||'  \
+            'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id ||' \
+            f'   AND main_manufacturer.id = "{main_manufacturer_id}" ||'  \
+            'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ||' \
+            '   AND main_lot.defect = "1" ||' \
+            'LEFT JOIN main_name_of_medicament as name ON name.id = main_medicament.id_of_name_of_medicament_id ||' \
+            'INNER JOIN main_reason ON main_reason.id = main_lot.id_of_reason'.split('||'), \
+            graphics.third_graphic(x=tuple(row.get('Название_лекарства') for row in result_of_query),
+                                   y=tuple(row.get('Причина_возврата') for row in result_of_query),
+                                   z=tuple(row.get('Дата_создания') for row in result_of_query), )
+
+
+##################################################################################################################
+
+# ================================================ ЗАДАНИЯ ДЛЯ СЕДЬМОЙ ЛАБЫ ======================================
+
+##################################################################################################################
 
 
 def get_all_employeers_in_db():
+    """
+        Одинадцатый запрос, итоговый запрос без условия.
+    :return:
+    """
     query = 'SELECT id,' \
             '       first_name AS Имя,' \
             '       second_name AS Фамилия, ' \
@@ -443,6 +423,11 @@ def get_all_employeers_in_db():
 
 
 def get_medicament_with_define_shape(tenth_query):
+    """
+        Двенадцатый запрос с условием на данные.
+    :param tenth_query:
+    :return:
+    """
     main_name_of_medicament_id = tenth_query[0][:tenth_query[0].find(' ')]
     main_shape_id = tenth_query[1][:tenth_query[1].find(' ')]
     main_district_id = tenth_query[2][:tenth_query[2].find(' ')]
@@ -478,7 +463,48 @@ def get_medicament_with_define_shape(tenth_query):
             f'  AND main_medicament.id_of_name_of_medicament_id = {main_name_of_medicament_id}'.split('||')
 
 
+def get_medicament_with_right_join(worker):    # получаем все лекарства принимаемые каким-то одним работником
+    """
+        Тринадцатый запрос с условием на группы.
+    :param worker:
+    :return:
+    """
+    query = 'SELECT main_lot.id, ' \
+            '       main_lot.number_of_lot AS Номер_партии, ' \
+            '       main_lot.datefact AS Дата_приема, '  \
+            '       main_lot.datestart AS Дата_создания, '  \
+            '       main_lot.datefinish AS Срок_годности, '  \
+            '       main_lot.price_manufacturer AS Цена_фирмы, '  \
+            '       main_lot.price_pharmacy AS Цена_аптеки, '  \
+            '       main_lot.defect AS Наличие_дефекта, '  \
+            '       main_lot.reason AS Причина_дефекта '  \
+            'FROM main_lot ' \
+            'INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
+            f'   AND main_employee.id = "{worker}" ' \
+            'GROUP BY main_lot.id '
+    result_of_query = execute(query)
+    return result_of_query, \
+           'SELECT main_lot.id, ||' \
+            '       main_lot.number_of_lot AS Номер_партии, ||' \
+            '       main_lot.datefact AS Дата_приема, ||'  \
+            '       main_lot.datestart AS Дата_создания, ||'  \
+            '       main_lot.datefinish AS Срок_годности, ||'  \
+            '       main_lot.price_manufacturer AS Цена_фирмы, ||'  \
+            '       main_lot.price_pharmacy AS Цена_аптеки, ||'  \
+            '       main_lot.defect AS Наличие_дефекта, ||'  \
+            '       main_lot.reason AS Причина_дефекта ||'  \
+            'FROM main_lot ||' \
+            'INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ||' \
+            f'   AND main_employee.id = "{worker}" ||' \
+            'GROUP BY main_lot.id '.split('||')
+
+
 def get_amount_of_employeers_in_pharmacy(main_district_id):
+    """
+        Запрос на группы, но не использующийся.
+    :param main_district_id:
+    :return:
+    """
     query = 'SELECT main_pharmacy.title_of_pharmacy AS Название_аптеки, ' \
             '       COUNT(main_employee.id) AS Количество_работников ' \
             'FROM main_district ' \
@@ -498,6 +524,11 @@ def get_amount_of_employeers_in_pharmacy(main_district_id):
 
 
 def get_cheap_medicaments(get_all_data):
+    """
+        Четырнадцатый запрос на группы + данные + с подзапросом.
+    :param get_all_data:
+    :return:
+    """
     main_district_id = get_all_data[1][:get_all_data[1].find(' ')]
     main_medicament_id = get_all_data[0][:get_all_data[0].find(' ')]
     # подказпрос который возвращает все найденные лекарства в данном регионе
@@ -587,15 +618,15 @@ def sum_all_methods_for_querys(get_all_data):
             '<h3>11.Получение всех сотрудников всех аптек<br>(итоговый запрос без условия)</h3>':
                 get_all_employeers_in_db(),
 
-            '<h3>12.Получение всех лекарст с определенной формой,<br>по определенному району<br>(итоговый запрос с условия на данные)</h3>'
+            '<h3>12.Получение всех лекарст с определенной формой,<br>по определенному району<br>(итоговый запрос с условием на данные)</h3>'
             f"<div class=\"alert alert-primary\">Исходные данные:<br>{', '.join(get_all_data.get('tenth_querys'))} </div>":
                 get_medicament_with_define_shape(get_all_data.get('tenth_querys')),
 
-            '<h3>13.Получение всех сотрудников всех аптек по району<br>(итоговый запрос с условием на группы)</h3>'
+            '<h3>13.Получение количества всех сотрудников всех аптек по району<br>(итоговый запрос с условием на группы)</h3>'
             f"<div class=\"alert alert-primary\">Исходные данные:<br>{get_all_data.get('eleventh_querys')[0]} </div>":
-                get_amount_of_employeers_in_pharmacy(get_all_data.get('eleventh_querys')[0][:get_all_data.get('eleventh_querys')[0].find(' ')]),
+                get_amount_of_employeers_in_pharmacy(get_all_data.get('thirdth_querys')[0][:get_all_data.get('thirdth_querys')[0].find(' ')]),
 
-            '<h3>14.Получение всех дешевых препаратав по району<br>(итоговый запрос без с условие на группы и данные)</h3>'
+            '<h3>14.Получение всех дешевых препаратов по району<br>(итоговый запрос с условием на группы и данные + запрос с подзапросом)</h3>'
             f"<div class=\"alert alert-primary\">Исходные данные:<br>{', '.join(get_all_data.get('twelveth_querys'))} </div>":
                 get_cheap_medicaments(get_all_data.get('twelveth_querys')),
             }
