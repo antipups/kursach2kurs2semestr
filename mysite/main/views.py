@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
@@ -173,7 +175,6 @@ def hw(request, dict_of_tables=dict_of_tables):
             dict_of_data.update({'Table': tuple(map(lambda row: row.getter, dict_of_data.get('pg').get_page(dict_of_data.get('page')).object_list))})
         else:   # если таблица мала
             dict_of_data.update({'Table': tuple(map(lambda row: row.getter, table.objects.all()))})
-        print(dict_of_data)
         return render(request, 'read_table.html', dict_of_data)
     else:  # если прекратили просмотр таблиц
         if dict_of_data.get('pg') is not None:
