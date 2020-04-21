@@ -1,106 +1,54 @@
-import pprint
-
-import pymysql.cursors
-import config
 import graphics
 import datetime
-
-paramstyle = "%s"
-
-
-def deploy_database():
-    """
-     Создать нужные таблицы в базе данных
-    """
-    pass
-
-
-def connect():
-    """
-     Подключение к базе данных
-    """
-    return pymysql.connect(
-        config.db_host,
-        config.db_user,
-        config.db_password,
-        config.db_database,
-        use_unicode=True,
-        cursorclass=pymysql.cursors.DictCursor)
-
-
-def execute(sql, *args, commit=False):
-    """
-     Формат запроса:
-     execute('<Запрос>', <передаваемые параметры>, <commit=True>)
-    """
-    db = connect()
-    cur = db.cursor()
-    try:
-        cur.execute(sql % {"p": paramstyle}, args)
-    except pymysql.err.InternalError as e:
-        if sql.find('texts') == -1:
-            print('Cannot execute mysql request: ' + str(e))
-        return
-    if commit:
-        db.commit()
-        db.close()
-    else:
-        ans = cur.fetchall()
-        db.close()
-        return ans
-
+import main
 
 #   ========================================    ЗАДАНИЯ     ================================================
 
 
 def get_all_medicament_from_pharmacy(name_of_pharmacy):
-    result_of_query = execute('SELECT title_of_medicament, COUNT(title_of_medicament) as count FROM main_pharmacy '     # по итогу выводим список с названиеями всех лекарств доставленных в аптеку 
-                              'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id AND '    # получаю необходимую аптеку
-                              f'main_pharmacy.id = (SELECT id FROM main_pharmacy WHERE title_of_pharmacy = "{name_of_pharmacy}" ) '    # название аптеку
-                              'INNER JOIN main_lot ON main_lot.id_of_employee_id = main_employee.id '  # получаю все партии
-                              'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id '   # получаю лекарства из всех партий
-                              'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' # получаем все названия лекарств + их кол-во
-                              'GROUP BY title_of_medicament '
-                              'ORDER BY count DESC '
-                              'LIMIT 5'
-                              )
-    # print(tuple(row.get('title_of_medicament').rstrip() for row in result_of_query))
-    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query)
+    result_of_query = 'SELECT main_lot.id, title_of_medicament, COUNT(title_of_medicament) as count FROM main_pharmacy ' \
+                      'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id AND ' \
+                      f'main_pharmacy.id = (SELECT id FROM main_pharmacy WHERE title_of_pharmacy = "{name_of_pharmacy}" ) ' \
+                      'INNER JOIN main_lot ON main_lot.id_of_employee_id = main_employee.id ' \
+                      'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id ' \
+                      'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' \
+                      'GROUP BY title_of_medicament ' \
+                      'ORDER BY count DESC ' \
+                      'LIMIT 5'
+    return tuple(row.title_of_medicament for row in main.models.Manufacturer.objects.raw(result_of_query))
 
 
 def get_all_medicament_from_district(name_of_district):
 
-    result_of_query = execute('SELECT title_of_medicament, COUNT(title_of_medicament) as count FROM main_district '     # по итогу выводим список с названиеями всех лекарств доставленных в аптеку 
-                              'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id AND '
-                              f'main_district.id = (SELECT id FROM main_district WHERE title_of_district = "{name_of_district}") '    # получаю необходимую аптеку
-                              'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id '    # получаю необходимую аптеку
-                              'INNER JOIN main_lot ON main_lot.id_of_employee_id = main_employee.id '  # получаю все партии
-                              'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id '   # получаю лекарства из всех партий
-                              'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' # получаем все названия лекарств + их кол-во
-                              'GROUP BY title_of_medicament '
-                              'ORDER BY count DESC'
-                              )
-    return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query[:5])
+    result_of_query = 'SELECT main_lot.id, title_of_medicament, COUNT(title_of_medicament) as count FROM main_district ' \
+                      'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id AND ' \
+                      f'main_district.id = (SELECT id FROM main_district WHERE title_of_district = "{name_of_district}") ' \
+                      'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id ' \
+                      'INNER JOIN main_lot ON main_lot.id_of_employee_id = main_employee.id ' \
+                      'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id ' \
+                      'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' \
+                      'GROUP BY title_of_medicament ' \
+                      'ORDER BY count DESC ' \
+                      'LIMIT 5'
+    return tuple(row.title_of_medicament for row in main.models.Manufacturer.objects.raw(result_of_query))
 
 
 def get_all_pharmacy_from_district(name_of_district):
-    result_of_query = execute('SELECT title_of_type, COUNT(title_of_type) as count FROM main_district '     # по итогу выводим список с названиеями всех лекарств доставленных в аптеку 
-                              'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id AND '
-                              f'main_district.id = (SELECT id FROM main_district WHERE title_of_district = "{name_of_district}") '    # получаю необходимую аптеку
-                              'INNER JOIN main_type ON main_type.id = main_pharmacy.id_of_type_id '
-                              'GROUP BY title_of_type '
-                              'ORDER BY count DESC'
-                              )
-    return tuple(row.get('title_of_type') + ': ' + str(row.get('count')) for row in result_of_query)
+    result_of_query = 'SELECT main_pharmacy.id, title_of_type, COUNT(title_of_type) as count FROM main_district ' \
+                      'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id AND ' \
+                      f'main_district.id = (SELECT id FROM main_district WHERE title_of_district = "{name_of_district}") ' \
+                      'INNER JOIN main_type ON main_type.id = main_pharmacy.id_of_type_id ' \
+                      'GROUP BY title_of_type ' \
+                      'ORDER BY count DESC'
+    return tuple(row.title_of_type + ': ' + str(row.count) for row in main.models.Manufacturer.objects.raw(result_of_query))
 
 
 def get_all_comebacks_from_manufacturer(name_of_manufacturer):
-    result_of_query = execute('SELECT SUM(main_lot.price_manufacturer), COUNT(main_lot.defect) FROM main_manufacturer '     # по итогу выводим список с названиеями всех лекарств доставленных в аптеку 
-                              'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id AND '
-                              f'main_manufacturer.id = (SELECT id FROM main_manufacturer WHERE title_of_manufacturer = "{name_of_manufacturer}") '    # получаю необходимую аптеку
-                              'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id WHERE defect="1" '
-                              )
-    return tuple('Сумма: ' + str(row.get('SUM(main_lot.price_manufacturer)')) + ', Количество возвратов: ' + str(row.get('COUNT(main_lot.defect)')) + '.' for row in result_of_query)
+    result_of_query = 'SELECT main_medicament.id, SUM(main_lot.price_manufacturer) as sum, COUNT(main_lot.defect) as count FROM main_manufacturer ' \
+                      'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id AND ' \
+                      f'main_manufacturer.id = (SELECT id FROM main_manufacturer WHERE title_of_manufacturer = "{name_of_manufacturer}") ' \
+                      'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id WHERE defect="1" '
+    return tuple('Сумма: ' + str(row.sum) + ', Количество возвратов: ' + str(row.count) for row in main.models.Manufacturer.objects.raw(result_of_query))
 
 
 #   ========================================    ЗАПРОСЫ     ================================================
@@ -112,21 +60,22 @@ def get_amount_pharmacy_type_in_district(main_district_id):     # получен
     :param main_district_id:
     :return:
     """
-    query = 'SELECT main_type.title_of_type as Название_типа, COUNT(main_pharmacy.id_of_type_id) as Количество_аптек_данного_типа ' \
+    query = 'SELECT main_pharmacy.id, main_type.title_of_type as Название_типа, ' \
+            '       COUNT(main_pharmacy.id_of_type_id) as Количество_аптек_данного_типа ' \
             'FROM main_district ' \
             'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ' \
             f'   AND main_district.id = "{main_district_id}" ' \
             'INNER JOIN main_type ON main_type.id = main_pharmacy.id_of_type_id ' \
             'GROUP BY main_pharmacy.id_of_type_id'
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_типа': row.Название_типа, 'Количество_аптек_данного_типа':row.Количество_аптек_данного_типа} for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT main_pharmacy.id_of_type_id as id_типа, COUNT(main_pharmacy.id_of_type_id) as Количество_аптек_данного_типа ||' \
            'FROM main_district ||' \
            'INNER JOIN main_pharmacy ON main_district.id = main_pharmacy.id_of_district_id ||' \
            f'   AND main_district.id = "{main_district_id}" ||' \
            'GROUP BY main_pharmacy.id_of_type_id ||'.split('||'), \
-           graphics.first_graphic(labels=tuple(row.get('Название_типа') for row in result_of_query),
-                                  values=tuple(row.get('Количество_аптек_данного_типа') for row in result_of_query))
+           graphics.first_graphic(labels=tuple(row.get("Название_типа") for row in result_of_query),
+                                  values=tuple(row.get("Количество_аптек_данного_типа") for row in result_of_query))
 
 
 def get_amount_of_medicaments(main_pharmacy_id):    # получение медикаментов из аптеки
@@ -135,7 +84,9 @@ def get_amount_of_medicaments(main_pharmacy_id):    # получение мед�
     :param main_pharmacy_id:
     :return:
     """
-    query = 'SELECT title_of_medicament AS Название_медикамента, COUNT(title_of_medicament) AS Количество_доставок FROM ' \
+    query = 'SELECT main_name_of_medicament.id, title_of_medicament AS Название_медикамента, ' \
+            '       COUNT(title_of_medicament) AS Количество_доставок ' \
+            'FROM ' \
             '   (SELECT main_lot.id_of_medicament_id ' \
             '   FROM main_lot ' \
             '   INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
@@ -143,7 +94,7 @@ def get_amount_of_medicaments(main_pharmacy_id):    # получение мед�
             f'       AND main_pharmacy.id = "{main_pharmacy_id}") AS medicament_in_pharm ' \
             'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = medicament_in_pharm.id_of_medicament_id ' \
             'GROUP BY title_of_medicament'
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_медикамента': row.Название_медикамента, 'Количество_доставок': row.Количество_доставок} for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT title_of_medicament AS Название_медикамента, COUNT(title_of_medicament) AS Количество_доставок FROM ||' \
            '   (SELECT main_lot.id_of_medicament_id ||' \
@@ -166,16 +117,29 @@ def get_lot_of_after(datefact):    # получение партий после 
     :return:
     """
     main_pharmacy_id = datefact[0][:datefact[0].find(' ')]
-    query = 'SELECT lot.id, lot.datefact AS Дата_доставки, lot.count AS Количество, lot.number_of_lot AS Номер_партии, ' \
-            '    lot.datestart AS Дата_изготовления, lot.datefinish AS Срок_годности, lot.price_manufacturer AS Цена_фирмы, ' \
-            '    lot.price_pharmacy AS Цена_аптеки, lot.defect AS Дефект, ' \
-            '    CONCAT(main_employee.second_name, " ", LEFT(main_employee.first_name, 1), ". ", LEFT(main_employee.third_name, 1), ".") AS Принявший_сотрудник '   \
+    query = 'SELECT lot.id, lot.datefact AS Дата_доставки, ' \
+            '       lot.count AS Количество, ' \
+            '       lot.number_of_lot AS Номер_партии, ' \
+            '       lot.datestart AS Дата_изготовления, ' \
+            '       lot.datefinish AS Срок_годности, ' \
+            '       lot.price_manufacturer AS Цена_фирмы, ' \
+            '       lot.price_pharmacy AS Цена_аптеки, ' \
+            '       lot.defect AS Дефект, ' \
+            '       CONCAT(main_employee.second_name, " ", LEFT(main_employee.first_name, 1), ". ", LEFT(main_employee.third_name, 1), ".") AS Принявший_сотрудник '   \
             'FROM main_pharmacy ' \
             'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id ' \
             f'   AND main_pharmacy.id = "{main_pharmacy_id}" '  \
             'INNER JOIN main_lot as lot ON lot.id_of_employee_id = main_employee.id '  \
             f'   AND lot.datefact > "{datefact[1]}" '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Дата_доставки': row.Дата_доставки,
+                             'Количество': row.Количество,
+                             'Номер_партии': row.Номер_партии,
+                             'Дата_изготовления': row.Дата_изготовления,
+                             'Срок_годности': row.Срок_годности,
+                             'Цена_фирмы': row.Цена_фирмы,
+                             'Цена_аптеки': row.Цена_аптеки,
+                             'Принявший_сотрудник': row.Принявший_сотрудник,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     for row in result_of_query:
         row['Дата_доставки'] = row.get('Дата_доставки').strftime('%Y-%m-%d')
         row['Дата_изготовления'] = row.get('Дата_изготовления').strftime('%Y-%m-%d')
@@ -199,16 +163,30 @@ def get_lot_of_between(datefact):    # получение партий межд�
     :return:
     """
     main_pharmacy_id = datefact[0][:datefact[0].find(' ')]
-    query = 'SELECT lot.id, lot.datefact AS Дата_доставки, lot.count AS Количество, lot.number_of_lot AS Номер_партии, ' \
-            '    lot.datestart AS Дата_изготовления, lot.datefinish AS Срок_годности, lot.price_manufacturer AS Цена_фирмы, ' \
-            '    lot.price_pharmacy AS Цена_аптеки, lot.defect AS Дефект, ' \
-            '    CONCAT(main_employee.second_name, " ", LEFT(main_employee.first_name, 1), ". ", LEFT(main_employee.third_name, 1), ".") AS Принявший_сотрудник '   \
+    query = 'SELECT lot.id, lot.datefact AS Дата_доставки, ' \
+            '       lot.count AS Количество, ' \
+            '       lot.number_of_lot AS Номер_партии, ' \
+            '       lot.datestart AS Дата_изготовления, ' \
+            '       lot.datefinish AS Срок_годности, ' \
+            '       lot.price_manufacturer AS Цена_фирмы, ' \
+            '       lot.price_pharmacy AS Цена_аптеки, ' \
+            '       lot.defect AS Дефект, ' \
+            '       CONCAT(main_employee.second_name, " ", LEFT(main_employee.first_name, 1), ". ", LEFT(main_employee.third_name, 1), ".") AS Принявший_сотрудник '   \
             'FROM main_pharmacy ' \
             'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id ' \
             f'   AND main_pharmacy.id = "{main_pharmacy_id}" '  \
             'INNER JOIN main_lot as lot ON lot.id_of_employee_id = main_employee.id '  \
             f'   AND lot.datefact BETWEEN "{datefact[1]}" AND "{datefact[2]}" '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Дата_доставки': row.Дата_доставки,
+                             'Количество': row.Количество,
+                             'Номер_партии': row.Номер_партии,
+                             'Дата_изготовления': row.Дата_изготовления,
+                             'Срок_годности': row.Срок_годности,
+                             'Цена_фирмы': row.Цена_фирмы,
+                             'Цена_аптеки': row.Цена_аптеки,
+                             'Дефект': row.Дефект,
+                             'Принявший_сотрудник': row.Принявший_сотрудник,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     for row in result_of_query:
         row['Дата_доставки'] = row.get('Дата_доставки').strftime('%Y-%m-%d')
         row['Дата_изготовления'] = row.get('Дата_изготовления').strftime('%Y-%m-%d')
@@ -231,7 +209,7 @@ def get_all_about_medicaments():    # получение всех существ
         (join без условия, первый запрос)
     :return:
     """
-    query = 'SELECT ' \
+    query = 'SELECT main_name_of_medicament.id, ' \
             '       main_name_of_medicament.title_of_medicament AS Название_лекарства, ' \
             '       main_pharma_group.title_of_pharma_group AS Фармакалогичесикая_группа, ' \
             '       main_manufacturer.title_of_manufacturer AS Издатель, ' \
@@ -242,7 +220,12 @@ def get_all_about_medicaments():    # получение всех существ
             'INNER JOIN main_pharma_group ON main_pharma_group.id = main_medicament.id_of_pharma_group_id ' \
             'INNER JOIN main_manufacturer ON main_manufacturer.id = main_medicament.id_of_manufacturer_id ' \
             'INNER JOIN main_shape ON main_shape.id = main_medicament.id_of_shape_id '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_лекарства': row.Название_лекарства,
+                             'Фармакалогичесикая_группа': row.Фармакалогичесикая_группа,
+                             'Издатель': row.Издатель,
+                             'Форма_выпуска': row.Форма_выпуска,
+                             'Инструкция': row.Инструкция,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT ' \
             '       main_name_of_medicament.title_of_medicament AS Название_лекарства, ||' \
@@ -263,13 +246,18 @@ def get_all_employeers():   # получение всех работников �
         (join без условия, второй запрос)
     :return:
     """
-    query = 'SELECT main_pharmacy.title_of_pharmacy AS Название_аптеки, ' \
+    query = 'SELECT main_pharmacy.id, ' \
+            '       main_pharmacy.title_of_pharmacy AS Название_аптеки, ' \
             '       main_employee.second_name AS Фамилия, ' \
             '       main_employee.first_name AS Имя, ' \
             '       main_employee.third_name AS Отчество '  \
             'FROM main_pharmacy ' \
             'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_аптеки': row.Название_аптеки,
+                             'Фамилия': row.Фамилия,
+                             'Имя': row.Имя,
+                             'Отчество': row.Отчество,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT main_pharmacy.title_of_pharmacy AS Название_аптеки, ||' \
            '       main_employee.second_name AS Фамилия, ||' \
@@ -285,7 +273,7 @@ def get_employee_from_district():
         (join без условия, третий запрос)
     :return:
     """
-    query = 'SELECT ' \
+    query = 'SELECT main_pharmacy.id, ' \
             '       main_district.title_of_district AS Название_района, ' \
             '       main_pharmacy.title_of_pharmacy AS Название_аптеки, ' \
             '       main_employee.second_name AS Фамилия, ' \
@@ -297,7 +285,14 @@ def get_employee_from_district():
             'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id ' \
             'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id ' \
             'INNER JOIN main_lot ON main_lot.id_of_employee_id = main_employee.id '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_района': row.Название_района,
+                             'Название_аптеки': row.Название_аптеки,
+                             'Фамилия': row.Фамилия,
+                             'Имя': row.Имя,
+                             'Отчество': row.Отчество,
+                             'id_партии': row.id_партии,
+                             'Дата_приема': row.Дата_приема,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     for row in result_of_query:
         row['Дата_приема'] = row.get('Дата_приема').strftime('%Y-%m-%d')
     return result_of_query, \
@@ -320,7 +315,7 @@ def get_all_unknown_medicaments():
         Восьмой запрос на левое внешнее соединение.
     :return:
     """
-    query = 'SELECT ' \
+    query = 'SELECT main_manufacturer.id, ' \
             '       main_name_of_medicament.title_of_medicament AS Название_лекарства, ' \
             '       main_pharma_group.title_of_pharma_group AS Фармакалогичесикая_группа, ' \
             '       main_manufacturer.title_of_manufacturer AS Издатель, ' \
@@ -333,7 +328,12 @@ def get_all_unknown_medicaments():
             'LEFT OUTER JOIN main_manufacturer ON main_manufacturer.id = main_medicament.id_of_manufacturer_id ' \
             'LEFT OUTER JOIN main_shape ON main_shape.id = main_medicament.id_of_shape_id ' \
             f'WHERE main_lot.id_of_medicament_id IS NULL'
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_лекарства': row.Название_лекарства,
+                             'Фармакалогичесикая_группа': row.Фармакалогичесикая_группа,
+                             'Издатель': row.Издатель,
+                             'Форма_выпуска': row.Форма_выпуска,
+                             'Инструкция': row.Инструкция,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT ||' \
            '       main_name_of_medicament.title_of_medicament AS Название_лекарства, ||' \
@@ -355,7 +355,7 @@ def get_all_employee_who_not_get_lot():
         Девятый запрос на правое внешнее соединение.
     :return:
     """
-    query = 'SELECT ' \
+    query = 'SELECT main_pharmacy.id, ' \
             '       main_pharmacy.title_of_pharmacy AS Название_аптеки, ' \
             '       main_employee.second_name AS Фамилия, ' \
             '       main_employee.first_name AS Имя, ' \
@@ -364,7 +364,11 @@ def get_all_employee_who_not_get_lot():
             'RIGHT OUTER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
             'LEFT JOIN main_pharmacy ON main_pharmacy.id = main_employee.id_of_pharmacy_id ' \
             'WHERE main_lot.id IS NULL'
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_аптеки': row.Название_аптеки,
+                             'Фамилия': row.Фамилия,
+                             'Имя': row.Имя,
+                             'Отчество': row.Отчество,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT ||' \
            '       main_pharmacy.title_of_pharmacy AS Название_аптеки, ||' \
@@ -383,7 +387,8 @@ def get_defect_from_manufact(main_manufacturer_id):     # смотрим все 
     :param main_manufacturer_id:
     :return:
     """
-    query = 'SELECT name.title_of_medicament AS Название_лекарства, ' \
+    query = 'SELECT main_reason.id, ' \
+            '       name.title_of_medicament AS Название_лекарства, ' \
             '       main_reason.title_of_reason AS Причина_возврата, ' \
             '       main_lot.datestart AS Дата_создания '  \
             'FROM main_manufacturer '  \
@@ -393,7 +398,10 @@ def get_defect_from_manufact(main_manufacturer_id):     # смотрим все 
             '   AND main_lot.defect = "1" ' \
             'LEFT JOIN main_name_of_medicament as name ON name.id = main_medicament.id_of_name_of_medicament_id ' \
             'INNER JOIN main_reason ON main_reason.id = main_lot.id_of_reason_id'
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_лекарства': row.Название_лекарства,
+                             'Причина_возврата': row.Причина_возврата,
+                             'Дата_создания': row.Дата_создания,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     for row in result_of_query:
         row['Дата_создания'] = row.get('Дата_создания').strftime('%Y-%m-%d')
     return result_of_query, \
@@ -428,7 +436,10 @@ def get_all_employeers_in_db():
             '       second_name AS Фамилия, ' \
             '       third_name AS Отчество ' \
             'FROM main_employee'
-    result_of_query = execute(query)
+    result_of_query = tuple({'Имя': row.Имя,
+                             'Фамилия': row.Фамилия,
+                             'Отчество': row.Отчество,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT id, ||' \
            '       first_name AS Имя, ||' \
@@ -442,7 +453,8 @@ def get_all_medicament_from_manufact(id_of_manufacturer_id):
         Двенадцатый запрос с условием на данные.
     :return:
     """
-    query = 'SELECT main_name_of_medicament.title_of_medicament AS Название_лекарства,' \
+    query = 'SELECT main_lot.id, ' \
+            '       main_name_of_medicament.title_of_medicament AS Название_лекарства,' \
             '       main_lot.datefact AS Дата_доставки, ' \
             '       main_lot.number_of_lot AS Номер_партии, ' \
             '       main_lot.count AS Количество, ' \
@@ -452,8 +464,13 @@ def get_all_medicament_from_manufact(id_of_manufacturer_id):
             'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id ' \
             f'   AND main_medicament.id_of_manufacturer_id = "{id_of_manufacturer_id}" ' \
             'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id '
-
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_лекарства': row.Название_лекарства,
+                             'Дата_доставки': row.Дата_доставки,
+                             'Номер_партии': row.Номер_партии,
+                             'Количество': row.Количество,
+                             'Цена_фирмы': row.Цена_фирмы,
+                             'Дефект': row.Дефект,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     for row in result_of_query:
         row['Дата_доставки'] = row.get('Дата_доставки').strftime('%Y-%m-%d')
     return result_of_query, \
@@ -529,7 +546,15 @@ def get_medicament_with_right_join(worker):    # получаем все лек�
             'INNER JOIN main_employee ON main_employee.id = main_lot.id_of_employee_id ' \
             f'   AND main_employee.id = "{worker}" ' \
             'GROUP BY main_lot.id '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Номер_партии': row.Номер_партии,
+                             'Дата_приема': row.Дата_приема,
+                             'Дата_создания': row.Дата_создания,
+                             'Срок_годности': row.Срок_годности,
+                             'Цена_фирмы': row.Цена_фирмы,
+                             'Цена_аптеки': row.Цена_аптеки,
+                             'Наличие_дефекта': row.Наличие_дефекта,
+                             'Причина_дефекта': row.Причина_дефекта,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     for row in result_of_query:
         row['Дата_приема'] = row.get('Дата_приема').strftime('%Y-%m-%d')
         row['Дата_создания'] = row.get('Дата_создания').strftime('%Y-%m-%d')
@@ -556,14 +581,17 @@ def get_amount_of_employeers_in_pharmacy(main_district_id):
     :param main_district_id:
     :return:
     """
-    query = 'SELECT main_pharmacy.title_of_pharmacy AS Название_аптеки, ' \
+    query = 'SELECT main_pharmacy.id, ' \
+            '       main_pharmacy.title_of_pharmacy AS Название_аптеки, ' \
             '       COUNT(main_employee.id) AS Количество_работников ' \
             'FROM main_district ' \
             'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id ' \
             f'   AND main_district.id = {main_district_id} ' \
             'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id ' \
             'GROUP BY main_pharmacy.title_of_pharmacy '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_аптеки': row.Название_аптеки,
+                             'Количество_работников': row.Количество_работников,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT main_pharmacy.title_of_pharmacy AS Название_аптеки, ||' \
             '       COUNT(main_employee.id) AS Количество_работников ||' \
@@ -583,7 +611,7 @@ def get_cheap_medicaments(get_all_data):
     main_district_id = get_all_data[1][:get_all_data[1].find(' ')]
     main_medicament_id = get_all_data[0][:get_all_data[0].find(' ')]
     # подказпрос который возвращает все найденные лекарства в данном регионе
-    sub_query = 'SELECT ' \
+    sub_query = 'SELECT main_pharmacy.id, ' \
                 '       main_lot.count AS Количество_препарата, ' \
                 '       main_lot.price_pharmacy AS Цена_препарата, ' \
                 '       main_pharmacy.title_of_pharmacy AS Название_аптеки,' \
@@ -597,12 +625,16 @@ def get_cheap_medicaments(get_all_data):
                 f'   AND main_medicament.id = "{main_medicament_id}" ' \
                 'ORDER BY КПД DESC ' \
                 f'LIMIT {2**64-1}'     #  кастыль MARIADB
-    query = 'SELECT Количество_препарата,' \
+    query = 'SELECT list_medicaments.id, ' \
+            '       Количество_препарата,' \
             '       Цена_препарата, ' \
             '       Название_аптеки ' \
             f'FROM ({sub_query}) AS list_medicaments ' \
             'GROUP BY list_medicaments.Название_аптеки '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Количество_препарата': row.Количество_препарата,
+                             'Цена_препарата': row.Цена_препарата,
+                             'Название_аптеки': row.Название_аптеки,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT Количество_препарата, ||' \
            '       Цена_препарата, ||' \
@@ -633,7 +665,7 @@ def get_cheap_all_medicaments(main_district_id):
     :return:
     """
     # подказпрос который возвращает все найденные лекарства в данном регионе
-    sub_query = 'SELECT ' \
+    sub_query = 'SELECT main_pharmacy.id, ' \
                 '       main_lot.count AS Количество_препарата, ' \
                 '       main_name_of_medicament.title_of_medicament AS Название_лекарства, ' \
                 '       main_lot.price_pharmacy AS Цена_препарата, ' \
@@ -648,13 +680,18 @@ def get_cheap_all_medicaments(main_district_id):
                 'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' \
                 'ORDER BY КПД DESC ' \
                 f'LIMIT {2**64-1}'     #  кастыль MARIADB
-    query = 'SELECT Название_лекарства, ' \
+    query = 'SELECT list_medicaments.id, ' \
+            '       Название_лекарства, ' \
             '       Количество_препарата,' \
             '       Цена_препарата, ' \
             '       Название_аптеки ' \
             f'FROM ({sub_query}) AS list_medicaments ' \
             'GROUP BY list_medicaments.Название_лекарства '
-    result_of_query = execute(query)
+    result_of_query = tuple({'Название_лекарства': row.Название_лекарства,
+                             'Количество_препарата': row.Количество_препарата,
+                             'Цена_препарата': row.Цена_препарата,
+                             'Название_аптеки': row.Название_аптеки,
+                             } for row in main.models.Manufacturer.objects.raw(query))
     return result_of_query, \
            'SELECT Название_лекарства, ||' \
            '       Количество_препарата, ||' \

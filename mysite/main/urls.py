@@ -16,5 +16,5 @@ urlpatterns = [
          lambda request: render(request, 'auth.html', {}), name='8'),
     path('login/', auth.login_menu, name='9'),
     path('pre_querys/', pre_querys.zapolnenie, name='10'),
-    path('запросы/', querys.start, name='11'),
+    path('querys/', querys.start, name='11'),
 ]
