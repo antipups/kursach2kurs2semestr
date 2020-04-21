@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 # from PIL import Image
 
 
@@ -335,7 +336,7 @@ class Lot(models.Model):
                'Цена(Фирма)', 'Цена(Аптека)', 'Работник', 'Дефект', 'Причина возврата'
 
     def getter(self):
-        return self.id, self.id_of_medicament.id_of_name_of_medicament.title_of_medicament, self.datefact, self.count, self.number_of_lot, self.datestart, self.datefinish, \
+        return self.id, self.id_of_medicament.id_of_name_of_medicament.title_of_medicament, self.datefact.strftime('%Y/%m/%d'), self.count, self.number_of_lot, self.datestart.strftime('%Y/%m/%d') , self.datefinish.strftime('%Y/%m/%d'), \
                self.price_manufacturer, self.price_pharmacy, \
                ' '.join((self.id_of_employee.second_name, self.id_of_employee.first_name[0] + '. ', self.id_of_employee.third_name[0] + '.')), \
                self.defect, self.id_of_reason.title_of_reason

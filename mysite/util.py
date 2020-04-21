@@ -1,6 +1,9 @@
+import pprint
+
 import pymysql.cursors
 import config
 import graphics
+import datetime
 
 paramstyle = "%s"
 
@@ -22,7 +25,6 @@ def connect():
         config.db_password,
         config.db_database,
         use_unicode=True,
-        charset=config.db_charset,
         cursorclass=pymysql.cursors.DictCursor)
 
 
@@ -62,6 +64,7 @@ def get_all_medicament_from_pharmacy(name_of_pharmacy):
                               'ORDER BY count DESC '
                               'LIMIT 5'
                               )
+    # print(tuple(row.get('title_of_medicament').rstrip() for row in result_of_query))
     return tuple(row.get('title_of_medicament').rstrip() for row in result_of_query)
 
 
@@ -173,6 +176,10 @@ def get_lot_of_after(datefact):    # получение партий после 
             'INNER JOIN main_lot as lot ON lot.id_of_employee_id = main_employee.id '  \
             f'   AND lot.datefact > "{datefact[1]}" '
     result_of_query = execute(query)
+    for row in result_of_query:
+        row['Дата_доставки'] = row.get('Дата_доставки').strftime('%Y-%m-%d')
+        row['Дата_изготовления'] = row.get('Дата_изготовления').strftime('%Y-%m-%d')
+        row['Срок_годности'] = row.get('Срок_годности').strftime('%Y-%m-%d')
     return result_of_query, \
            'SELECT lot.id, lot.datefact AS Дата_доставки, lot.count AS Количество, lot.number_of_lot AS Номер_партии, ||' \
             '    lot.datestart AS Дата_изготовления, lot.datefinish AS Срок_годности, lot.price_manufacturer AS Цена_фирмы, ||' \
@@ -202,6 +209,10 @@ def get_lot_of_between(datefact):    # получение партий межд�
             'INNER JOIN main_lot as lot ON lot.id_of_employee_id = main_employee.id '  \
             f'   AND lot.datefact BETWEEN "{datefact[1]}" AND "{datefact[2]}" '
     result_of_query = execute(query)
+    for row in result_of_query:
+        row['Дата_доставки'] = row.get('Дата_доставки').strftime('%Y-%m-%d')
+        row['Дата_изготовления'] = row.get('Дата_изготовления').strftime('%Y-%m-%d')
+        row['Срок_годности'] = row.get('Срок_годности').strftime('%Y-%m-%d')
     return result_of_query, \
            'SELECT lot.id, lot.datefact AS Дата_доставки, lot.count AS Количество, lot.number_of_lot AS Номер_партии, ||' \
             '    lot.datestart AS Дата_изготовления, lot.datefinish AS Срок_годности, lot.price_manufacturer AS Цена_фирмы, ||' \
@@ -287,6 +298,8 @@ def get_employee_from_district():
             'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id ' \
             'INNER JOIN main_lot ON main_lot.id_of_employee_id = main_employee.id '
     result_of_query = execute(query)
+    for row in result_of_query:
+        row['Дата_приема'] = row.get('Дата_приема').strftime('%Y-%m-%d')
     return result_of_query, \
            'SELECT ||' \
             '       main_district.title_of_district AS Название_района, ||' \
@@ -381,6 +394,8 @@ def get_defect_from_manufact(main_manufacturer_id):     # смотрим все 
             'LEFT JOIN main_name_of_medicament as name ON name.id = main_medicament.id_of_name_of_medicament_id ' \
             'INNER JOIN main_reason ON main_reason.id = main_lot.id_of_reason_id'
     result_of_query = execute(query)
+    for row in result_of_query:
+        row['Дата_создания'] = row.get('Дата_создания').strftime('%Y-%m-%d')
     return result_of_query, \
            'SELECT name.title_of_medicament AS Название_лекарства, main_lot.reason AS Причина_возврата, ||' \
             '   main_lot.datestart AS Дата_создания ||'  \
@@ -439,6 +454,8 @@ def get_all_medicament_from_manufact(id_of_manufacturer_id):
             'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id '
 
     result_of_query = execute(query)
+    for row in result_of_query:
+        row['Дата_доставки'] = row.get('Дата_доставки').strftime('%Y-%m-%d')
     return result_of_query, \
            'SELECT main_name_of_medicament.title_of_medicament AS Название_лекарства, ||' \
             '       main_lot.datefact AS Дата_доставки, ||' \
@@ -513,6 +530,10 @@ def get_medicament_with_right_join(worker):    # получаем все лек�
             f'   AND main_employee.id = "{worker}" ' \
             'GROUP BY main_lot.id '
     result_of_query = execute(query)
+    for row in result_of_query:
+        row['Дата_приема'] = row.get('Дата_приема').strftime('%Y-%m-%d')
+        row['Дата_создания'] = row.get('Дата_создания').strftime('%Y-%m-%d')
+        row['Срок_годности'] = row.get('Срок_годности').strftime('%Y-%m-%d')
     return result_of_query, \
            'SELECT main_lot.id, ||' \
             '       main_lot.number_of_lot AS Номер_партии, ||' \
@@ -661,7 +682,8 @@ def get_cheap_all_medicaments(main_district_id):
 
 def sum_all_methods_for_querys(get_all_data):
 
-    return {'<h3>1.Вывод всех типов аптек (и количество аптек) по заданному району.<br>(первый внутренний запрос по внешнему ключу)</h3>'
+    return {
+            '<h3>1.Вывод всех типов аптек (и количество аптек) по заданному району.<br>(первый внутренний запрос по внешнему ключу)</h3>'
             f"<div class=\"alert alert-primary\">Исходные данные:<br>{get_all_data.get('first_querys')[0]}</div>":
                 get_amount_pharmacy_type_in_district(get_all_data.get('first_querys')[0][:get_all_data.get('first_querys')[0].find('|') -1]),
 

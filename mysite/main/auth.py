@@ -10,7 +10,8 @@ def login_menu(request):
     if user is not None:
         views.dict_of_data.update({'user': True,
                                    'username': user.get_full_name()})
-        return render(request, 'content.html', views.dict_of_data)
+        request.session['dict_of_data'] = views.dict_of_data
+        return render(request, 'content.html', request.session['dict_of_data'])
     else:
         views.dict_of_data.update({'error': True})
         return render(request, 'content.html', views.dict_of_data)
