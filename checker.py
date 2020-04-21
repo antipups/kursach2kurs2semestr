@@ -94,6 +94,8 @@ def lot(**dict_of_post):
         datefact, datestart, datefinish = datetime.date(int(datefact[:4]), int(datefact[5:7]), int(datefact[-2:])), \
                                           datetime.date(int(datestart[:4]), int(datestart[5:7]), int(datestart[-2:])), \
                                           datetime.date(int(datefinish[:4]), int(datefinish[5:7]), int(datefinish[-2:]))
+        if datestart.year < 1900 or datetime.datetime.now() < datefact or datetime.datetime.now() < datestart:
+            return
         one_day = datetime.timedelta(days=1)    # переменная разность, чтоб регулировать даты
         if datefinish - datestart < one_day or datefinish - datefact < one_day or datefact - datestart < one_day:
             return

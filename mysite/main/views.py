@@ -308,6 +308,8 @@ def mode(request, dict_of_tables=dict_of_tables):
                 if dict_of_post.get('defect') == '':
                     dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
                     del dict_of_post['defect']
+                if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:
+                    raise ValueError
                 object_of_table.objects.create(**dict_of_post)
 
                 # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
