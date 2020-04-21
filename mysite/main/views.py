@@ -270,7 +270,6 @@ def hw(request, dict_of_tables=dict_of_tables):
 def mode(request, dict_of_tables=dict_of_tables):
     if request.method == 'POST':
         dict_of_data = request.session['dict_of_data']
-        print(dict_of_data)
         request.session['dict_of_data'].update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
         dict_of_post = dict(request.POST)
         list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
@@ -295,12 +294,14 @@ def mode(request, dict_of_tables=dict_of_tables):
         # print(dict_of_post)
         html = request.session['dict_of_data'].get('template')
         try:
-
             if request.session['dict_of_data'].get('mode').find('Поиск') > -1:
                 result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
                 if result_of_search:
+                    result_of_search = tuple(row for row in object_of_table.objects.filter(**dict_of_post).values_list())
                     request.session['dict_of_data'].update({'win': True, 'data_of_object': result_of_search})
-
+                else:
+                    request.session['dict_of_data'].update({'cause': 'Запись не найдена.'})
+                    return render(request, html, dict(request.session['dict_of_data']))
             elif request.session['dict_of_data'].get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
@@ -379,9 +380,6 @@ def mode(request, dict_of_tables=dict_of_tables):
             return render(request, html, request.session['dict_of_data'])
         except IntegrityError:
             request.session['dict_of_data'].update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
-            return render(request, html, request.session['dict_of_data'])
-        except:
-            request.session['dict_of_data'].update({'cause': 'Что-то пошло не так.', 'win': False, 'addon': False})
             return render(request, html, request.session['dict_of_data'])
         else:
             request.session['dict_of_data'].update({'win': True})
