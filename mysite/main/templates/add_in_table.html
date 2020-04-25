@@ -7,14 +7,14 @@
                 {% for key, znach in name_of_rows.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
                       <label for="add">{{key}}</label>
-                      <input class="form-control" id="add" name="{{znach.0}}" value="{{ value }}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" type="{{znach.3}}" tabindex="1" {{znach.4}}>
+                        <input class="form-control" id="add" name="{{znach.0}}" value="{{ value }}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" type="{{znach.3}}" tabindex="1" {{znach.4}} {% if znach.3 == "checkbox" %} onchange="invis()" {% endif %}>
                     </div>
                 {% endfor %}
 
                 {% for key, value in ids.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
-                      <label for="add">{{key}}</label>
-                        <select id="add" name="{{value}}" class="form-control" tabindex="1">
+                      <label for="add" name="{{value}}" {% if value == "id_of_reason" %} style="visibility:hidden" {% endif %}>{{key}}</label>
+                        <select id="add" name="{{value}}" class="form-control" tabindex="1" {% if value == "id_of_reason" %} style="visibility:hidden" {% endif %}>
                             <option selected disabled>Выберите...</option>
                             {% for key_, value_ in tables.items %}
                                 {% if value == key_ %}

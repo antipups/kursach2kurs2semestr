@@ -87,19 +87,20 @@ def employee(**dict_of_post):
 def lot(**dict_of_post):
     if dict_of_post.get('id_of_medicament') is None or dict_of_post.get('id_of_employee') is None:
         return
-    datefact, count, number_of_lot, datestart, datefinish, price_manufacturer, price_pharmacy, defect, reason = \
+    datefact, count, number_of_lot, datestart, datefinish, price_manufacturer, price_pharmacy = \
         dict_of_post.get('datefact'), dict_of_post.get('count'), dict_of_post.get('number_of_lot'), dict_of_post.get('datestart'), dict_of_post.get('datefinish'), \
-        dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy'), dict_of_post.get('defect'), dict_of_post.get('id_of_reason')
+        dict_of_post.get('price_manufacturer'), dict_of_post.get('price_pharmacy')
     try:
         datefact, datestart, datefinish = datetime.date(int(datefact[:4]), int(datefact[5:7]), int(datefact[-2:])), \
                                           datetime.date(int(datestart[:4]), int(datestart[5:7]), int(datestart[-2:])), \
                                           datetime.date(int(datefinish[:4]), int(datefinish[5:7]), int(datefinish[-2:]))
-        if datestart.year < 1900 or datetime.datetime.now() < datefact or datetime.datetime.now() < datestart:
+        if datestart.year < 1900 or datetime.datetime.now().date() < datefact or datetime.datetime.now().date() < datestart:
             return
         one_day = datetime.timedelta(days=1)    # переменная разность, чтоб регулировать даты
         if datefinish - datestart < one_day or datefinish - datefact < one_day or datefact - datestart < one_day:
             return
     except:
+        print('date')
         return
     if len(count) == 0 or count.isdigit() is False:
         return
@@ -108,8 +109,6 @@ def lot(**dict_of_post):
     if len(price_pharmacy) == 0 or len(price_pharmacy) > 4 or price_pharmacy.isdigit() is False:
         return
     if len(price_manufacturer) == 0 or len(price_manufacturer) > 4 or price_manufacturer.isdigit() is False:
-        return
-    if defect == '1' and reason is None:
         return
     return True
 

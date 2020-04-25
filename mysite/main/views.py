@@ -305,9 +305,11 @@ def mode(request, dict_of_tables=dict_of_tables):
             elif request.session['dict_of_data'].get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
                 if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                     dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
-                if dict_of_post.get('defect') == '':
+                if dict_of_post.get('id_of_reason') is None:
                     dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
-                    del dict_of_post['defect']
+                    dict_of_post['defect'] = False
+                else:
+                    dict_of_post['defect'] = True
                 if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:
                     raise ValueError
                 object_of_table.objects.create(**dict_of_post)

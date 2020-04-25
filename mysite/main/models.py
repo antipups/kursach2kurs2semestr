@@ -350,4 +350,4 @@ class Lot(models.Model):
                 'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date', 'required'),
                 'Цена(Фирма)': ('price_manufacturer', '1234', 4, 'number', 'required'),
                 'Цена(Аптека)': ('price_pharmacy', '9876', 4, 'number', 'required'),
-                'Дефект': ('defect', '1', 1, 'number'),}
+                'Дефект': ('defect', '1', 1, 'checkbox', ),}
