@@ -268,123 +268,133 @@ def hw(request, dict_of_tables=dict_of_tables):
 
 @csrf_exempt
 def mode(request, dict_of_tables=dict_of_tables):
-    if request.method == 'POST':
-        dict_of_data = request.session['dict_of_data']
-        request.session['dict_of_data'].update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
-        dict_of_post = dict(request.POST)
-        list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
-        object_of_table = dict_of_tables.get(request.session['dict_of_data'].get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
-        for row in dict_of_post.items():    # получаем из html файла данные, они подаеются в словаре в виде списков, перебираем всё, и получаем чистые данные
-            if row[0].find('id_of_') > -1:  # если это id то режем до id
-                if (row[1][0][:row[1][0].find(' ')]).isdigit() is False and request.session['dict_of_data'].get('mode').find('Поиск') == -1:
-                    return render(request, 'add_in_table.html', request.session['dict_of_data'])
-                if request.session['dict_of_data'].get('mode').find('Поиск') > -1 and row[1][0][:row[1][0].find(' ')].isdigit() is False:  # если режим поиска - все аргументы НЕ обязательны
-                    list_to_del.append(row[0])
-                else:
-                    dict_of_post[row[0]] = eval(row[0][row[0].find('_of_') + 4:].capitalize()).objects.get(id=int(row[1][0][:row[1][0].find(' ')]))
+    print(request.session['dict_of_data'])
+    dict_of_data = request.session['dict_of_data']
+    request.session['dict_of_data'].update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
+    dict_of_post = dict(request.POST)
+    list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
+    object_of_table = dict_of_tables.get(request.session['dict_of_data'].get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
+    for row in dict_of_post.items():    # получаем из html файла данные, они подаеются в словаре в виде списков, перебираем всё, и получаем чистые данные
+        if row[0].find('id_of_') > -1:  # если это id то режем до id
+            if (row[1][0][:row[1][0].find(' ')]).isdigit() is False and request.session['dict_of_data'].get('mode').find('Поиск') == -1:
+                return render(request, 'add_in_table.html', request.session['dict_of_data'])
+            if request.session['dict_of_data'].get('mode').find('Поиск') > -1 and row[1][0][:row[1][0].find(' ')].isdigit() is False:  # если режим поиска - все аргументы НЕ обязательны
+                list_to_del.append(row[0])
             else:
-                if request.session['dict_of_data'].get('mode').find('Поиск') > -1 and not row[1][0]:
-                    list_to_del.append(row[0])
-                else:
-                    dict_of_post[row[0]] = row[1][0]
-
-        for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
-            del dict_of_post[remove_element]
-
-        # print(dict_of_post)
-        html = request.session['dict_of_data'].get('template')
-        try:
-            if request.session['dict_of_data'].get('mode').find('Поиск') > -1:
-                result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
-                if result_of_search:
-                    result_of_search = tuple(row for row in object_of_table.objects.filter(**dict_of_post).values_list())
-                    request.session['dict_of_data'].update({'win': True, 'data_of_object': result_of_search})
-                else:
-                    request.session['dict_of_data'].update({'cause': 'Запись не найдена.'})
-                    return render(request, html, dict(request.session['dict_of_data']))
-            elif request.session['dict_of_data'].get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
-                if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
-                    dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
-                if dict_of_post.get('id_of_reason') is None:
-                    dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
-                    dict_of_post['defect'] = False
-                else:
-                    dict_of_post['defect'] = True
-                if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:
-                    raise ValueError
-                object_of_table.objects.create(**dict_of_post)
-
-                # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
-                # 'reason': 'Просроченный срок годности', 'id_of_medicament': <Medicament: Medicament object (2)>, 'id_of_employee': <Employee: Employee object (1)>}
-
-                # спам партий
-                # for i in range(500):
-                #     year, month, day = random.randint(1990, 2019), random.randint(1, 12), random.randint(1, 28)
-                #     datefact = datetime.datetime(year=year,
-                #                                  month=month,
-                #                                  day=day)
-                #
-                #     datestart = datefact - datetime.datetime(day=datetime.timedelta(days=random.randint(1, 20)))
-                #     datefinish = datefact + datetime.datetime(day=datetime.timedelta(days=random.randint(1, 20)))
-                #     price_manufacturer, price_pharmacy = random.randint(1, 5999), random.randint(6000, 9999)
-                #     defect = random.choice(('0', '1'))
-                #     reason = random.choice(('Згнившая упаковка', 'Ужасное состояние', 'Исчерпан срок годности')) if defect == '1' else 'Нет дефекта'
-                #     count, number_of_lot = random.randint(1, 9999), random.randint(1, 9999)
-                #     dict_of_post.update({'datefact': datefact, 'datestart': datestart, 'datefinish': datefinish,
-                #                          'price_manufacturer': price_manufacturer, 'price_pharmacy': price_pharmacy,
-                #                          'defect': defect, 'reason': reason, 'count': count, 'number_of_lot': number_of_lot,})
-
-                # ниже спам бд фирмами
-                # rb = xlrd.open_workbook('C:\\Users\\kurku\\PycharmProjects\\parse_for_five\\books.xls',
-                #                         formatting_info=True)
-                # sheet = rb.sheet_by_index(0)
-                # for row in range(50, 4337):
-                #
-                #     html = requests.get('http://www.yopmail.com/ru/email-generator.php',).text
-                #     url = html[html.find('onmouseup="this.select();" type="text" value="') + 46:]
-                #     dict_of_post['email_of_manufacturer'] = url[:url.find('"')].replace('&#64;', '@')
-                #     dict_of_post['year_of_manufacturer'] = str(random.randint(1990, 2020))
-                #     dict_of_post['title_of_manufacturer'] = sheet.row_values(row)[0]
-                #     if len(dict_of_post.get('title_of_manufacturer')) > 30:
-                #         continue
-                #     dict_of_post['address_of_manufacturer'] = sheet.row_values(row)[2]
-                #     if len(dict_of_post.get('address_of_manufacturer')) > 100:
-                #         continue
-                #     dict_of_post['id_of_country'] = random.choice(Country.objects.all())
-
-                # ниже, спам бд медикаментами
-                # with open('C:\\Users\\kurku\\PycharmProjects\\kursach2kurs2semestr\\medicaments.txt') as f:
-                #     for i in f.read().split('\n'):
-                #         if 0 < len(i) <= 20:
-                #             dict_of_post['title_of_medicament'] = i
-                #             try:
-                #                 object_of_table.objects.create(**dict_of_post)
-                #             except:
-                #                 continue
-
-            elif request.session['dict_of_data'].get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
-                amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()[0]  # количество удалимых записей
-                if amount_of_remove != 0:
-                    request.session['dict_of_data'].update({'amount_of_remove': amount_of_remove})
-
-            elif request.session['dict_of_data'].get('mode').find('Изме') > -1 and request.session['dict_of_data'].get('addon') is False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
-                if len(object_of_table.objects.filter(**dict_of_post)) == 0:
-                    raise ValueError
-                request.session['dict_of_data'].update({'addon': True, 'dict_of_post': dict_of_post})
-
-            elif request.session['dict_of_data'].get('mode').find('Изме') > -1 and request.session['dict_of_data'].get('addon') is True:
-                amount_of_update = object_of_table.objects.filter(**request.session['dict_of_data'].get('dict_of_post')).update(**dict_of_post)
-                if amount_of_update > 0:
-                    request.session['dict_of_data'].update({'win': True, 'addon': False})
-                else:
-                    request.session['dict_of_data'].update({'win': False, 'addon': False})
-
-        except ValueError:
-            request.session['dict_of_data'].update({'cause': 'Неверно заполненны поля.', 'win': False, 'addon': False})
-            return render(request, html, request.session['dict_of_data'])
-        except IntegrityError:
-            request.session['dict_of_data'].update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
-            return render(request, html, request.session['dict_of_data'])
+                dict_of_post[row[0]] = eval(row[0][row[0].find('_of_') + 4:].capitalize()).objects.get(id=int(row[1][0][:row[1][0].find(' ')]))
         else:
-            request.session['dict_of_data'].update({'win': True})
-            return render(request, html, dict(request.session['dict_of_data']))
+            if request.session['dict_of_data'].get('mode').find('Поиск') > -1 and not row[1][0]:
+                list_to_del.append(row[0])
+            else:
+                dict_of_post[row[0]] = row[1][0]
+
+    for remove_element in list_to_del:  # чистим данные от пользователя, а именно все данные которые он не заполнил
+        del dict_of_post[remove_element]
+
+    # print(dict_of_post)
+    html = request.session['dict_of_data'].get('template')
+    try:
+        if request.session['dict_of_data'].get('mode').find('Поиск') > -1:
+            result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
+            if result_of_search:
+                result_of_search = tuple(row for row in object_of_table.objects.filter(**dict_of_post).values_list())
+                request.session['dict_of_data'].update({'win': True, 'data_of_object': result_of_search})
+            else:
+                request.session['dict_of_data'].update({'cause': 'Запись не найдена.'})
+                return render(request, html, dict(request.session['dict_of_data']))
+        elif request.session['dict_of_data'].get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
+            if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
+                dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
+            if dict_of_post.get('id_of_reason') is None:
+                dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
+                dict_of_post['defect'] = False
+            else:
+                dict_of_post['defect'] = True
+            if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:
+                raise ValueError
+            object_of_table.objects.create(**dict_of_post)
+
+            # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
+            # 'reason': 'Просроченный срок годности', 'id_of_medicament': <Medicament: Medicament object (2)>, 'id_of_employee': <Employee: Employee object (1)>}
+
+            # спам партий
+            # for i in range(500):
+            #     year, month, day = random.randint(1990, 2019), random.randint(1, 12), random.randint(1, 28)
+            #     datefact = datetime.datetime(year=year,
+            #                                  month=month,
+            #                                  day=day)
+            #
+            #     datestart = datefact - datetime.datetime(day=datetime.timedelta(days=random.randint(1, 20)))
+            #     datefinish = datefact + datetime.datetime(day=datetime.timedelta(days=random.randint(1, 20)))
+            #     price_manufacturer, price_pharmacy = random.randint(1, 5999), random.randint(6000, 9999)
+            #     defect = random.choice(('0', '1'))
+            #     reason = random.choice(('Згнившая упаковка', 'Ужасное состояние', 'Исчерпан срок годности')) if defect == '1' else 'Нет дефекта'
+            #     count, number_of_lot = random.randint(1, 9999), random.randint(1, 9999)
+            #     dict_of_post.update({'datefact': datefact, 'datestart': datestart, 'datefinish': datefinish,
+            #                          'price_manufacturer': price_manufacturer, 'price_pharmacy': price_pharmacy,
+            #                          'defect': defect, 'reason': reason, 'count': count, 'number_of_lot': number_of_lot,})
+
+            # ниже спам бд фирмами
+            # rb = xlrd.open_workbook('C:\\Users\\kurku\\PycharmProjects\\parse_for_five\\books.xls',
+            #                         formatting_info=True)
+            # sheet = rb.sheet_by_index(0)
+            # for row in range(50, 4337):
+            #
+            #     html = requests.get('http://www.yopmail.com/ru/email-generator.php',).text
+            #     url = html[html.find('onmouseup="this.select();" type="text" value="') + 46:]
+            #     dict_of_post['email_of_manufacturer'] = url[:url.find('"')].replace('&#64;', '@')
+            #     dict_of_post['year_of_manufacturer'] = str(random.randint(1990, 2020))
+            #     dict_of_post['title_of_manufacturer'] = sheet.row_values(row)[0]
+            #     if len(dict_of_post.get('title_of_manufacturer')) > 30:
+            #         continue
+            #     dict_of_post['address_of_manufacturer'] = sheet.row_values(row)[2]
+            #     if len(dict_of_post.get('address_of_manufacturer')) > 100:
+            #         continue
+            #     dict_of_post['id_of_country'] = random.choice(Country.objects.all())
+
+            # ниже, спам бд медикаментами
+            # with open('C:\\Users\\kurku\\PycharmProjects\\kursach2kurs2semestr\\medicaments.txt') as f:
+            #     for i in f.read().split('\n'):
+            #         if 0 < len(i) <= 20:
+            #             dict_of_post['title_of_medicament'] = i
+            #             try:
+            #                 object_of_table.objects.create(**dict_of_post)
+            #             except:
+            #                 continue
+
+        elif request.session['dict_of_data'].get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
+            # удаление всех пустых полей
+            list_of_del_key = []
+            for key, value in dict_of_post.items():
+                if not value:
+                    list_of_del_key.append(key)
+            for key in list_of_del_key:
+                del dict_of_post[key]
+            ##############################
+            amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()  # количество удалимых записей
+            if amount_of_remove != 0:
+                if not isinstance(amount_of_remove, int):
+                    amount_of_remove = amount_of_remove[0]
+                request.session['dict_of_data'].update({'amount_of_remove': amount_of_remove})
+
+        elif request.session['dict_of_data'].get('mode').find('Изме') > -1 and request.session['dict_of_data'].get('addon') is False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
+            if len(object_of_table.objects.filter(**dict_of_post)) == 0:
+                raise ValueError
+            request.session['dict_of_data'].update({'addon': True, 'dict_of_post': dict_of_post})
+
+        elif request.session['dict_of_data'].get('mode').find('Изме') > -1 and request.session['dict_of_data'].get('addon') is True:
+            amount_of_update = object_of_table.objects.filter(**request.session['dict_of_data'].get('dict_of_post')).update(**dict_of_post)
+            if amount_of_update > 0:
+                request.session['dict_of_data'].update({'win': True, 'addon': False})
+            else:
+                request.session['dict_of_data'].update({'win': False, 'addon': False})
+
+    except ValueError:
+        request.session['dict_of_data'].update({'cause': 'Неверно заполненны поля.', 'win': False, 'addon': False})
+        return render(request, html, request.session['dict_of_data'])
+    except IntegrityError:
+        request.session['dict_of_data'].update({'cause': 'Такая запись в базе данных уже есть.', 'win': False, 'addon': False})
+        return render(request, html, request.session['dict_of_data'])
+    else:
+        request.session['dict_of_data'].update({'win': True})
+        return render(request, html, dict(request.session['dict_of_data']))
