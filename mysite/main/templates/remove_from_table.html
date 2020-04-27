@@ -8,7 +8,7 @@
                 {% for key, znach in name_of_rows.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
                       <label for="add">{{key}}</label>
-                      <input class="form-control" id="add" name="{{znach.0}}" value="{{ value }}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" type="{{znach.3}}" tabindex="1"  {{znach.4}}>
+                      <input class="form-control" id="add" name="{{znach.0}}" value="{{ value }}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" type="{{znach.3}}" tabindex="1">
                     </div>
                 {% endfor %}
 

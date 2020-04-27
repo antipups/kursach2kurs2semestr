@@ -1,0 +1,85 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="SHORTCUT ICON" href="{% static 'image/favicon.jpg' %}" type="image/jpg">
+    <style>
+        body {
+            background: #c7b39b url({% static img %});
+            background-size: 100%; /* Современные браузеры */
+        }
+    </style>
+    <title>Курсач</title>
+  </head>
+  <body>
+
+        <div class="container-fluid p-0">
+
+        <div class="navbar bg-dark">    <!-- Хедер -->
+
+            <h1><span class="nav badge badge-secondary">Курсовой проект </span></h1>
+
+            {% if username %}
+                <h1><span class="badge badge-secondary">Вы авторизованы как - {{username}}</span></h1>
+            {% else %}
+            <h1>
+            <div class="dropleft">
+                <span class="btn badge badge-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true">Войти</span>
+                <form action="/login/" method="post">
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <div class="dropdown-item">
+                                <div class="form-group mt-3">
+                                    <label for="login">Логин</label>
+                                    <input type="text" maxlength="20" class="form-control" id="login" name="username" aria-describedby="emailHelp" autocomplete="off" tabindex="1">
+                                    <small id="emailHelp" class="form-text text-muted">Указанный логин должен быть не более 20 символов.</small>
+                                    <label for="login">Пароль</label>
+                                    <input type="password" maxlength="20" class="form-control" id="login" name="password" autocomplete="off" tabindex="1">
+                                    <nav class="pagin">
+                                        <button type="button" class="btn btn-secondary mt-2 mr-2" data-dismiss="modal">Закрыть</button>
+                                        <button class="btn btn-primary mt-2" id="login" type="submit" tabindex="1">Войти</button>
+                                    </nav>
+                                </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </h1>
+            {% endif %}
+
+        </div>
+
+        {% if user %}
+            {% block content %}
+
+            {% endblock %}
+        {% else %}
+            {% if error %}
+                <h1><span class="badge badge-danger w-100">Такой пользователь не зарегистрирован.<br>Проверьте данные или обратитесь к СИСТЕМНОМУ АДМИНИСТРАТОРУ.</span></h1>
+            {% else %}
+                <h1><span class="badge badge-danger w-100">Вы не авторизованы.<br>Для авторизации нажми - войти.</span></h1>
+            {% endif %}
+        {% endif %}
+        <script src="{% static 'bootstrap/js/popper.min.js' %}"></script>
+        <script src="{% static 'bootstrap/js/jquery-3.4.1.slim.min.js' %}"></script>
+        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+        <script>
+        	function invis()
+			{
+			    let keks = document.getElementsByName("id_of_reason");
+			    for (let i = 0; i < 2; i++)
+			        if (keks[i].outerHTML.indexOf("hidden") > 1) keks[i].style.visibility = "visible"
+			        else
+			        {
+			            keks[i].style.visibility = "hidden";
+			            keks[1].options[0].selected = true;
+			        }
+			}
+        </script>
+  </body>
+</html>

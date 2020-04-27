@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
@@ -6,6 +7,7 @@ import graphics
 import util
 import checker
 from django.core.paginator import Paginator
+import math
 
 
 tuple_with_tables = (('Лекарства',  # кортеж со всеми таблицами
@@ -160,7 +162,7 @@ def hw(request, dict_of_tables=dict_of_tables):
             'name_of_table': string[string.find(':'):],
             'name_of_rows': table.readable_rus(),
         })
-        if table.objects.filter(id=11):     # если данных слишком много
+        if len(table.objects.all()) > 6:     # если данных слишком много
             if not request.POST.get('cursor') or not request.session['dict_of_data'].get('name_of_table_for_pagin') or request.session['dict_of_data'].get('name_of_table_for_pagin') != string[string.find(':') + 2:]:
                 request.session['dict_of_data'].update({
                                      'page': 1,
@@ -178,7 +180,7 @@ def hw(request, dict_of_tables=dict_of_tables):
                 del dict_of_data['name_of_table_for_pagin']
 
             request.session['dict_of_data'].update({'Table': tuple(map(lambda row: row.getter(), Paginator(tuple(table.objects.all()), 6).get_page(request.session['dict_of_data'].get('page')).object_list))})
-
+            request.session['dict_of_data'].update({'amount_of_pages': math.ceil(len(table.objects.all()) / 6)})
         else:   # если таблица мала
             request.session['dict_of_data'].update({'Table': tuple(map(lambda row: row.getter(), tuple(table.objects.all())))})
 
@@ -268,11 +270,12 @@ def hw(request, dict_of_tables=dict_of_tables):
 
 @csrf_exempt
 def mode(request, dict_of_tables=dict_of_tables):
-    print(request.session['dict_of_data'])
+    # print(request.session['dict_of_data'])
     dict_of_data = request.session['dict_of_data']
     request.session['dict_of_data'].update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
     dict_of_post = dict(request.POST)
     list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
+    # print(dict_of_post)
     object_of_table = dict_of_tables.get(request.session['dict_of_data'].get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
     for row in dict_of_post.items():    # получаем из html файла данные, они подаеются в словаре в виде списков, перебираем всё, и получаем чистые данные
         if row[0].find('id_of_') > -1:  # если это id то режем до id
@@ -293,8 +296,9 @@ def mode(request, dict_of_tables=dict_of_tables):
 
     # print(dict_of_post)
     html = request.session['dict_of_data'].get('template')
+    mode = dict_of_post.get('mode') if dict_of_post.get('mode') else request.session['dict_of_data'].get('mode')
     try:
-        if request.session['dict_of_data'].get('mode').find('Поиск') > -1:
+        if mode.startswith('Поиск'):
             result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
             if result_of_search:
                 result_of_search = tuple(row for row in object_of_table.objects.filter(**dict_of_post).values_list())
@@ -302,14 +306,16 @@ def mode(request, dict_of_tables=dict_of_tables):
             else:
                 request.session['dict_of_data'].update({'cause': 'Запись не найдена.'})
                 return render(request, html, dict(request.session['dict_of_data']))
-        elif request.session['dict_of_data'].get('mode').find('Добав') > -1:   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
+
+        elif mode.startswith('Добав'):   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
             if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                 dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
-            if dict_of_post.get('id_of_reason') is None:
-                dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
-                dict_of_post['defect'] = False
-            else:
-                dict_of_post['defect'] = True
+            if dict_of_post.get('name_of_table') == 'Партия':
+                if dict_of_post.get('id_of_reason') is None:
+                    dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
+                    dict_of_post['defect'] = False
+                else:
+                    dict_of_post['defect'] = True
             if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:
                 raise ValueError
             object_of_table.objects.create(**dict_of_post)
@@ -362,27 +368,33 @@ def mode(request, dict_of_tables=dict_of_tables):
             #             except:
             #                 continue
 
-        elif request.session['dict_of_data'].get('mode').find('Удал') > -1:  # если делаем удаление > проверки на наличие данных -> удаление
-            # удаление всех пустых полей
-            list_of_del_key = []
-            for key, value in dict_of_post.items():
-                if not value:
-                    list_of_del_key.append(key)
-            for key in list_of_del_key:
-                del dict_of_post[key]
-            ##############################
-            amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()  # количество удалимых записей
-            if amount_of_remove != 0:
-                if not isinstance(amount_of_remove, int):
-                    amount_of_remove = amount_of_remove[0]
-                request.session['dict_of_data'].update({'amount_of_remove': amount_of_remove})
+        elif mode.startswith('Удал'):  # если делаем удаление > проверки на наличие данных -> удаление
+            if dict_of_post.get('flag'):   #   ajax
+                object_of_table = dict_of_tables.get(dict_of_post.get('name_of_table'))
+                del dict_of_post['mode'], dict_of_post['name_of_table'], dict_of_post['flag']
+                object_of_table.objects.filter(**dict_of_post).delete()
+                return HttpResponse('<script>alert(1)</script>')
+            else:
+                # удаление всех пустых полей
+                list_of_del_key = []
+                for key, value in dict_of_post.items():
+                    if not value:
+                        list_of_del_key.append(key)
+                for key in list_of_del_key:
+                    del dict_of_post[key]
+                ##############################
+                amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()  # количество удалимых записей
+                if amount_of_remove != 0:
+                    if not isinstance(amount_of_remove, int):
+                        amount_of_remove = amount_of_remove[0]
+                    request.session['dict_of_data'].update({'amount_of_remove': amount_of_remove})
 
-        elif request.session['dict_of_data'].get('mode').find('Изме') > -1 and request.session['dict_of_data'].get('addon') is False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
+        elif mode.startswith('Изме') and request.session['dict_of_data'].get('addon') is False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
             if len(object_of_table.objects.filter(**dict_of_post)) == 0:
                 raise ValueError
             request.session['dict_of_data'].update({'addon': True, 'dict_of_post': dict_of_post})
 
-        elif request.session['dict_of_data'].get('mode').find('Изме') > -1 and request.session['dict_of_data'].get('addon') is True:
+        elif mode.startswith('Изме') and request.session['dict_of_data'].get('addon') is True:
             amount_of_update = object_of_table.objects.filter(**request.session['dict_of_data'].get('dict_of_post')).update(**dict_of_post)
             if amount_of_update > 0:
                 request.session['dict_of_data'].update({'win': True, 'addon': False})

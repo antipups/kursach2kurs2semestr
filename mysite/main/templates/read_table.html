@@ -4,7 +4,7 @@
 
     <table class="table table-bordered table-dark table-hover">
         <tr>
-            <td class="w-25" colspan="{{name_of_rows|length}}" align="center">Таблица {{name_of_table}}</td>
+            <td class="w-25 disabled" colspan="{{name_of_rows|length}}" align="center">Таблица {{name_of_table}}</td>
         </tr>
         <tr>
             {% for i in name_of_rows %}
@@ -12,7 +12,7 @@
             {% endfor %}
         </tr>
         {% for i in Table %}
-            <tr class="table-bordered" onclick="js()">
+            <tr class="table-bordered">
                 {% for j in i %}
                     <td class="m-5">{{j}}</td>
                 {% endfor %}
@@ -20,15 +20,28 @@
         {% endfor %}
     </table>
 
-    {% if pagination == True %}
+    <div class="badge badge-light control_table">
+        <div style="visibility: hidden" id="action_over_table">
+            <button class="btn btn-info mb-0" id="to_remove" >Удалить выбранные записи</button>
+            <button class="btn btn-info mb-0">Изменить выбранные записи</button>
+        </div>
+        {% if pagination == True %}
         <nav class="pagin">
             <form action="/main/mode/" method="post">
-                <ul class="pagination">
-                    <li class="page-item"><button class="page-link" href="/main/mode/" name="cursor" value="{{name_of_table}}, prev" type="submit"><</button></li>
-                    <li class="page-item"><button class="page-link" href="/main/mode/" name="cursor" value="{{name_of_table}}, next" type="submit">></button></li>
+                <ul class="pagination mb-0">
+                    <li class="page-item mb-0"><button class="btn btn-dark" href="/main/mode/" name="cursor" value="{{name_of_table}}, prev" type="submit"><</button></li>
+                    <li class="page-item mb-0"><span class="btn btn-danger">{{page}}/{{amount_of_pages}}</span></li>
+                    <li class="page-item mb-0"><button class="btn btn-dark" href="/main/mode/" name="cursor" value="{{name_of_table}}, next" type="submit">></button></li>
                 </ul>
             </form>
         </nav>
     {% endif %}
+    </div>
+
+    <script>
+        for (let trs of document.getElementsByTagName('tr'))
+            trs.addEventListener('click',e => mode_of_row(e))
+        document.getElementById("to_remove").addEventListener('click',e => delete_rows(e))
+    </script>
 
 {% endblock %}
