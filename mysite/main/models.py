@@ -14,7 +14,7 @@ class Country(models.Model):
     """
         Таблица с странами
     """
-    title_of_country = models.CharField(max_length=3)
+    title_of_country = models.CharField(max_length=3, unique=True)
 
     @staticmethod
     def readable():
@@ -36,7 +36,7 @@ class Reason(models.Model):
     """
         Таблица с причинами
     """
-    title_of_reason = models.CharField(max_length=100)
+    title_of_reason = models.CharField(max_length=100, unique=True)
 
     @staticmethod
     def readable():
@@ -60,7 +60,7 @@ class Manufacturer(models.Model):
             Country (страны).
     """
     title_of_manufacturer = models.CharField(max_length=30)
-    id_of_country = models.ForeignKey(Country, on_delete=models.PROTECT)
+    id_of_country = models.ForeignKey(Country, on_delete=models.CASCADE)
     address_of_manufacturer = models.CharField(max_length=30)
     email_of_manufacturer = models.CharField(max_length=30)
     year_of_manufacturer = models.IntegerField()
@@ -95,7 +95,7 @@ class Shape(models.Model):
     """
         Таблица форм выпуска
     """
-    title_of_shape = models.CharField(max_length=15)
+    title_of_shape = models.CharField(max_length=15, unique=True)
 
     @staticmethod
     def readable():
@@ -117,7 +117,7 @@ class Pharma_group(models.Model):
     """
         Таблица фармакалогических групп
     """
-    title_of_pharma_group = models.CharField(max_length=20)
+    title_of_pharma_group = models.CharField(max_length=20, unique=True)
 
     @staticmethod
     def readable():
@@ -139,7 +139,7 @@ class Name_of_medicament(models.Model):
     """
         Таблица названия медикаментов
     """
-    title_of_medicament = models.CharField(max_length=20)
+    title_of_medicament = models.CharField(max_length=20, unique=True)
 
     @staticmethod
     def readable():
@@ -164,12 +164,12 @@ class Medicament(models.Model):
             Pharma_group (фармак. группа);
             Manufacturer (фирма).
     """
-    id_of_name_of_medicament = models.ForeignKey(Name_of_medicament, models.CASCADE)
-    id_of_shape = models.ForeignKey(Shape, models.PROTECT)
-    id_of_pharma_group = models.ForeignKey(Pharma_group, models.PROTECT)
+    id_of_name_of_medicament = models.ForeignKey(Name_of_medicament, on_delete=models.CASCADE)
+    id_of_shape = models.ForeignKey(Shape, on_delete=models.CASCADE)
+    id_of_pharma_group = models.ForeignKey(Pharma_group, on_delete=models.CASCADE)
     comments = models.TextField()
     bar_code = models.TextField()
-    id_of_manufacturer = models.ForeignKey(Manufacturer, models.CASCADE)
+    id_of_manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
 
     @staticmethod
     def readable():
@@ -199,7 +199,7 @@ class Type(models.Model):
     """
         Таблица типов собственности
     """
-    title_of_type = models.CharField(max_length=15)
+    title_of_type = models.CharField(max_length=15, unique=True)
 
     @staticmethod
     def readable():
@@ -221,7 +221,7 @@ class District(models.Model):
     """
         Таблица районов
     """
-    title_of_district = models.CharField(max_length=15, unique=True)
+    title_of_district = models.CharField(max_length=15, unique=True, )
 
     @staticmethod
     def readable():
@@ -247,9 +247,9 @@ class Pharmacy(models.Model):
 
     number_of_pharmacy = models.IntegerField()
     title_of_pharmacy = models.CharField(max_length=15)
-    id_of_type = models.ForeignKey(Type, models.CASCADE)
+    id_of_type = models.ForeignKey(Type, on_delete=models.CASCADE)
     address_of_pharmacy = models.CharField(max_length=12)
-    id_of_district = models.ForeignKey(District, models.PROTECT)
+    id_of_district = models.ForeignKey(District, on_delete=models.CASCADE)
     phone_of_pharmacy = models.CharField(max_length=10)
 
     @staticmethod
@@ -284,7 +284,7 @@ class Employee(models.Model):
         Таблица работника, внешние ключи:
             Pharmacy (аптека).
     """
-    id_of_pharmacy = models.ForeignKey(Pharmacy, models.CASCADE)
+    id_of_pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
     second_name = models.CharField(max_length=20)
     third_name = models.CharField(max_length=20)
@@ -313,7 +313,7 @@ class Lot(models.Model):
             Employee (работник).
             Medicament (лекарство)
     """
-    id_of_medicament = models.ForeignKey(Medicament, models.DO_NOTHING)
+    id_of_medicament = models.ForeignKey(Medicament, on_delete=models.DO_NOTHING)
     datefact = models.DateField()
     count = models.IntegerField()
     number_of_lot = models.IntegerField()
@@ -323,7 +323,7 @@ class Lot(models.Model):
     price_pharmacy = models.IntegerField()
     id_of_employee = models.ForeignKey(Employee, models.DO_NOTHING)
     defect = models.BooleanField(default=False)
-    id_of_reason = models.ForeignKey(Reason, models.DO_NOTHING, default=None)
+    id_of_reason = models.ForeignKey(Reason, on_delete=models.CASCADE, default=None)
 
     @staticmethod
     def readable():
