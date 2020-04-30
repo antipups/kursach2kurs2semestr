@@ -161,16 +161,17 @@ def hw(request, dict_of_tables=dict_of_tables):
         request.session['dict_of_data'].update({
             'name_of_table': string[string.find(':'):],
             'name_of_rows': table.readable_rus(),
+            'amount_of_rows': table.objects.count()
         })
-        if len(table.objects.all()) > 6:     # если данных слишком много
+        if table.objects.count() > 6:     # если данных слишком много
             if not request.POST.get('cursor') or not request.session['dict_of_data'].get('name_of_table_for_pagin') or request.session['dict_of_data'].get('name_of_table_for_pagin') != string[string.find(':') + 2:]:
                 request.session['dict_of_data'].update({
                                      'page': 1,
                                      'pagination': True,
-                                     'name_of_table_for_pagin': string[string.find(':') + 2:]})
+                                     'name_of_table_for_pagin': string[string.find(':') + 2:],})
             elif request.session['dict_of_data'].get('name_of_table_for_pagin') and request.session['dict_of_data'].get('name_of_table_for_pagin') == string[string.find(':') + 2:]:
                 new_page = 1
-                if request.POST.get('cursor').find('next') > -1 and request.session['dict_of_data'].get('page') < len(table.objects.all()) / 6:
+                if request.POST.get('cursor').find('next') > -1 and request.session['dict_of_data'].get('page') < table.objects.count() / 6:
                     new_page = request.session['dict_of_data'].get('page') + 1
                 elif request.POST.get('cursor').find('next') == -1 and request.session['dict_of_data'].get('page') > 1:
                     new_page = request.session['dict_of_data'].get('page') - 1
@@ -180,7 +181,7 @@ def hw(request, dict_of_tables=dict_of_tables):
                 del dict_of_data['name_of_table_for_pagin']
 
             request.session['dict_of_data'].update({'Table': tuple(map(lambda row: row.getter(), Paginator(tuple(table.objects.all()), 6).get_page(request.session['dict_of_data'].get('page')).object_list))})
-            request.session['dict_of_data'].update({'amount_of_pages': math.ceil(len(table.objects.all()) / 6)})
+            request.session['dict_of_data'].update({'amount_of_pages': math.ceil(table.objects.count() / 6)})
         else:   # если таблица мала
             request.session['dict_of_data'].update({'Table': tuple(map(lambda row: row.getter(), tuple(table.objects.all())))})
 
@@ -274,6 +275,12 @@ def mode(request, dict_of_tables=dict_of_tables):
     dict_of_data = request.session['dict_of_data']
     request.session['dict_of_data'].update({'win': False})     # переменная для утверждения, удачная ли была операция или нет
     dict_of_post = dict(request.POST)
+    ids_of_update = []
+    if dict_of_post.get('id0'):
+        for key, value in dict_of_post.items():
+            if key.startswith('id'):
+                ids_of_update.append(value[0])
+    # print(dict_of_post)
     list_to_del = []    # список в который поместятся все ключи которые имеют пустые значения
     # print(dict_of_post)
     object_of_table = dict_of_tables.get(request.session['dict_of_data'].get('name_of_table'))     # получаем таблицу в виде объекта с хтмла
@@ -297,6 +304,7 @@ def mode(request, dict_of_tables=dict_of_tables):
     # print(dict_of_post)
     html = request.session['dict_of_data'].get('template')
     mode = dict_of_post.get('mode') if dict_of_post.get('mode') else request.session['dict_of_data'].get('mode')
+    addon = bool(dict_of_post.get('addon')) if dict_of_post.get('addon') else request.session['dict_of_data'].get('addon')
     try:
         if mode.startswith('Поиск'):
             result_of_search = object_of_table.objects.filter(**dict_of_post).values_list()
@@ -389,13 +397,43 @@ def mode(request, dict_of_tables=dict_of_tables):
                         amount_of_remove = amount_of_remove[0]
                     request.session['dict_of_data'].update({'amount_of_remove': amount_of_remove})
 
-        elif mode.startswith('Изме') and request.session['dict_of_data'].get('addon') is False:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
-            if len(object_of_table.objects.filter(**dict_of_post)) == 0:
-                raise ValueError
+        elif mode.startswith('Изме') and not addon:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
+            print('first_step')
+            # удаление всех пустых полей
+            if dict_of_post.get('flag'):  # ajax
+                html = 'update_table.html'
+                request.session['dict_of_data'].update(generation_of_data(dict_of_tables.get(dict_of_post.get('name_of_table')), dict_of_post.get('name_of_table')))
+                dict_of_post.clear()
+                dict_of_post['id'] = ids_of_update
+                print(ids_of_update)
+            else:
+                list_of_del_key = []
+                for key, value in dict_of_post.items():
+                    if not value:
+                        list_of_del_key.append(key)
+                for key in list_of_del_key:
+                    del dict_of_post[key]
+                ##############################
+                if len(object_of_table.objects.filter(**dict_of_post)) == 0:
+                    raise ValueError
             request.session['dict_of_data'].update({'addon': True, 'dict_of_post': dict_of_post})
-
-        elif mode.startswith('Изме') and request.session['dict_of_data'].get('addon') is True:
-            amount_of_update = object_of_table.objects.filter(**request.session['dict_of_data'].get('dict_of_post')).update(**dict_of_post)
+        elif mode.startswith('Изме') and addon:
+            print('second_step')
+            html = 'update_table.html'
+            # удаление всех пустых полей
+            list_of_del_key = []
+            for key, value in dict_of_post.items():
+                if not value:
+                    list_of_del_key.append(key)
+            for key in list_of_del_key:
+                del dict_of_post[key]
+            ##############################
+            if request.session['dict_of_data'].get('dict_of_post').get('id'):
+                for id_ in request.session['dict_of_data'].get('dict_of_post').get('id'):
+                    object_of_table.objects.filter(id=id_).update(**dict_of_post)
+                amount_of_update = 1
+            else:
+                amount_of_update = object_of_table.objects.filter(**request.session['dict_of_data'].get('dict_of_post')).update(**dict_of_post)
             if amount_of_update > 0:
                 request.session['dict_of_data'].update({'win': True, 'addon': False})
             else:
@@ -410,3 +448,66 @@ def mode(request, dict_of_tables=dict_of_tables):
     else:
         request.session['dict_of_data'].update({'win': True})
         return render(request, html, dict(request.session['dict_of_data']))
+
+
+def generation_of_data(table, name_of_table):
+    engl_rows = rows = table.readable()[1:]     # получаем поля таблицы , для этого в классе каждой таблицы прописанны поля
+    rus_rows = table.readable_rus()[1:]
+    ids, rows, code = tuple(x for x in rows if x.find('id_of_') == 0), tuple(x for x in rows if x.find('id_of_') == -1 and x.find('code') == -1), tuple(x for x in rows if x.find('code') > -1)
+    engl_ids = tuple(ids)
+    # выше на одну строку генерируем два кортежа, один из айдишников, то есть внешних ключей, другой из простых полей
+
+    dict_of_tables = {      # кортеж для получения значений со всех таблиц
+        'Country': Country.objects.values_list(),
+        'Shape': Shape.objects.values_list(),
+        'Medicament': Medicament.objects.values_list(),
+        'Pharma_group': Pharma_group.objects.values_list(),
+        'Manufacturer': Manufacturer.objects.values_list(),
+        'District': District.objects.values_list(),
+        'Pharmacy': Pharmacy.objects.values_list(),
+        'Lot': Lot.objects.values_list(),
+        'Employee': Employee.objects.values_list(),
+        'Name_of_medicament': Name_of_medicament.objects.values_list(),
+        'Type': Type.objects.values_list(),
+        'Reason': Reason.objects.values_list(),
+    }
+    tables = {}     # словарь для вывода на html выдвигающихся полей
+    if ids:
+        for i in enumerate(tuple(dict_of_tables.get(x[x.find('_of_') + 4:].capitalize()) for x in ids)):    # в tables помещяем внешний ключ + примари ключИ
+            if ids[i[0]] in ('id_of_shape', 'id_of_pharma_group', 'id_of_manufacturer', 'id_of_country', 'id_of_district', 'id_of_name_of_medicament', 'id_of_type', 'id_of_reason'):
+                tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + j[1] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_pharmacy':
+                tables.update({ids[i[0]]: tuple(
+                    str(j[0]) + ' | ' + j[2] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_lot':
+                tables.update({ids[i[0]]: tuple(
+                    str(j[0]) + ' | ' + j[3] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_employee':
+                tables.update({ids[i[0]]: tuple(
+                    str(j[0]) + ' | ' + j[3] + ' ' + j[2] + ' ' + j[4] for j in i[1])})  # можно улудшить + названием, но это лень
+            elif ids[i[0]] == 'id_of_medicament':
+                tables.update({ids[i[0]]: tuple(str(j[0]) + ' | ' + Name_of_medicament.objects.get(id=j[1]).title_of_medicament for j in i[1])})
+
+    rows, ids, code = [], [], []
+
+    for index, value in enumerate(engl_rows):
+        if value.find('id_of_') > -1:
+            ids.append(rus_rows[index])
+        elif value.find('id_of_') == -1 and value.find('code') == -1:
+            rows.append(rus_rows[index])
+        else:
+            code.append(rus_rows[index])
+
+    dict_ids = {}       # создаем словарь с русским ключем и английский значением, чтоб сортировать их на айди и
+    for id_ in range(len(ids)):
+        dict_ids.update({ids[id_]:engl_ids[id_]})
+
+    dict_rows = table.get_attr()    # задаем атрибуты инпутам, что вводить, в каком колве и прочее
+    return {
+        'name_of_table': name_of_table,
+        'name_of_rows': dict_rows,
+        'code': code,
+        'ids': dict_ids,
+        'tables': tables,
+        'mode': 'Изменить в ',
+    }

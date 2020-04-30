@@ -17,7 +17,6 @@ function mode_of_row(e) {
     if (row.textContent.trim().startsWith('id') || row.textContent.trim().startsWith('Таб')) return
 
     let controls = document.getElementById('action_over_table')
-    // document.createElement("tr"). = 'black'
     if (row.style.backgroundColor === 'cyan')
     {
         row.style.backgroundColor = '#343A40'
@@ -37,38 +36,6 @@ function mode_of_row(e) {
         row.style.color = 'black'
         controls.style.visibility = 'visible'
     }
-
-    // let array_of_row_to_del
-    //
-    // for (let trs of full_table.childNodes)
-    //         if (trs instanceof HTMLTableRowElement)
-    //             if (trs.style.backgroundColor === 'cyan')
-    //             {
-    //                 controls.style.visibility = 'visible'
-    //                 break
-    //             }
-
-    // let table = child.parentElement.parentElement;
-    // result_str = 'mode=Удалить из &name_of_table=' + table.firstChild.textContent.trim().slice(table.firstChild.textContent.trim().indexOf(':') + 2)
-    // let count = 0;
-    // for (const keks of row.childNodes)
-    //     if (keks.textContent.trim().length > 0)
-    //     {
-    //         result_str += '&flag' + count + '=' +  keks.textContent.trim()
-    //         count ++;
-    //     }
-    // let request = new XMLHttpRequest();
-    // request.open('POST','http://127.0.0.1:8000/main/work_with_tables/',true);
-    // request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    // request.addEventListener("readystatechange", () =>
-    // {
-    //     if(request.readyState === 4 && request.status === 200)
-    //     {
-    //         console.log("Запрос пришел");
-    //     }
-    // });
-    // request.send(result_str);
-
 }
 
 function delete_rows() {
@@ -91,8 +58,7 @@ function delete_rows() {
 
     for (let row of prepare_to_delete)
     {
-        data_ = 'mode=Удалить из &name_of_table=' + table.firstChild.textContent.trim().slice(table.firstChild.textContent.trim().indexOf(':') + 2) + '&id=' + row.children[0].textContent + '&flag=1'
-        console.log(data_)
+        data_ = 'mode=Удалить из &name_of_table=' + table.firstChild.textContent.trim().slice(table.firstChild.textContent.trim().indexOf(':') + 2, table.firstChild.textContent.trim().indexOf('(') - 1) + '&id=' + row.children[0].textContent + '&flag=1'
         let request = new XMLHttpRequest();
         request.open('POST','http://127.0.0.1:8000/main/work_with_tables/',true);
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -118,4 +84,40 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+
+function update_rows() {
+    let count_rows = 0
+    let prepare_to_delete = []
+    let indexs_to_delete = []
+    let table;
+    for (let row of document.getElementsByTagName('tr'))
+    {
+        table = row.parentElement;
+        if (row.style.backgroundColor === 'cyan')
+        {
+            prepare_to_delete.push(row)
+            indexs_to_delete.push(count_rows)
+        }
+        count_rows ++;
+    }
+
+    for (const ind of indexs_to_delete.reverse() )  table.deleteRow(ind);
+
+    let form = document.createElement('form')
+    form.action = 'http://127.0.0.1:8000/main/work_with_tables/'
+    form.method = 'POST'
+    let count = 0;
+    for (let row of prepare_to_delete)
+    {
+        form.innerHTML += `<input name="id${count++}" value="${row.children[0].textContent}">`;
+    }
+    form.innerHTML += `<input name="addon" value="">`;
+    form.innerHTML += `<input name="mode" value="Изменить в ">`;
+    form.innerHTML += `<input name="flag" value="1">`;
+    form.innerHTML += `<input name="name_of_table" value="${table.firstChild.textContent.trim().slice(table.firstChild.textContent.trim().indexOf(':') + 2, table.firstChild.textContent.trim().indexOf('(') - 1)}">`;
+    document.body.appendChild(form);
+    form.submit()
+    document.getElementById('action_over_table').style.visibility = 'hidden'
 }

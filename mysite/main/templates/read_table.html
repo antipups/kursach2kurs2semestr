@@ -4,7 +4,7 @@
 
     <table class="table table-bordered table-dark table-hover">
         <tr>
-            <td class="w-25 disabled" colspan="{{name_of_rows|length}}" align="center">Таблица {{name_of_table}}</td>
+            <td class="w-25 disabled" colspan="{{name_of_rows|length}}" align="center">Таблица {{name_of_table}} (Количество записей - {{amount_of_rows}}) </td>
         </tr>
         <tr>
             {% for i in name_of_rows %}
@@ -23,7 +23,9 @@
     <div class="badge badge-light control_table">
         <div style="visibility: hidden" id="action_over_table">
             <button class="btn btn-info mb-0" id="to_remove" >Удалить выбранные записи</button>
-            <button class="btn btn-info mb-0">Изменить выбранные записи</button>
+<!--            <form action="/main/work_with_tables/" method="post">-->
+            <button class="btn btn-info mb-0" id="to_update" type="submit">Изменить выбранные записи</button>
+<!--            </form>-->
         </div>
         {% if pagination == True %}
         <nav class="pagin">
@@ -41,7 +43,8 @@
     <script>
         for (let trs of document.getElementsByTagName('tr'))
             trs.addEventListener('click',e => mode_of_row(e))
-        document.getElementById("to_remove").addEventListener('click',e => delete_rows(e))
+        document.getElementById("to_remove").addEventListener('click',e => delete_rows())
+        document.getElementById("to_update").addEventListener('click',e => update_rows())
     </script>
 
 {% endblock %}
