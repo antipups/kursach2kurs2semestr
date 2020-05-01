@@ -69,18 +69,16 @@ def task1(request):    # для задания №1
 @csrf_exempt
 def task1_cont(request):
     dict_of_post = request.POST
-    dict_of_data = request.session['dict_of_data']
     if dict_of_post.get('Аптека'):
         result = util.get_all_medicament_from_pharmacy(dict_of_post.get('Аптека'))
     elif dict_of_post.get('Район'):
         result = util.get_all_medicament_from_district(dict_of_post.get('Район'))
     else:
-        request.session['dict_of_data'].update({'win': "0"})
-        return render(request, 'task1.html', request.session['dict_of_data'])
+        result = util.get_all_medicament_from_all()
 
     if result:
         request.session['dict_of_data'].update({'win': True,
-                             'medicaments': result,})
+                                                'medicaments': result,})
     else:
         request.session['dict_of_data'].update({'win': False})
     return render(request, 'task1.html', request.session['dict_of_data'])
@@ -90,7 +88,6 @@ def task2(request):  # для задания №2
     ids = {'Район': tuple()}  # айдишники страны и аптек
     for district in Manufacturer.objects.raw('SELECT * FROM main_district'):
         ids['Район'] = ids.get('Район') + (district.title_of_district,)
-    dict_of_data = request.session['dict_of_data']
     request.session['dict_of_data'].update({'ids': ids})
     return render(request, 'task2.html', request.session['dict_of_data'])
 
@@ -98,15 +95,14 @@ def task2(request):  # для задания №2
 @csrf_exempt
 def task2_cont(request):
     dict_of_post = request.POST
-    dict_of_data = request.session['dict_of_data']
     if dict_of_post.get('Район'):
         result = util.get_all_pharmacy_from_district(dict_of_post.get('Район'))
     else:
-        request.session['dict_of_data'].update({'win': "0"})
-        return render(request, 'task2.html', request.session['dict_of_data'])
+        result = util.get_all_pharmacy_from_all()
+
     if result:
         request.session['dict_of_data'].update({'win': True,
-                             'amount_of_pharmacy': result})
+                                                'amount_of_pharmacy': result})
     else:
         request.session['dict_of_data'].update({'win': False})
     return render(request, 'task2.html', request.session['dict_of_data'])
@@ -124,12 +120,11 @@ def task3(request):  # для задания №3    ВОООООБЩЕ НЕ Д�
 @csrf_exempt
 def task3_cont(request):
     dict_of_post = request.POST
-    dict_of_data = request.session['dict_of_data']
     if dict_of_post.get('Фирма'):
         result = util.get_all_comebacks_from_manufacturer(dict_of_post.get('Фирма'))
     else:
-        request.session['dict_of_data'].update({'win': "0"})
-        return render(request, 'task3.html', request.session['dict_of_data'])
+        result = util.get_all_comebacks_from_all()
+
     if result:
         request.session['dict_of_data'].update({'win': True,
                              'result': result[0]})
@@ -398,14 +393,14 @@ def mode(request, dict_of_tables=dict_of_tables):
                     request.session['dict_of_data'].update({'amount_of_remove': amount_of_remove})
 
         elif mode.startswith('Изме') and not addon:  # если делаем обновление данных > проверка на наличие данных -> след шаг обновления
-            print('first_step')
+            # print('first_step')
             # удаление всех пустых полей
             if dict_of_post.get('flag'):  # ajax
                 html = 'update_table.html'
                 request.session['dict_of_data'].update(generation_of_data(dict_of_tables.get(dict_of_post.get('name_of_table')), dict_of_post.get('name_of_table')))
                 dict_of_post.clear()
                 dict_of_post['id'] = ids_of_update
-                print(ids_of_update)
+                # print(ids_of_update)
             else:
                 list_of_del_key = []
                 for key, value in dict_of_post.items():

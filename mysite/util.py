@@ -5,6 +5,19 @@ import main
 #   ========================================    ЗАДАНИЯ     ================================================
 
 
+def get_all_medicament_from_all():
+    result_of_query = 'SELECT main_lot.id, ' \
+                      '     title_of_medicament, ' \
+                      '     COUNT(title_of_medicament) as count ' \
+                      'FROM main_lot ' \
+                      'INNER JOIN main_medicament ON main_medicament.id = main_lot.id_of_medicament_id ' \
+                      'INNER JOIN main_name_of_medicament ON main_name_of_medicament.id = main_medicament.id_of_name_of_medicament_id ' \
+                      'GROUP BY title_of_medicament ' \
+                      'ORDER BY count DESC ' \
+                      'LIMIT 5'
+    return tuple(row.title_of_medicament for row in main.models.Manufacturer.objects.raw(result_of_query))
+
+
 def get_all_medicament_from_pharmacy(name_of_pharmacy):
     result_of_query = 'SELECT main_lot.id, title_of_medicament, COUNT(title_of_medicament) as count FROM main_pharmacy ' \
                       'INNER JOIN main_employee ON main_employee.id_of_pharmacy_id = main_pharmacy.id AND ' \
@@ -33,6 +46,15 @@ def get_all_medicament_from_district(name_of_district):
     return tuple(row.title_of_medicament for row in main.models.Manufacturer.objects.raw(result_of_query))
 
 
+def get_all_pharmacy_from_all():
+    result_of_query = 'SELECT main_pharmacy.id, title_of_type, COUNT(title_of_type) as count FROM main_district ' \
+                      'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id ' \
+                      'INNER JOIN main_type ON main_type.id = main_pharmacy.id_of_type_id ' \
+                      'GROUP BY title_of_type ' \
+                      'ORDER BY count DESC'
+    return tuple(row.title_of_type + ': ' + str(row.count) for row in main.models.Manufacturer.objects.raw(result_of_query))
+
+
 def get_all_pharmacy_from_district(name_of_district):
     result_of_query = 'SELECT main_pharmacy.id, title_of_type, COUNT(title_of_type) as count FROM main_district ' \
                       'INNER JOIN main_pharmacy ON main_pharmacy.id_of_district_id = main_district.id AND ' \
@@ -41,6 +63,13 @@ def get_all_pharmacy_from_district(name_of_district):
                       'GROUP BY title_of_type ' \
                       'ORDER BY count DESC'
     return tuple(row.title_of_type + ': ' + str(row.count) for row in main.models.Manufacturer.objects.raw(result_of_query))
+
+
+def get_all_comebacks_from_all():
+    result_of_query = 'SELECT main_medicament.id, SUM(main_lot.price_manufacturer) as sum, COUNT(main_lot.defect) as count FROM main_manufacturer ' \
+                      'INNER JOIN main_medicament ON main_medicament.id_of_manufacturer_id = main_manufacturer.id ' \
+                      'INNER JOIN main_lot ON main_lot.id_of_medicament_id = main_medicament.id WHERE defect="1" '
+    return tuple('Сумма: ' + str(row.sum) + ', Количество возвратов: ' + str(row.count) for row in main.models.Manufacturer.objects.raw(result_of_query))
 
 
 def get_all_comebacks_from_manufacturer(name_of_manufacturer):
