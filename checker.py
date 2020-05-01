@@ -40,7 +40,7 @@ def manufacturer(**dict_of_post):
         return
     if len(email_of_manufacturer) == 0 or len(email_of_manufacturer) > 30:
         return
-    if (len(year_of_manufacturer) == 0 or len(year_of_manufacturer) > 4) and year_of_manufacturer.isdigit() is False and int(year_of_manufacturer) > 2020:
+    if len(year_of_manufacturer) != 4 or year_of_manufacturer.isdigit() is False or int(year_of_manufacturer) > 2020:
         return
     return True
 
@@ -95,9 +95,11 @@ def lot(**dict_of_post):
                                           datetime.date(int(datestart[:4]), int(datestart[5:7]), int(datestart[-2:])), \
                                           datetime.date(int(datefinish[:4]), int(datefinish[5:7]), int(datefinish[-2:]))
         if datestart.year < 1900 or datetime.datetime.now().date() < datefact or datetime.datetime.now().date() < datestart:
+            print('lox1')
             return
         one_day = datetime.timedelta(days=1)    # переменная разность, чтоб регулировать даты
         if datefinish - datestart < one_day or datefinish - datefact < one_day or datefact - datestart < one_day:
+            print('lox2')
             return
     except:
         print('date')

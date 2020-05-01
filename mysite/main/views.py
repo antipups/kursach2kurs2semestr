@@ -127,7 +127,7 @@ def task3_cont(request):
 
     if result:
         request.session['dict_of_data'].update({'win': True,
-                             'result': result[0]})
+                                                'result': result[0]})
     else:
         request.session['dict_of_data'].update({'win': False})
     return render(request, 'task3.html', request.session['dict_of_data'])
@@ -313,7 +313,7 @@ def mode(request, dict_of_tables=dict_of_tables):
         elif mode.startswith('Добав'):   # если добавляем, то делаем добавление > проверки на наличие данных -> добавление
             if dict_of_post.get('title_of_country') is not None:    # для таблицы с странами (там должен быть капс)
                 dict_of_post['title_of_country'] = dict_of_post.get('title_of_country').upper()
-            if dict_of_post.get('name_of_table') == 'Партия':
+            if request.session['dict_of_data'].get('name_of_table') == 'Партия':
                 if dict_of_post.get('id_of_reason') is None:
                     dict_of_post['id_of_reason'] = Reason.objects.get(id=3)
                     dict_of_post['defect'] = False
@@ -321,6 +321,7 @@ def mode(request, dict_of_tables=dict_of_tables):
                     dict_of_post['defect'] = True
             if eval('checker.' + dict_of_data.get('model') + '(**dict_of_post)') is not True:
                 raise ValueError
+
             object_of_table.objects.create(**dict_of_post)
 
             # {'datefact': '2020-02-13', 'count': '2100', 'number_of_lot': '123', 'datestart': '2020-02-10', 'datefinish': '2020-02-22', 'price_manufacturer': '1000', 'price_pharmacy': '2000', 'defect': '1',
@@ -386,6 +387,7 @@ def mode(request, dict_of_tables=dict_of_tables):
                 for key in list_of_del_key:
                     del dict_of_post[key]
                 ##############################
+
                 amount_of_remove = object_of_table.objects.filter(**dict_of_post).delete()  # количество удалимых записей
                 if amount_of_remove != 0:
                     if not isinstance(amount_of_remove, int):
@@ -411,6 +413,9 @@ def mode(request, dict_of_tables=dict_of_tables):
                 ##############################
                 if len(object_of_table.objects.filter(**dict_of_post)) == 0:
                     raise ValueError
+                for key, value in dict_of_post.items():
+                    if key.startswith('id_of'):
+                        dict_of_post[key] = dict_of_post.get('id_of_district').id
             request.session['dict_of_data'].update({'addon': True, 'dict_of_post': dict_of_post})
         elif mode.startswith('Изме') and addon:
             print('second_step')

@@ -313,7 +313,7 @@ class Lot(models.Model):
             Employee (работник).
             Medicament (лекарство)
     """
-    id_of_medicament = models.ForeignKey(Medicament, on_delete=models.DO_NOTHING)
+    id_of_medicament = models.ForeignKey(Medicament, on_delete=models.CASCADE)
     datefact = models.DateField()
     count = models.IntegerField()
     number_of_lot = models.IntegerField()
@@ -321,7 +321,7 @@ class Lot(models.Model):
     datefinish = models.DateField()
     price_manufacturer = models.IntegerField()
     price_pharmacy = models.IntegerField()
-    id_of_employee = models.ForeignKey(Employee, models.DO_NOTHING)
+    id_of_employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     defect = models.BooleanField(default=False)
     id_of_reason = models.ForeignKey(Reason, on_delete=models.CASCADE, default=None)
 
