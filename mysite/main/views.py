@@ -415,7 +415,7 @@ def mode(request, dict_of_tables=dict_of_tables):
                     raise ValueError
                 for key, value in dict_of_post.items():
                     if key.startswith('id_of'):
-                        dict_of_post[key] = dict_of_post.get('id_of_district').id
+                        dict_of_post[key] = dict_of_post.get(key).id
             request.session['dict_of_data'].update({'addon': True, 'dict_of_post': dict_of_post})
         elif mode.startswith('Изме') and addon:
             print('second_step')

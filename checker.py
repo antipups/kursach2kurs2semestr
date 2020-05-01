@@ -40,7 +40,7 @@ def manufacturer(**dict_of_post):
         return
     if len(email_of_manufacturer) == 0 or len(email_of_manufacturer) > 30:
         return
-    if len(year_of_manufacturer) != 4 or year_of_manufacturer.isdigit() is False or int(year_of_manufacturer) > 2020:
+    if len(year_of_manufacturer) != 4 or year_of_manufacturer.isdigit() is False or int(year_of_manufacturer) > 2020 or int(year_of_manufacturer) < 1900:
         return
     return True
 

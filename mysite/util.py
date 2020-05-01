@@ -768,7 +768,7 @@ def sum_all_methods_for_querys(get_all_data):
             '<h3>5.Получение всех существующих лекарств<br>(первый внутренне симметричный запрос)</h3>':
                 get_all_about_medicaments(),
 
-            '<h3>6.Получение всех работников<br>(второй внутренне симметричный запрос)</h3>':
+            '<h3>6.Получение всех работников c аптеками<br>(второй внутренне симметричный запрос)</h3>':
                 get_all_employeers(),
 
             '<h3>7.Получение всех работников получивших партии, и вывод их партий<br>(третий внутренне симметричный запрос)</h3>':
@@ -794,16 +794,18 @@ def sum_all_methods_for_querys(get_all_data):
                 get_all_medicament_from_manufact(get_all_data.get('twelfth_querys')[0][:get_all_data.get('twelfth_querys')[0].find(' ')]),
 
             '<h3>13.Получение количества всех сотрудников всех аптек по району<br>(итоговый запрос с условием на группы)</h3>'
-            f"<div class=\"alert alert-primary\">Исходные данные:<br>{get_all_data.get('eleventh_querys')[0]} </div>":
+            f"<div class=\"alert alert-primary\">Исходные данные:<br>{get_all_data.get('thirdth_querys')[0]} </div>":
                 get_amount_of_employeers_in_pharmacy(get_all_data.get('thirdth_querys')[0][:get_all_data.get('thirdth_querys')[0].find(' ')]),
 
-            '<h3>14.Получение всех дешевых препаратов по району<br>(итоговый запрос с условием на группы и данные + запрос с подзапросом)</h3>'
+            '<h3>14.Получение всех дешевых препаратов по району<br>(запрос на запросе по принципу итогового запроса)</h3>'
+            f"<div class=\"alert alert-primary\">Исходные данные:<br>{get_all_data.get('fifteenth_querys')[0]} </div>":
+                get_cheap_all_medicaments(
+                    get_all_data.get('fifteenth_querys')[0][:get_all_data.get('fifth_querys')[0].find(' ')]),
+
+            '<h3>15.Получение всех дешевых препаратов по району<br>(итоговый запрос с условием на группы и данные + запрос с подзапросом)</h3>'
             f"<div class=\"alert alert-primary\">Исходные данные:<br>{', '.join(get_all_data.get('twelveth_querys'))} </div>":
                 get_cheap_medicaments(get_all_data.get('twelveth_querys')),
 
-            '<h3>15.Получение всех дешевых препаратов по району<br>(запрос на запросе по принципу итогового запроса)</h3>'
-            f"<div class=\"alert alert-primary\">Исходные данные:<br>{get_all_data.get('fifteenth_querys')[0]} </div>":
-                get_cheap_all_medicaments(get_all_data.get('fifteenth_querys')[0][:get_all_data.get('fifth_querys')[0].find(' ')]),
             }
 
 
