@@ -1,35 +1,41 @@
 {% extends "content.html" %}
 
 {% block table %}
-    <div class="badge badge-secondary p-2 w-100"><h3>Добавить в таблицу {{name_of_table}}</h3>
-        <form action="/main/work_with_tables/" method="post">
+    <div class="badge badge-dark p-2 w-100"><h3>Добавить в таблицу {{name_of_table}}</h3>
+        <form action="/main/work_with_tables/" method="post" class="needs-validation" novalidate>
             <div class="form-row">    <!-- один строка для ввода -->
                 {% for key, znach in name_of_rows.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода -->
-                      <label for="add">{{key}}</label>
-                        <input class="form-control" id="add" name="{{znach.0}}" value="{{ value }}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" type="{{znach.3}}" tabindex="1" {{znach.4}} {% if znach.3 == "checkbox" %} onchange="invis()" {% endif %}>
+                      <label>{{key}}</label>
+                        <input class="form-control" name="{{znach.0}}" value="{{ value }}" pattern="{{znach.6}}" autocomplete="off" placeholder="{{znach.1}}" maxlength="{{znach.2}}" type="{{znach.3}}" tabindex="1" {{znach.4}} {% if znach.3 == "checkbox" %} onchange="invis()" {% endif %}>
+                        <div class="invalid-feedback">
+                            <h6>{{znach.5|safe}}</h6>
+                        </div>
                     </div>
                 {% endfor %}
 
                 {% for key, value in ids.items %}
                     <div class="form-group col-md-3">   <!-- одна форма ввода (дропдовн)-->
                       <label for="add" name="{{value}}" {% if value == "id_of_reason" %} style="visibility:hidden" {% endif %}>{{key}}</label>
-                        <select id="add" name="{{value}}" class="form-control" tabindex="1" {% if value == "id_of_reason" %} style="visibility:hidden" {% endif %}>
-                            <option selected disabled>Выберите...</option>
+                        <select name="{{value}}" class="form-control" tabindex="1" {% if value == "id_of_reason" %} style="visibility:hidden" {% endif %} required>
+                            <option {% if value == "id_of_reason" %} value="3 | Нет дефекта" {% else %} value="" {% endif %} selected disabled>Выберите...</option>
                             {% for key_, value_ in tables.items %}
                                 {% if value == key_ %}
                                     {% for j in value_ %}
-                                        <option>{{j}}</option>
+                                        <option value="{{j}}">{{j}}</option>
                                     {% endfor %}
                                 {% endif %}
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">
+                            <h6>Выберите какое-то значение.</h6>
+                        </div>
                     </div>
                 {% endfor %}
 
                 {% if code %}   <!-- если требуется код -->
                     <div class="custom-file w-25 mt-4 ml-1">
-                        <input type="file" class="custom-file-input" id="add" name="bar_code" tabindex="1">
+                        <input type="file" class="custom-file-input" name="bar_code" tabindex="1">
                         <label class="custom-file-label" for="add">Штрих-код</label>
                     </div>
                 {% endif %}
@@ -53,5 +59,32 @@
     {% if win == False %}
         <div class="alert alert-danger mt-3" align="center" role="alert"><h3>{{cause}}</h3></div>
     {% endif %}
+
+    <script>
+        (function()
+        {
+            'use strict';
+            window.addEventListener('load', function()
+            {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form)
+                {
+                    form.addEventListener('submit', function(event)
+                    {
+                        if (form.checkValidity() === false)
+                        {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            },
+            false);
+        }
+        )();
+    </script>
 
 {% endblock %}

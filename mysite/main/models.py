@@ -29,7 +29,7 @@ class Country(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_country', 'РОС', 3, 'text', 'required')}
+        return {'Название': ('title_of_country', 'РОС', 3, 'text', 'required', 'Введите сокращение (до 3-ёх символов)', '[A-zА-я]{1,3}')}
 
 
 class Reason(models.Model):
@@ -51,7 +51,7 @@ class Reason(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_reason', 'Поломанная упаковка', 100, 'text', 'required')}
+        return {'Название': ('title_of_reason', 'Поломанная упаковка', 100, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 100 символов', '[A-zА-я]{1,100}')}
 
 
 class Manufacturer(models.Model):
@@ -79,10 +79,11 @@ class Manufacturer(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_manufacturer', 'ООО АвтоРог', 30, 'text', 'required'),
-                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 30, 'text', 'required'),
-                'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 30, 'text', 'required'),
-                'Год': ('year_of_manufacturer', '2001', 4, 'number', 'required')}
+        return {'Название': ('title_of_manufacturer', 'ООО АвтоРог', 30, 'text', 'required', 'Введите меньше 30 символов<br>и только буквы', '[A-zА-я]{1,30}'),
+                'Адрес': ('address_of_manufacturer', 'Пушкина 16/2', 30, 'text', 'required', 'Введите меньше 30 символов', '.{1,30}'),
+                'E-mail': ('email_of_manufacturer', 'rog@gmail.com', 30, 'email', 'required', 'Нет знака @', '.{1,30}'),
+                'Год': ('year_of_manufacturer', '2001', 4, 'text', 'required', 'Введите значение<br>больше 1900, и меньше 2020', '((19[0-9]{2})|(20(([0-1][0-9])|20)))')}
+
 
 ################################################################
 
@@ -110,7 +111,7 @@ class Shape(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_shape', 'Таблетки', 15, 'text', 'required')}
+        return {'Название': ('title_of_shape', 'Таблетки', 15, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 15 символов', '[A-zА-я]{1,15}')}
 
 
 class Pharma_group(models.Model):
@@ -132,7 +133,7 @@ class Pharma_group(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_pharma_group', 'Калиев каналов актив', 20, 'text', 'required')}
+        return {'Название': ('title_of_pharma_group', 'Калиев каналов актив', 20, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 20 символов', '[A-zА-я]{1,20}')}
 
 
 class Name_of_medicament(models.Model):
@@ -154,7 +155,7 @@ class Name_of_medicament(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_medicament', 'Анадрол', 20, 'text', 'required')}
+        return {'Название': ('title_of_medicament', 'Анадрол', 20, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 20 символов', '[A-zА-я]{1,20}')}
 
 
 class Medicament(models.Model):
@@ -186,7 +187,7 @@ class Medicament(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Инструкция': ('comments', 'Принимать после еды 3 раза в день.', 100, 'text', 'required')}
+        return {'Инструкция': ('comments', 'Принимать после еды 3 раза в день.', 100, 'text', 'required', 'Длина меньше 100 символов', '.{1,100}')}
 
 ################################################################
 
@@ -214,7 +215,7 @@ class Type(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_type', 'Частная', 15, 'text', 'required')}
+        return {'Название': ('title_of_type', 'Частная', 15, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 15 символов', '[A-zА-я]{1,15}')}
 
 
 class District(models.Model):
@@ -236,7 +237,7 @@ class District(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Название': ('title_of_district', 'Кировский', 15, 'text', 'required')}
+        return {'Название': ('title_of_district', 'Кировский', 15, 'text', 'required', 'Введите корректное название района и <br>длина меньше 15 символов', '[A-zА-я]{0,15}')}
 
 
 class Pharmacy(models.Model):
@@ -266,10 +267,10 @@ class Pharmacy(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Номер': ('number_of_pharmacy', '0123456789', 100, 'number', 'required'),
-                'Название': ('title_of_pharmacy', 'Черника', 15, 'text', 'required'),
-                'Адрес': ('address_of_pharmacy', 'Пушкина дом 16', 15, 'text', 'required'),
-                'Телефон': ('phone_of_pharmacy', '0123456789', 10, 'number', 'required')}
+        return {'Номер': ('number_of_pharmacy', '0123456789', 100, 'text', 'required', 'Допускаются только цифры и<br>длина меньше 100 символов', '[A-zА-я]{1,100}'),
+                'Название': ('title_of_pharmacy', 'Черника', 15, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 15', '[A-zА-я]{1,15}'),
+                'Адрес': ('address_of_pharmacy', 'Пушкина дом 16', 15, 'text', 'required', 'Длина меньше 15 символов', '[A-zА-я]{1,15}'),
+                'Телефон': ('phone_of_pharmacy', '0123456789', 10, 'text', 'required', 'Допускаются только цифры и<br>длина меньше 10 символов', '[A-zА-я]{1,100}')}
 
 
 ################################################################
@@ -302,9 +303,9 @@ class Employee(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Имя': ('first_name', 'Василий', 20, 'text', 'required'),
-                'Фамилия': ('second_name', 'Пупкин', 20, 'text', 'required'),
-                'Отчество': ('third_name', 'Васильевич', 20, 'text', 'required')}
+        return {'Имя': ('first_name', 'Василий', 20, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 20 символов', '[A-zА-я]{1,20}'),
+                'Фамилия': ('second_name', 'Пупкин', 20, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 20 символов', '[A-zА-я]{1,20}'),
+                'Отчество': ('third_name', 'Васильевич', 20, 'text', 'required', 'Допускаются только буквы и<br>длина меньше 20 символов', '[A-zА-я]{1,20}')}
 
 
 class Lot(models.Model):
@@ -343,11 +344,11 @@ class Lot(models.Model):
 
     @staticmethod
     def get_attr():
-        return {'Дата доставки': ('datefact', '23.03.2012', 15, 'date', 'required'),
-                'Кол-во упаковок': ('count', '1234567890', 10, 'number', 'required'),
-                'Номер': ('number_of_lot', '4321', 4, 'number', 'required'),
-                'Дата выпуска': ('datestart', '20.03.2012', 15, 'date', 'required'),
-                'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date', 'required'),
-                'Цена(Фирма)': ('price_manufacturer', '1234', 4, 'number', 'required'),
-                'Цена(Аптека)': ('price_pharmacy', '9876', 4, 'number', 'required'),
-                'Дефект': ('defect', '1', 1, 'checkbox', ),}
+        return {'Дата доставки': ('datefact', '23.03.2012', 15, 'date', 'required', 'Допускаются дата > даты изготовления<br>но меньше сегодняшней', '.{1,15}'),
+                'Кол-во упаковок': ('count', '1234567890', 10, 'number', 'required', 'Допускаются только цифры и<br>длина меньше 10 символов', '[0-9]{1,10}'),
+                'Номер': ('number_of_lot', '4321', 4, 'number', 'required', 'Допускаются только цифры и<br>длина меньше 4 символов', '[0-9]{1,4}'),
+                'Дата выпуска': ('datestart', '20.03.2012', 15, 'date', 'required', 'Допускаются только цифры и<br>длина меньше 20 символов', '.{1,15}'),
+                'Дата срока годности': ('datefinish', '25.03.2012', 15, 'date', 'required', 'Допускаются только цифры и<br>длина меньше 20 символов', '.{1,15}'),
+                'Цена(Фирма)': ('price_manufacturer', '1234', 4, 'number', 'required', 'Допускаются только цифры и<br>длина меньше 4 символов', '[0-9]{1,4}'),
+                'Цена(Аптека)': ('price_pharmacy', '9876', 4, 'number', 'required', 'Допускаются только цифры и<br>длина меньше 4 символов', '[0-9]{1,4}'),
+                'Дефект': ('defect', '1', 1, 'checkbox', '?', '.{0,100}')}
